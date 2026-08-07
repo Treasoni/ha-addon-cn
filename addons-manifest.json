@@ -459,6 +459,13 @@
       "synced_at": "2026-08-07T06:52:44+00:00",
       "zh_guide": true
     },
+    "get": {
+      "source": "hacs-china",
+      "upstream_version": "2.0.0-1",
+      "local_version": "2.0.0-1",
+      "synced_at": "2026-08-07T15:38:02+00:00",
+      "zh_guide": false
+    },
     "git_pull": {
       "source": "official",
       "upstream_version": "9.0.1",
@@ -513,6 +520,12 @@
       "upstream_version": "1.6.0-bullseye-3",
       "local_version": "1.6.0-bullseye-3",
       "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": true
+    },
+    "haos-mirror-switcher": {
+      "source": "local",
+      "local_version": "0.1.0",
+      "synced_at": "2026-08-07T15:55:30+00:00",
       "zh_guide": true
     },
     "immich": {
@@ -1319,13 +1332,6 @@
       "local_version": "1.6.0",
       "synced_at": "2026-08-07T08:27:24+00:00",
       "zh_guide": true
-    },
-    "get": {
-      "source": "hacs-china",
-      "upstream_version": "2.0.0-1",
-      "local_version": "2.0.0-1",
-      "synced_at": "2026-08-07T15:38:02+00:00",
-      "zh_guide": false
     }
   },
   "conflicts": [

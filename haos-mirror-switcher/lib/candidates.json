@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "ghcr.io": [
+    "ghcr.nju.edu.cn",
+    "ghcr.m.daocloud.io",
+    "ghcr.1ms.run"
+  ],
+  "docker.io": [
+    "docker.nju.edu.cn",
+    "docker.1ms.run",
+    "docker.xuanyuan.me",
+    "docker.m.daocloud.io",
+    "docker.mirrors.ustc.edu.cn"
+  ],
+  "lscr.io": [
+    "docker.1panel.live"
+  ],
+  "probe": {}
+}

@@ -2,7 +2,18 @@
 
 ---
 
-_最后更新：2026-08-07_
+_最后更新：2026-08-08_
+
+## 2026-08-08
+
+### 审校：haos-mirror-switcher（source: local）
+
+- 错误 1：`probe_all` 用 `active|reg` 扁平键写 state.json，而 `build_target` 读 `st["active"]` 嵌套字典 → 探测结果全被忽略，apply 永不写镜像。根因：bash 里手工拼 JSON 键用了 `|`，与消费者的嵌套结构不一致。修复：python 把探测结果结构化为 `{"active": {...}, "probe_results": {...}}` 再合并。预防：state 写入的键结构必须与读取方一致；JSON 用 python 结构化输出，勿用 bash 字符串拼接。
+- 错误 2：`build_target` 的 patch 只含非空 mirror，"active 置 null 即移除"未实现 → `recover_direct`（恢复直连）实际什么都不做。根因：jq 对象合并 `(. + $patch)` 只覆盖已有键，patch 缺该键时旧映射保留。修复：enabled 的 registry 一律写 `patch[reg] = cur.get(reg)`（null 交给 `with_entries(select(.value != null))` 删除）。预防：jq 合并若要表达"删除"，patch 里必须显式写 null，再过滤 null 条目。
+- 错误 3：`_mutate_proxies` 直接写 `/lib/proxy_hosts.json`（镜像层）→ 容器重建（HA 重启/更新）后用户增删的 gh-proxy 全丢。修复：增删持久化到 `/data/state.json` 的 `proxy_override`/`proxy_removed`，内置清单只读。预防：用户可编辑数据必须放挂载卷（/data），绝不写镜像层 /lib。
+- 错误 4：OTA board 用 `uname -m` 推断 → ova/树莓派等非 generic 板会下载错误的 `.raucb`。修复：`/os/info` 的 `data.board` 为准，uname 仅作 fallback。预防：HAOS 板型信息从 Supervisor `/os/info` 拿，勿从内核 arch 猜。
+- 错误 5：HAOS 宿主路径写 `/usr/share/hassio`、`/mnt/data/addons_config`（那是 Docker 安装/HASS 约定）。修复：HAOS 上 supervisor 数据在 `/mnt/data/supervisor`，addon_config 宿主路径为 `/mnt/data/supervisor/addons_config/{slug}`。预防：HAOS 宿主路径一律以 `/mnt/data/supervisor` 为根。
+- 错误 6：config.yaml 的 `enable_ghcr/enable_dockerio/enable_lscr` 被 run.sh 读进 `ENABLE_*` 但无人消费，`enabled` 状态被硬编码全 true。修复：`probe_all`/`build_target` 用 `ENABLE_*` 环境变量与 state 的 enabled 共同生效。预防：options 读到 env 后必须确认被动作函数消费，否则文档与行为脱节。
 
 ## 2026-08-07
 
