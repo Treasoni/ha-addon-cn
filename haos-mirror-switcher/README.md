@@ -15,7 +15,15 @@
 ## 安装
 
 > [!important] 手动换源前置步骤（首次必读）
-> 本加载项是自有本地构建（`source: local`），构建时需要从 ghcr.io 拉取基础镜像。若你的 HA 当前完全拉不到 ghcr.io，请先按「HAOS 国内换源」教程手动把 Supervisor 镜像源指到国内镜像一次（例如把 `ghcr.io` 映射到 `ghcr.nju.edu.cn`），确认商店与加载项能正常安装后，再安装本加载项接管后续维护。
+> 本加载项是自有本地构建（`source: local`）。构建分两步，**两条镜像通道都必须在安装前可用**，缺一不可：
+> 1. Supervisor 先要从 Docker Hub 拉**构建器 CLI 镜像**（`docker:*`，仓库 `library/docker`）——这走 **docker.io** 通道；
+> 2. 再用 `ghcr.io` 拉基础镜像（`{arch}-base`）——这走 **ghcr.io** 通道。
+>
+> 因此若你的 HA 拉不到这些镜像，请先按「HAOS 国内换源」教程手动把 Supervisor 的 `registries_mirror` **同时**配好两个映射再安装本加载项：
+> ```json
+> { "registries": {}, "registries_mirror": { "ghcr.io": "ghcr.nju.edu.cn", "docker.io": "docker.nju.edu.cn" } }
+> ```
+> 只配 ghcr.io 会在构建时因拉不到 Docker Hub 的构建器 CLI 镜像（报 `Can't pull image docker:...-cli` / `auth.docker.io ... EOF`）而失败。配好后重启 Supervisor、确认商店与加载项能正常安装，再安装本加载项接管后续维护。
 
 1. 在 Home Assistant → 设置 → 加载项 → 右上角商店，添加本商店仓库：
    - Gitee：`https://gitee.com/zhqznc_10603234_123/ha-addon`

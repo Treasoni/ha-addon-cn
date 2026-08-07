@@ -2,7 +2,25 @@
 
 ---
 
-_最后更新：2026-08-07_
+_最后更新：2026-08-08_
+
+## 2026-08-08
+
+### source: local add-on 本地构建有两条镜像前置通道，缺一不可
+
+**类别**：knowledge_gap
+**优先级**：high
+**状态**：resolved（已落地 haos-mirror-switcher README 前置步骤）
+**范围**：source: local add-on / Supervisor 本地构建
+
+**摘要**：Supervisor 构建 `source: local` 插件要拉两类镜像——①先从 Docker Hub 拉构建器 CLI 镜像（`docker:*`，仓库 `library/docker`，走 docker.io 通道）；②再按 config.yaml 从 ghcr.io 拉 `{arch}-base`。只配 `registries_mirror` 的 ghcr.io 映射，构建会因拉不到 Docker Hub 的 `docker:...-cli` 而失败（`Can't pull image docker:29.6.2-cli` / `auth.docker.io ... EOF`）。
+
+**详情**：
+- 事实：真机装 `haos-mirror-switcher` 报 `Pulling image docker:29.6.2-cli` → `failed to authorize ... repository:library/docker:pull` → EOF。用户在 docker.json 只配了 ghcr.io 映射。
+- 根因：构建 source: local 需要 Docker Hub 的 `library/docker` CLI 镜像作为构建器，这是 docker.io 通道；它不在 ghcr.io 映射覆盖范围内。
+- 下次做法：source: local 插件的「手动换源前置」必须**同时**配好 `{ "ghcr.io": ..., "docker.io": ... }` 两个映射，README 前置步骤要写明这条硬依赖。已在 haos-mirror-switcher README 补齐。
+
+---
 
 - **`hassio.app_stdin` 是真实服务**（rpc_shutdown 审校）：HA 已将 add-on 改称 app，core 新增了 `hassio.app_stdin`（字段 `app`），与 `hassio.addon_stdin`（字段 `addon`）并存，均映射到 `/addons/{slug}/stdin`。上游官方 DOCS 已改用 `app_stdin`，中文 README 照抄不属于编造，切勿“纠正”成 addon_stdin。
 - **官方源审校用本地镜像**：`.cache/upstream/official/{slug}/DOCS.md` 是官方完整文档，README 的端口/默认值/FAQ 声称均可直接对照，无需联网。
