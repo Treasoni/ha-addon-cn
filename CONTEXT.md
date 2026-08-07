@@ -48,4 +48,8 @@ _Avoid_: 加速器、Docker 镜像加速（那是 docker.io 的 daemon.json 配�
 同步管道里对 config.yaml 的重写步骤：拷贝上游文件后立即套镜像地址重写，先变换再与本地对比，保证改写不被下次同步冲掉、幂等且不误报 updated。当前镜像源记录在 `addons-manifest.json` 的 `image_mirror` 字段。
 _Avoid_: 同步钩子、改写步骤
 
+**上游资料卡**:
+自有 add-on 的 config.yaml 头部注释块，记录上游软件端口、默认账号、数据目录、环境变量与版本，是「先收集资料再写」的强制落地物，未收集完成不得编写 Dockerfile 与 options。
+_Avoid_: 需求文档、开发笔记
+
 > 「镜像」三义：**镜像仓库**（vendored add-on，代码全量拷贝）/ **镜像源**（registry proxy，代理 ghcr.io 的镜像站）/ **镜像地址重写**（image rewrite，改 `image:` 字段）。语境不同含义不同。
