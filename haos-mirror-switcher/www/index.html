@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HAOS 国内换源</title>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--line:#334155;--fg:#e2e8f0;--muted:#94a3b8;--ok:#22c55e;--warn:#f59e0b;--err:#ef4444;--acc:#38bdf8;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6}
+.wrap{max-width:860px;margin:0 auto;padding:20px}
+h1{font-size:1.4rem;margin:.2em 0 1em}
+h2{font-size:1.1rem;border-left:4px solid var(--acc);padding-left:.6em;margin:1.4em 0 .6em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin:10px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:6px 0}
+label{color:var(--muted);font-size:.85rem}
+.muted{color:var(--muted);font-size:.85rem}
+.big{font-size:1.15rem;font-weight:600}
+.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.8rem;border:1px solid var(--line)}
+.b-ok{color:var(--ok);border-color:var(--ok)}
+.b-warn{color:var(--warn);border-color:var(--warn)}
+.b-err{color:var(--err);border-color:var(--err)}
+button{background:#0ea5e9;color:#fff;border:0;border-radius:8px;padding:8px 16px;font-size:.9rem;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+button.ghost{background:transparent;border:1px solid var(--line);color:var(--fg)}
+button.danger{background:var(--err)}
+button.warnb{background:var(--warn);color:#111}
+input[type=text],select{background:var(--bg);border:1px solid var(--line);color:var(--fg);border-radius:6px;padding:6px 8px;font-size:.9rem}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:500}
+code{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:.85em}
+pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;overflow-x:auto;font-size:.82rem;max-height:240px;overflow-y:auto}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#111;border:1px solid var(--line);border-radius:8px;padding:10px 18px;display:none;max-width:90%;z-index:99}
+input[type=checkbox]{transform:scale(1.2);margin-right:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🇨🇳 HAOS 国内换源</h1>
+
+  <div class="card" id="connCard">
+    <span class="muted">连接状态：</span><span id="connState">检测中…</span>
+    <span class="muted">｜ 当前版本：</span><span id="curVer">-</span>
+    <span class="muted">｜ 最新版本：</span><span id="latestVer">-</span>
+  </div>
+
+  <h2>镜像源换源（Supervisor 层）</h2>
+  <div class="card">
+    <div class="row"><label>当前生效映射</label><span id="currentMirror" class="big">-</span></div>
+    <div class="row">
+      <button id="btnProbe">立即探测</button>
+      <button id="btnApply" class="warnb">一键应用</button>
+      <button id="btnRestore" class="ghost">恢复上次配置</button>
+      <button id="btnRecover" class="danger">恢复直连（移除全部映射）</button>
+      <button id="btnRestartSup" class="ghost">重启 Supervisor</button>
+    </div>
+    <div class="row"><label>自动换源</label><input type="checkbox" id="autoSwitch" checked></div>
+    <div class="row"><label>自动换源已开：失效自动切换，无需手动</label></div>
+    <table id="mirrorTable">
+      <thead><tr><th>仓库</th><th>启用</th><th>当前源</th><th>候选（优先序）</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <div class="row" id="candidateRow">
+      <select id="candReg"><option value="ghcr.io">ghcr.io</option><option value="docker.io">docker.io</option><option value="lscr.io">lscr.io</option></select>
+      <input type="text" id="candHost" placeholder="镜像源主机，如 ghcr.nju.edu.cn">
+      <button id="btnCandAdd" class="ghost">添加候选</button>
+    </div>
+  </div>
+
+  <h2>OTA 固件升级（官方 .raucb 国内加速）</h2>
+  <div class="card">
+    <div class="row"><label>当前系统版本</label><span id="otaCur" class="big">-</span>
+      <label>最新版本</label><span id="otaLatest" class="big">-</span></div>
+    <div class="row">
+      <button id="btnOtaCheck">检查更新</button>
+      <button id="btnOtaDownload" disabled>下载升级包</button>
+      <button id="btnOtaInstall" disabled>安装到备用槽位</button>
+      <button id="btnOtaReboot" class="danger" disabled>重启系统生效</button>
+    </div>
+    <div class="row"><label>OTA 状态</label><span id="otaState" class="muted">-</span></div>
+    <div class="row"><label>gh-proxy 下载代理</label>
+      <input type="text" id="proxyHost" placeholder="如 ghproxy.net">
+      <button id="btnProxyAdd" class="ghost">添加</button>
+    </div>
+    <div class="row" id="proxyList"></div>
+    <div class="muted">说明：仅下载官方签名升级包（验签由系统内置密钥完成），经国内 gh-proxy 加速。安装后需重启系统生效。</div>
+  </div>
+
+  <h2>运行日志</h2>
+  <div class="card"><pre id="log"></pre></div>
+</div>
+<div id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+let STATE=null;
+
+function toast(msg,ms=3500){
+  const t=$('toast'); t.textContent=msg; t.style.display='block';
+  clearTimeout(t._h); t._h=setTimeout(()=>t.style.display='none',ms);
+}
+async function api(path,method='GET',body){
+  try{
+    const r=await fetch(path,{method,headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined});
+    return await r.json();
+  }catch(e){ return {ok:false,error:String(e)}; }
+}
+
+function setConn(ok){
+  $('connState').textContent=ok?'在线':'离线';
+  $('connState').className='badge '+(ok?'b-ok':'b-err');
+}
+
+async function refresh(){
+  const r=await api('/api/status');
+  if(!r.socket){ setConn(false); }
+  else{ setConn(true); }
+  STATE=r;
+  // 版本
+  const ota=r.ota||{};
+  $('curVer').textContent=ota.current_version||'-';
+  $('latestVer').textContent=ota.latest_version||'-';
+  $('otaCur').textContent=ota.current_version||'-';
+  $('otaLatest').textContent=ota.latest_version||'-';
+  // 当前映射
+  const cm=Object.entries(r.current_mirror||{}).map(([k,v])=>k+':'+(v||'直连')).join('，')||'（无映射，直连官方源）';
+  $('currentMirror').textContent=cm;
+  // 自动换源
+  $('autoSwitch').checked=(r.options.auto_switch!=='false');
+  // 镜像表
+  const tb=$('mirrorTable').querySelector('tbody'); tb.innerHTML='';
+  for(const reg of ['ghcr.io','docker.io','lscr.io']){
+    const enabled=!(r.enabled&&r.enabled[reg]===false);
+    const active=r.active&&r.active[reg];
+    const cands=(r.candidates&&r.candidates[reg]||[]).concat(r.override&&r.override[reg]||[]);
+    const removed=new Set(r.removed&&r.removed[reg]||[]);
+    const effective=cands.filter(h=>!removed.has(h));
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><code>${reg}</code></td>
+      <td><input type="checkbox" data-reg="${reg}" ${enabled?'checked':''}></td>
+      <td>${active?`<span class="badge b-ok">${active}</span>`:'<span class="badge b-warn">未配置</span>'}</td>
+      <td class="muted">${effective.join('，')||'-'}</td>`;
+    tb.appendChild(tr);
+  }
+  tb.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+    cb.onchange=()=>api('/api/toggle','POST',{registry:cb.dataset.reg,enabled:cb.checked}).then(refresh);
+  });
+  // gh-proxy
+  $('proxyList').innerHTML=(r.proxies||[]).map(h=>
+    `<span class="badge" style="margin-right:6px">${h} <a href="#" data-h="${h}" onclick="return rmProxy(event)">✕</a></span>`).join('');
+  // OTA 状态
+  const state=ota.state||'idle';
+  $('otaState').textContent={idle:'空闲',downloaded:'已下载',installed:'已安装待重启',download_failed:'下载失败',install_failed:'安装失败'}[state]||state;
+  const havePkg=!!(ota.downloaded&&state==='downloaded');
+  $('btnOtaDownload').disabled=!!(ota.latest_version===ota.current_version)||!(ota.latest_version&&ota.latest_version!=='unknown');
+  $('btnOtaInstall').disabled=!havePkg;
+  $('btnOtaReboot').disabled=!(state==='installed'||state==='downloaded');
+  // 日志
+  $('log').textContent=(r.log||[]).map(l=>{
+    const d=new Date(l.ts*1000).toLocaleTimeString();
+    return `[${d}] ${l.msg}`;
+  }).join('\n')||'（暂无日志）';
+}
+
+async function doAction(fn,msg,confirmMsg){
+  if(confirmMsg&&!confirm(confirmMsg)) return;
+  toast(msg);
+  const r=await api(fn,'POST');
+  if(r.ok&&r.note) toast(r.note,6000);
+  else if(r.err) toast('失败：'+r.err,6000);
+  setTimeout(refresh, r.note&&r.note.includes('重启')?15000:2000);
+}
+
+$('btnProbe').onclick=()=>doAction('/api/probe','正在探测…');
+$('btnApply').onclick=()=>doAction('/api/apply','正在应用配置…');
+$('btnRestore').onclick=()=>doAction('/api/restore','正在恢复…');
+$('btnRecover').onclick=()=>doAction('/api/recover-direct','正在恢复直连…','确定移除全部镜像映射、恢复直连官方源？');
+$('btnRestartSup').onclick=()=>doAction('/api/restart-supervisor','正在重启 Supervisor…','确定重启 Supervisor？所有加载项会短暂重启。');
+$('autoSwitch').onchange=e=>{/* auto_switch 在 options 里，UI 只读展示 */};
+$('btnCandAdd').onclick=async()=>{
+  const reg=$('candReg').value, host=$('candHost').value.trim();
+  if(!host) return toast('请输入镜像源主机');
+  await api('/api/candidates','POST',{registry:reg,host,action:'add'});
+  $('candHost').value=''; refresh();
+};
+$('btnProxyAdd').onclick=async()=>{
+  const h=$('proxyHost').value.trim(); if(!h) return;
+  await api('/api/proxy-hosts','POST',{host:h,action:'add'});
+  $('proxyHost').value=''; refresh();
+};
+window.rmProxy=async e=>{
+  e.preventDefault();
+  const h=e.target.dataset.h;
+  await api('/api/proxy-hosts','POST',{host:h,action:'remove'});
+  refresh();
+};
+$('btnOtaCheck').onclick=async()=>{
+  toast('正在检查更新…');
+  const r=await api('/api/ota/check','POST');
+  if(r.ok){ toast('发现新版本，可点击下载升级包'); }
+  else { toast(r.out||'已是最新版本'); }
+  refresh();
+};
+$('btnOtaDownload').onclick=async()=>{
+  const ver=STATE.ota.latest_version;
+  if(!ver) return toast('请先检查更新');
+  toast('正在下载升级包（约 200-260MB，国内代理加速）…');
+  const r=await api('/api/ota/download','POST',{version:ver});
+  toast(r.ok?'下载完成，可安装到备用槽位':'下载失败：'+r.out,8000);
+  refresh();
+};
+$('btnOtaInstall').onclick=async()=>{
+  if(!confirm('安装后系统将把升级包写入备用槽位，需重启才生效。确定安装？')) return;
+  toast('正在安装…');
+  const r=await api('/api/ota/install','POST');
+  toast(r.ok?'已安装到备用槽位，点击「重启系统生效」':'安装失败：'+r.err,6000);
+  refresh();
+};
+$('btnOtaReboot').onclick=async()=>{
+  if(!confirm('确定重启系统？约 1-2 分钟自动恢复，期间无法访问。')) return;
+  toast('正在重启系统，约 1-2 分钟自动恢复…',15000);
+  const r=await api('/api/ota/reboot','POST');
+  pollUntilBack();
+};
+function pollUntilBack(){
+  let n=0;
+  const iv=setInterval(async()=>{
+    try{
+      const r=await fetch('/api/status',{cache:'no-store'});
+      if(r.ok){ clearInterval(iv); toast('系统已恢复在线'); refresh(); }
+    }catch(e){}
+    if(++n>48) clearInterval(iv); // ~4min
+  },5000);
+}
+refresh();
+setInterval(refresh,30000);
+</script>
+</body>
+</html>
