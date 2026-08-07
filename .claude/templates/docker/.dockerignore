@@ -1,0 +1,20 @@
+# 构建上下文精简：排除仓库噪音与密钥（参照 spotweb/.dockerignore）。
+# 使用时根据项目调整；保留对密钥/版本控制/构建产物的排除。
+**/.git
+**/.gitignore
+**/.env
+**/.env.*
+**/node_modules
+**/dist
+**/build
+**/coverage
+**/__pycache__
+**/*.pyc
+**/.claude
+**/.vscode
+**/.idea
+**/docker-compose*
+**/compose*
+**/Dockerfile*
+*.log
+README.md

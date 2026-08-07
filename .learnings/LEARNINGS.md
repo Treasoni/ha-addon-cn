@@ -70,3 +70,51 @@ _最后更新：2026-08-07_
 - 事实：会话开始时快照显示 60+ README 改动 + untracked netbird-server/README.md，实际运行时工作区完全干净。
 - 根因：快照是会话起点时刻的，之后可能有提交发生。
 - 下次做法：任何「基于当前工作区」的决策（提交范围、dirty 判断）前，先 `git status --short` 自证。
+
+---
+
+### bash 条件判断：`[[ ==/!= ]]` 右值是 glob，不是 regex
+
+**类别**：knowledge_gap
+**优先级**：high
+**状态**：resolved（已固化到 check-docker.sh 与 RULES.md）
+**范围**：check-docker.sh / bash 脚本
+
+**摘要**：`[[ "$x" != *pat* ]]` 里 `+` 是字面量、`[[:space:]]` 只匹配单字符，不能当正则用；regex 必须用 `=~`，否定用 `! [[ "$x" =~ pat ]]`。
+
+**详情**：
+- 事实：用 `[[ "$block" != *rm[[:space:]]+-rf[[:space:]]+/var/lib/apt/lists* ]]` 判断多行 RUN 是否清理 apt 缓存，`rm -rf` 明明在却误报「未清理」。
+- 根因：`[[ ==/!= ]]` 右值是 glob pattern，`+` 是字面量；我把 glob 与 regex 语义混用了。
+- 下次做法：字符串包含判断用 `[[ "$s" =~ pat ]]`；否定用 `! [[ "$s" =~ pat ]]`；要 `+`/`[[:space:]]+` 量词时必须走 `=~`。
+
+---
+
+### Dockerfile 校验的解析边界（check-docker.sh）
+
+**类别**：knowledge_gap
+**优先级**：high
+**状态**：resolved（已固化到 .claude/scripts/check-docker.sh）
+**范围**：.claude/scripts/check-docker.sh
+
+**摘要**：写 Dockerfile 检查器不能假设 `FROM <img>` 简单形态：有 `FROM --platform=$X <img>`、`FROM <stage>`（多阶段别名）、`ARG BUILD_FROM=默认值`、官方镜像名用连字符等边界。
+
+**详情**：
+- 事实：`FROM --platform=$BUILDPLATFORM golang:1.26-trixie AS buildenv` 被当裸仓库名；`FROM buildenv AS build` 的别名被当裸仓库；`ARG BUILD_FROM=ghcr.io/...` 没被识别为 add-on（被分类成 generic）；官方 `homeassistant/{arch}-addon-matter-server` 因连字符没过 `[A-Za-z0-9_]+` 正则。
+- 根因：FROM 的镜像 ref 不一定是第一个 token（`--flag` 在前）；addon 判定忽略了带默认值的 `ARG`；镜像名允许 `-`。
+- 下次做法：FROM 解析先跳过 `--flag` token；先收集全部 `AS <name>` 放行别名；addon 判定用 `^ARG BUILD_FROM([[:space:]]|=|$)`；镜像名字符集含 `-`。
+
+---
+
+### 校验 Dockerfile 必须按逻辑 RUN 语句判断
+
+**类别**：best_practice
+**优先级**：medium
+**状态**：resolved
+**范围**：.claude/scripts/check-docker.sh
+
+**摘要**：`RUN apt-get update \ && ... \ && rm -rf /var/lib/apt/lists/*` 是跨多物理行的单个 RUN，按物理行检查会误报；先把 `\` 续行合并成逻辑语句再判断。
+
+**详情**：
+- 事实：Dockerfile.generic 里 4 行续行 RUN 被报「apt-get update 未清理缓存」，但同一语句第 3 行有 `rm -rf /var/lib/apt/lists/*`。
+- 根因：docker 构建单元是逻辑语句（`\` 续行），不是物理行。
+- 下次做法：用 awk 把以 `\` 结尾的续行合并为逻辑 RUN（输出起始行 + 全文），再对整块判断 flag/清理；不要逐物理行 grep。

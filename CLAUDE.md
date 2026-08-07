@@ -32,6 +32,14 @@
 - After env template changes, run `.claude/scripts/check-env-template.sh`. Use `--strict` when you want unused documented variables to fail the check.
 <!-- env-template:claude:end -->
 
+<!-- docker:claude:begin -->
+## Docker 规范
+
+- Follow `.claude/rules/common/dockerfile.md` whenever creating, updating, or auditing `Dockerfile`, `build.json`, `build.yaml`, `.dockerignore`, or docker-compose files.
+- Reuse templates under `.claude/templates/docker/` for new Dockerfiles; add-on Dockerfiles must stay byte-identical to `.claude/skills/hassio-addon-sync/templates/new-addon/Dockerfile`.
+- After Dockerfile/template changes, run `.claude/scripts/check-docker.sh` to verify base-image pinning, non-root user, healthcheck, secrets, exec-form commands, and add-on template consistency.
+<!-- docker:claude:end -->
+
 <!-- prompt-cache-bootstrap:claude:begin -->
 ## Prompt Cache
 

@@ -1,0 +1,27 @@
+# docker-compose 本地测试示例（Compose v2，省略 version）。
+# 仅本地调试用；add-on 发布/安装由 HA Supervisor 按 build.json/config.yaml 构建，不走 compose。
+# .env 已被 .gitignore 忽略，配合 .claude/rules/common/env.md，compose 里不写明文密钥。
+name: my-service
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.generic
+    image: my-registry.local/my-service:1.2.3
+    init: true
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - data:/var/lib/app
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://127.0.0.1:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    ports:
+      - "8080:8080"
+
+volumes:
+  data:

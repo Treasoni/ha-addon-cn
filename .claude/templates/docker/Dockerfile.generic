@@ -1,0 +1,42 @@
+# Generic multi-stage service Dockerfile — 通用镜像模板（非 add-on）。
+# 铁律：基础镜像 pin 具体版本（禁 latest）；非 root；HEALTHCHECK；exec 形式；
+#       org.opencontainers.* 标签。add-on 请用 Dockerfile.addon。
+# 用法：把下面的基础镜像版本换成你实际使用的具体版本 tag。
+
+# ---- build stage ----
+FROM node:22.14.0-bookworm-slim AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# ---- runtime stage ----
+FROM node:22.14.0-bookworm-slim
+ENV NODE_ENV=production \
+    PORT=8080
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends curl \
+ && rm -rf /var/lib/apt/lists/* \
+ && useradd --system --uid 10001 --no-create-home appuser
+
+WORKDIR /app
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/node_modules ./node_modules
+
+USER 10001
+EXPOSE 8080
+
+# 可复现构建：这些 ARG 由构建方 --build-arg 注入，无默认值。
+ARG BUILD_SOURCE
+ARG BUILD_REVISION
+ARG BUILD_VERSION
+LABEL org.opencontainers.image.source="$BUILD_SOURCE" \
+      org.opencontainers.image.revision="$BUILD_REVISION" \
+      org.opencontainers.image.version="$BUILD_VERSION"
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD curl --fail http://127.0.0.1:8080/health || exit 1
+
+CMD ["node", "dist/server.js"]
