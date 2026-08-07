@@ -5,13 +5,14 @@ description: 维护本仓库的 Home Assistant Add-on 商店：同步上游 add-
 
 # Hassio Add-on 商店维护
 
-本仓库根目录即一个 Home Assistant Add-on 商店（`repository.json` + 各 add-on 目录）。add-on 来自三个上游源**全量镜像**：
+本仓库根目录即一个 Home Assistant Add-on 商店（`repository.json` + 各 add-on 目录）。add-on 来自四个上游源**全量镜像**：
 
 | 源 | 优先级 | 说明 |
 |---|---|---|
 | `alexbelgium/hassio-addons` | 1（主源） | MIT，~137 个 add-on |
 | `home-assistant/addons` | 2 | 官方，Apache-2.0，~26 个 |
 | `hassio-addons/repository` | 3 | frenck，MIT，~48 个 |
+| `hacs-china/addons`（gitee，`branch: china`） | 4 | 中文社区源，MIT；镜像为官方形态 `<ns>/{arch}-addon-<slug>` |
 
 基线在 `addons-manifest.json`（提交入库）。同步脚本：`.claude/scripts/sync-addons.py`（无第三方依赖，`python` 直接跑）。
 
