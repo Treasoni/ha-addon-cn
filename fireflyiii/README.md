@@ -8,7 +8,7 @@ Firefly III 是一款免费、开源的个人财务管理工具（自托管）�
 ## 安装
 
 1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
-   - Gitee：https://gitee.com/zhqznc_10603234_123/homeassistant
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
    - GitHub：https://github.com/Treasoni/ha-addon-cn
 2. 搜索 fireflyiii 并安装。
 3. 安装后进入配置页，先修改 `APP_KEY`（见下文），点击保存，再启动加载项。

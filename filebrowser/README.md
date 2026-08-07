@@ -6,7 +6,7 @@ Filebrowser 是一个基于 Web 的文件管理界面，用于在指定目录内
 
 ## 安装
 1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
-   - Gitee：https://gitee.com/zhqznc_10603234_123/homeassistant
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
    - GitHub：https://github.com/Treasoni/ha-addon-cn
 2. 搜索 filebrowser 并安装。
 3. 点击「保存」存储配置，然后启动加载项，查看日志确认运行正常。

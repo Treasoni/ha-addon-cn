@@ -8,7 +8,7 @@ AdGuard Home 是一款全网络范围的广告与跟踪器拦截 DNS 服务器�
 ## 安装
 
 1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
-   - Gitee：https://gitee.com/zhqznc_10603234_123/homeassistant
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
    - GitHub：https://github.com/Treasoni/ha-addon-cn
 2. 搜索 adguard 并安装。
 

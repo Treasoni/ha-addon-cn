@@ -8,7 +8,7 @@ Immich 是一款可直接从手机备份照片和视频的自托管解决方案�
 
 ## 安装
 1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
-   - Gitee：https://gitee.com/zhqznc_10603234_123/homeassistant
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
    - GitHub：https://github.com/Treasoni/ha-addon-cn
 2. 搜索 **immich** 并安装。
 3. 配置数据库等选项后点击「保存」，然后启动加载项并查看日志确认一切正常。

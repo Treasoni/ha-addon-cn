@@ -8,7 +8,7 @@ qBittorrent 是一款跨平台、免费开源的 BitTorrent 下载客户端。�
 ## 安装
 
 1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
-   - Gitee：https://gitee.com/zhqznc_10603234_123/homeassistant
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
    - GitHub：https://github.com/Treasoni/ha-addon-cn
 2. 搜索 `qbittorrent` 并安装。
 3. 保存配置并按需调整选项，然后启动加载项，检查日志确认运行正常，最后打开 Web 界面并按需修改软件设置。

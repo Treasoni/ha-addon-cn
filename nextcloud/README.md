@@ -8,7 +8,7 @@ Nextcloud 是一款开源的自托管云存储与协作平台，可让你在自�
 ## 安装
 
 1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
-   - Gitee：https://gitee.com/zhqznc_10603234_123/homeassistant
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
    - GitHub：https://github.com/Treasoni/ha-addon-cn
 2. 搜索 nextcloud 并安装。
 3. 点击"保存"保存配置，然后启动加载项。

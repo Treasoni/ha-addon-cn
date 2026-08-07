@@ -8,7 +8,7 @@
 ## 安装
 
 1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
-   - Gitee：https://gitee.com/zhqznc_10603234_123/homeassistant
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
    - GitHub：https://github.com/Treasoni/ha-addon-cn
 2. 搜索 zwave_js 并安装。
 3. 安装后需要配置 Z-Wave 控制器串口，并添加 Home Assistant 的 Z-Wave JS 集成（参见下方"使用/访问入口"）。

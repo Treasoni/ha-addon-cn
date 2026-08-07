@@ -8,7 +8,7 @@ Tautulli 是一款与 Plex Media Server 搭配使用的监控与统计工具。�
 ## 安装
 
 1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
-   - Gitee：https://gitee.com/zhqznc_10603234_123/homeassistant
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
    - GitHub：https://github.com/Treasoni/ha-addon-cn
 2. 搜索 tautulli 并安装。
 3. 安装后启动加载项，首次启动可能需要几分钟，请耐心等待。

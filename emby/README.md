@@ -6,7 +6,7 @@ Emby 是一款免费的媒体服务系统，帮你整理个人媒体库中的视
 
 ## 安装
 1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
-   - Gitee：https://gitee.com/zhqznc_10603234_123/homeassistant
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
    - GitHub：https://github.com/Treasoni/ha-addon-cn
 2. 搜索 emby 并安装。
 

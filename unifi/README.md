@@ -8,7 +8,7 @@ UniFi Network Application 运行 Ubiquiti 官方的 UniFi 网络管理软件，�
 
 ## 安装
 1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
-   - Gitee：https://gitee.com/zhqznc_10603234_123/homeassistant
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
    - GitHub：https://github.com/Treasoni/ha-addon-cn
 2. 搜索 unifi 并安装。
 3. 查看 “UniFi Network Application” 的日志，确认安装运行正常。

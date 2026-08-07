@@ -6,7 +6,7 @@ Scrutiny 是面向 smartd S.M.A.R.T 监控的硬盘健康仪表盘与监控方�
 
 ## 安装
 1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
-   - Gitee：https://gitee.com/zhqznc_10603234_123/homeassistant
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
    - GitHub：https://github.com/Treasoni/ha-addon-cn
 2. 搜索 scrutiny 并安装。
 3. 安装完成后保存配置，按需设置加载项选项，然后启动加载项并查看日志确认一切正常。

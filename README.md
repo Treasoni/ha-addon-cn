@@ -10,13 +10,13 @@
 
 点击按钮一键添加（Home Assistant 需要能访问对应站点）：
 
-[![添加到 Home Assistant（Gitee）](https://my.home-assistant.io/badges/store.svg)](https://my.home-assistant.io/redirect/store/?repository_url=https%3A%2F%2Fgitee.com%2Fzhqznc_10603234_123%2Fhomeassistant)
+[![添加到 Home Assistant（Gitee）](https://my.home-assistant.io/badges/store.svg)](https://my.home-assistant.io/redirect/store/?repository_url=https%3A%2F%2Fgitee.com%2Fzhqznc_10603234_123%2Fha-addon)
 [![添加到 Home Assistant（GitHub）](https://my.home-assistant.io/badges/store.svg)](https://my.home-assistant.io/redirect/store/?repository_url=https%3A%2F%2Fgithub.com%2FTreasoni%2Fha-addon-cn)
 
 或手动添加（设置 → 加载项 → 商店 → 右上角「…」→ 仓库）：
 
 ```
-Gitee ：https://gitee.com/zhqznc_10603234_123/homeassistant   （国内推荐）
+Gitee ：https://gitee.com/zhqznc_10603234_123/ha-addon   （国内推荐）
 GitHub：https://github.com/Treasoni/ha-addon-cn
 ```
 

@@ -6,7 +6,7 @@ Vaultwarden 是一款开源密码管理方案（基于轻量级的 Bitwarden RS 
 
 ## 安装
 1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
-   - Gitee：https://gitee.com/zhqznc_10603234_123/homeassistant
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
    - GitHub：https://github.com/Treasoni/ha-addon-cn
 2. 搜索 bitwarden 并安装。
 3. 启动加载项，并查看日志确认运行正常（日志中会显示管理员令牌）。

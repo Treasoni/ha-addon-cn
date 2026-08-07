@@ -8,7 +8,7 @@ Prowlarr 是一款基于流行的 arr .NET/React 技术栈构建的索引器（I
 ## 安装
 
 1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
-   - Gitee：https://gitee.com/zhqznc_10603234_123/homeassistant
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
    - GitHub：https://github.com/Treasoni/ha-addon-cn
 2. 搜索 prowlarr 并安装。
 3. 安装后保存配置、启动加载项，并检查日志确认一切正常。

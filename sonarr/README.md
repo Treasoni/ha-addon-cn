@@ -8,7 +8,7 @@ Sonarr 是一款面向 Usenet 和 BitTorrent 用户的 PVR（个人视频录像�
 ## 安装
 
 1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
-   - Gitee：https://gitee.com/zhqznc_10603234_123/homeassistant
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
    - GitHub：https://github.com/Treasoni/ha-addon-cn
 2. 搜索 sonarr 并安装。
 

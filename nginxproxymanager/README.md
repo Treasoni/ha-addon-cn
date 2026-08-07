@@ -6,7 +6,7 @@ Nginx Proxy Manager（NPM）让你用简单而强大的图形界面管理 Nginx 
 
 ## 安装
 1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
-   - Gitee：https://gitee.com/zhqznc_10603234_123/homeassistant
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
    - GitHub：https://github.com/Treasoni/ha-addon-cn
 2. 搜索 nginxproxymanager 并安装。
 

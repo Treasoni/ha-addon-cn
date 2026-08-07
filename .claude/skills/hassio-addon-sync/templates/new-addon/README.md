@@ -10,7 +10,7 @@
 ## 安装
 
 1. 在 Home Assistant → 设置 → 加载项 → 右上角商店，添加本商店仓库：
-   - Gitee：`https://gitee.com/zhqznc_10603234_123/homeassistant`
+   - Gitee：`https://gitee.com/zhqznc_10603234_123/ha-addon`
    - GitHub：`https://github.com/Treasoni/ha-addon-cn`
 2. 搜索 `__SLUG__` 并安装。
 

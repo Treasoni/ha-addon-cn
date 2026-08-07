@@ -8,7 +8,7 @@ Node-RED 是一款基于流程（Flow）的编程工具，用于把硬件设备�
 ## 安装
 
 1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
-   - Gitee：https://gitee.com/zhqznc_10603234_123/homeassistant
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
    - GitHub：https://github.com/Treasoni/ha-addon-cn
 2. 搜索 node-red 并安装。
 3. 启动「Node-RED」加载项，并查看日志确认运行正常。
