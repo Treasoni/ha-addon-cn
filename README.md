@@ -1,10 +1,12 @@
 # 我的 Add-on 商店
 
-一个**面向国内用户**的 Home Assistant Add-on 商店：把 GitHub 上主流 add-on **全量镜像**到 Gitee，安装不再被网络卡住；主流 add-on 还附**中文使用指南**。
+一个**面向国内用户**的 Home Assistant Add-on 商店：把 GitHub 上主流 add-on 镜像到 Gitee，安装不再被网络卡住；主流 add-on 还附**中文使用指南**。
 
-- 📦 **192 个 add-on**：来自 alexbelgium（130）、Home Assistant 官方（24）、frenck 社区（38）三大源，与上游保持同步。
+<!-- catalog-stats:start -->
+- 📦 **183 个 add-on**：来自 alexbelgium（121）、frenck（38）、official（24）。
+- 📖 **中文指南**：172/183 个 add-on。
+<!-- catalog-stats:end -->
 - 🇨🇳 **国内可用**：主仓库托管在 Gitee，不用科学上网也能添加、安装、更新。
-- 📖 **中文指南**：45 个主流 add-on 已提供中文使用指南（HA 详情页直接显示中文）。
 
 ---
 
@@ -54,7 +56,7 @@
 
 - 每个 add-on 的 `README.md` 都是**中文使用指南**，包含：简介、安装、配置项表格、访问入口、常见问题。
 - 查看方式：add-on 详情页 → **「README」/「文档」标签**（HA 渲染该 add-on 的 README.md）。
-- 目前 **45/192** 个 add-on 有中文指南（主流媒体、家庭服务、官方基础设施、自动化网络类已覆盖）。缺中文指南的 add-on 仍显示上游英文说明，会陆续补齐。
+- 已提供中文指南的 add-on 数量见页面顶部统计；缺中文指南的 add-on 仍显示上游英文说明，会陆续补齐。
 - 想确认哪个有中文指南：本仓库根目录 `addons-manifest.json` 里每个 add-on 的 `zh_guide` 字段；或直接打开仓库里对应 add-on 文件夹看 README.md 是否以 `<!-- zh-guide -->` 开头。
 
 ---
@@ -79,10 +81,10 @@
 - 首次安装需要拉取容器镜像，取决于网络与机型；`aarch64`（树莓派等）比 `amd64` 慢。建议国内用户连接 Docker 镜像加速。
 
 **Q：为什么个别官方 add-on（`samba`、`ssh`、`mosquitto` 等）仍安装很慢/失败？**
-- 本商店 168 个社区 add-on 的镜像已改写为国内镜像源（`ghcr.nju.edu.cn`），国内可直接拉取；但 **24 个官方 add-on 的镜像在 Docker Hub**（`homeassistant/...`，不在 ghcr.io），本商店不改写它们。请给 HA 主机配置 **Docker Hub 镜像加速**（编辑 `/etc/docker/daemon.json` 的 `registry-mirrors` 后重启 Docker）即可加速这 24 个。
+- 社区 add-on 的镜像已改写为国内镜像源（`ghcr.nju.edu.cn`），国内可直接拉取；官方 add-on 的镜像在 Docker Hub（`homeassistant/...`，不在 ghcr.io），本商店不改写它们。请给 HA 主机配置 **Docker Hub 镜像加速**（编辑 `/etc/docker/daemon.json` 的 `registry-mirrors` 后重启 Docker）即可加速官方镜像。
 
 **Q：为什么有的 add-on 只有英文说明？**
-- 中文指南在陆续补齐中（当前 45/192）。优先覆盖了主流 add-on；其余可按需在仓库里提需求。
+- 中文指南在陆续补齐中；页面顶部统计会显示当前覆盖数量。优先覆盖了主流 add-on；其余可按需在仓库里提需求。
 
 **Q：这个商店和官方商店冲突吗？**
 - 不冲突。本商店是第三方社区商店，与 Home Assistant 官方 add-on 商店并行；同名 add-on（如 `samba`、`ssh`）以本商店为准或任选其一安装。
@@ -91,10 +93,10 @@
 
 ## 这个商店是什么
 
-- **全量镜像**：三个上游源的所有 add-on 目录原样复制到本仓库，保持与上游一致：
-  - [alexbelgium/hassio-addons](https://github.com/alexbelgium/hassio-addons)（MIT）— 130 个
-  - [home-assistant/addons](https://github.com/home-assistant/addons)（Apache-2.0）— 24 个（官方）
-  - [hassio-addons/repository](https://github.com/hassio-addons/repository)（MIT）— 38 个
+- **活跃目录镜像**：三个上游源中仍在本商店发布的 add-on 目录原样复制到本仓库，保持与上游一致：
+  - [alexbelgium/hassio-addons](https://github.com/alexbelgium/hassio-addons)（MIT）
+  - [home-assistant/addons](https://github.com/home-assistant/addons)（Apache-2.0，官方）
+  - [hassio-addons/repository](https://github.com/hassio-addons/repository)（MIT）
   - 同名 add-on 按 alexbelgium > 官方 > frenck 优先级取一份。
 - **同步基线**：`addons-manifest.json`（每个 add-on 的来源、版本、中文指南状态都在里面）。
 

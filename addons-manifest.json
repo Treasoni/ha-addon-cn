@@ -1311,69 +1311,6 @@
       "local_version": "1.6.0",
       "synced_at": "2026-08-07T08:27:24+00:00",
       "zh_guide": true
-    },
-    "zzz_archived_code-server": {
-      "source": "alexbelgium",
-      "upstream_version": "4.131.0",
-      "local_version": "4.131.0",
-      "synced_at": "2026-08-07T06:52:47+00:00",
-      "zh_guide": false
-    },
-    "zzz_archived_jellyseerr": {
-      "source": "alexbelgium",
-      "upstream_version": "v3.4.1",
-      "local_version": "v3.4.1",
-      "synced_at": "2026-08-07T06:52:47+00:00",
-      "zh_guide": false
-    },
-    "zzz_archived_omada": {
-      "source": "alexbelgium",
-      "upstream_version": "5.14.26.1-2024-08-29-2",
-      "local_version": "5.14.26.1-2024-08-29-2",
-      "synced_at": "2026-08-07T06:52:47+00:00",
-      "zh_guide": false
-    },
-    "zzz_archived_omada_v3": {
-      "source": "alexbelgium",
-      "upstream_version": "5.3-amd64-2025-11-09",
-      "local_version": "5.3-amd64-2025-11-09",
-      "synced_at": "2026-08-07T06:52:47+00:00",
-      "zh_guide": false
-    },
-    "zzz_archived_ombi": {
-      "source": "alexbelgium",
-      "upstream_version": "4.55.2",
-      "local_version": "4.55.2",
-      "synced_at": "2026-08-07T06:52:47+00:00",
-      "zh_guide": false
-    },
-    "zzz_archived_overseerr": {
-      "source": "alexbelgium",
-      "upstream_version": "1.34.0",
-      "local_version": "1.34.0",
-      "synced_at": "2026-08-07T06:52:47+00:00",
-      "zh_guide": false
-    },
-    "zzz_archived_paperless_ngx": {
-      "source": "alexbelgium",
-      "upstream_version": "3.0.5",
-      "local_version": "3.0.5",
-      "synced_at": "2026-08-07T06:52:47+00:00",
-      "zh_guide": false
-    },
-    "zzz_archived_papermerge": {
-      "source": "alexbelgium",
-      "upstream_version": "v2.0.1-ls60-bugfix",
-      "local_version": "v2.0.1-ls60-bugfix",
-      "synced_at": "2026-08-07T06:52:47+00:00",
-      "zh_guide": false
-    },
-    "zzz_archived_plex_meta_manager": {
-      "source": "alexbelgium",
-      "upstream_version": "1.21.1",
-      "local_version": "1.21.1",
-      "synced_at": "2026-08-07T06:52:47+00:00",
-      "zh_guide": false
     }
   },
   "conflicts": [
