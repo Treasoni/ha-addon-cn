@@ -18,14 +18,9 @@
 
 ## 第一步：添加仓库
 
-### 方式一：一键添加（推荐）
+### 方式一：手动添加（推荐，最稳定）
 
-点击按钮会打开 Home Assistant 并自动添加本商店（需要已登录你的 HA）：
-
-[![添加到 Home Assistant（Gitee，国内推荐）](https://my.home-assistant.io/badges/store.svg)](https://my.home-assistant.io/redirect/store/?repository_url=https%3A%2F%2Fgitee.com%2Fzhqznc_10603234_123%2Fha-addon)
-[![添加到 Home Assistant（GitHub 备用）](https://my.home-assistant.io/badges/store.svg)](https://my.home-assistant.io/redirect/store/?repository_url=https%3A%2F%2Fgithub.com%2FTreasoni%2Fha-addon-cn)
-
-### 方式二：手动添加
+> 一键添加按钮依赖 `my.home-assistant.io` 且需浏览器已登录 HA，国内网络下该域名可能打不开；**手动粘贴地址最可靠**。
 
 1. 进入 Home Assistant → **设置 → 加载项 → 商店**
 2. 点右上角 **「…」→ 仓库**
@@ -33,6 +28,13 @@
    - **Gitee（国内推荐）**：`https://gitee.com/zhqznc_10603234_123/ha-addon`
    - GitHub 备用：`https://github.com/Treasoni/ha-addon-cn`
 4. 回到商店页面，稍等片刻即可看到「我的 Add-on 商店」及其 add-on 列表。
+
+### 方式二：一键添加（需 `my.home-assistant.io` 可达）
+
+在**已登录 HA** 的浏览器里点按钮可自动添加本商店；若页面空白或提示无法连接，请改用方式一手动添加：
+
+[![添加到 Home Assistant（Gitee，国内推荐）](https://my.home-assistant.io/badges/store.svg)](https://my.home-assistant.io/redirect/store/?repository_url=https%3A%2F%2Fgitee.com%2Fzhqznc_10603234_123%2Fha-addon)
+[![添加到 Home Assistant（GitHub 备用）](https://my.home-assistant.io/badges/store.svg)](https://my.home-assistant.io/redirect/store/?repository_url=https%3A%2F%2Fgithub.com%2FTreasoni%2Fha-addon-cn)
 
 > 💡 **为什么选 Gitee？** Gitee 在国内访问快且稳定；GitHub 仅在你能正常访问时作为备用。
 
