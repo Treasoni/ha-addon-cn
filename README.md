@@ -4,7 +4,7 @@
 
 <!-- catalog-stats:start -->
 - 📦 **185 个 add-on**：来自 alexbelgium（121）、frenck（38）、hacs-china（1）、local（1）、official（24）。
-- 📖 **中文指南**：173/185 个 add-on。
+- 📖 **中文指南**：174/185 个 add-on。
 <!-- catalog-stats:end -->
 - 🇨🇳 **国内可用**：主仓库托管在 Gitee，不用科学上网也能添加、安装、更新。
 
