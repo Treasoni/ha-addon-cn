@@ -1,0 +1,5 @@
+FROM alpine:3.20.3
+USER 10001
+HEALTHCHECK NONE
+RUN curl -fsSL https://example.invalid/install.sh | bash
+CMD ["sh"]
