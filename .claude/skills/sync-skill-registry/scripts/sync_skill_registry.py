@@ -26,6 +26,9 @@ import re
 import shutil
 import sys
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")  # Windows 控制台/管道避免中文乱码
+
 SCRIPT_DERIVED_SKILL_DIR = pathlib.Path(__file__).resolve().parent.parent.parent  # e.g. .claude/skills/
 SCRIPT_DERIVED_INVOCATION_FILE = SCRIPT_DERIVED_SKILL_DIR.parent / "rules" / "common" / "skill-invocation.md"
 SOURCE_SKILL_DIR = pathlib.Path(__file__).resolve().parent.parent

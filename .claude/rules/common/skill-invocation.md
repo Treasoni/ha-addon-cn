@@ -1,7 +1,7 @@
 # Skill Invocation
 
 ## 技能列表
-<!-- skill-registry:managed ["addon-authoring","ask-matt","claude-handoff","code-review","codebase-design","diagnosing-bugs","digest","domain-modeling","git-guardrails-claude-code","grill-me","grill-with-docs","grilling","handoff","hassio-addon-sync","implement","improve-codebase-architecture","loop-me","maintain-learnings","manifest-platform","migrate-to-shoehorn","prompt-cache-optimizer","prototype","research","resolving-merge-conflicts","scaffold-exercises","setup-matt-pocock-skills","setup-pre-commit","setup-ts-deep-modules","sync-skill-registry","tdd","teach","to-questionnaire","to-spec","to-tickets","triage","wait-what","wayfinder","wizard","workflow-todo-state","writing-beats","writing-for-agents","writing-fragments","writing-shape","zh-guide-workflow"] -->
+<!-- skill-registry:managed ["addon-authoring","ask-matt","claude-handoff","code-review","codebase-design","diagnosing-bugs","digest","domain-modeling","git-guardrails-claude-code","grill-me","grill-with-docs","grilling","handoff","hassio-addon-sync","implement","improve-codebase-architecture","loop-me","maintain-learnings","manifest-platform","migrate-to-shoehorn","prompt-cache-optimizer","prototype","research","resolving-merge-conflicts","scaffold-exercises","security-secret-audit","setup-matt-pocock-skills","setup-pre-commit","setup-ts-deep-modules","sync-skill-registry","tdd","teach","to-questionnaire","to-spec","to-tickets","triage","wait-what","wayfinder","wizard","workflow-todo-state","writing-beats","writing-for-agents","writing-fragments","writing-shape","zh-guide-workflow"] -->
 
 #### 未分类
 
@@ -32,6 +32,7 @@
 | `research` | Investigate a question against high-trust primary sources and capture the fin… | Investigate a question against high-trus… |
 | `resolving-merge-conflicts` | "Use when you need to resolve an in-progress git merge/rebase conflict." | Use when you need to resolve an in-progress git merge/rebase conflict. |
 | `scaffold-exercises` | Create exercise directory structures with sections, problems, solutions | Create exercise directory structures wit… |
+| `security-secret-audit` | Audit a Git repository for exposed API keys, tokens, passwords, private keys | Audit a Git repository for exposed API k… |
 | `setup-matt-pocock-skills` | Configure this repo for the engineering skills — set up its issue tracker | Configure this repo for the engineering … |
 | `setup-pre-commit` | Set up Husky pre-commit hooks with lint-staged (Prettier), type checking | Set up Husky pre-commit hooks with lint-… |
 | `setup-ts-deep-modules` | Wire dependency-cruiser into a TypeScript repo so each package is a deep modu… | Wire dependency-cruiser into a TypeScrip… |
