@@ -17,9 +17,7 @@ Free Games Claimer 基于 P-Adamiec/Free-Games-Claimer-Remaster，可自动领�
 | `RUN_ONCE` | 布尔 / `true` | 运行所有选中的领取器一次后停止加载项（与旧版行为一致） |
 | `STORES` | 字符串（可选） / 空 | 可选的逗号分隔商店覆盖，例如 `epic,prime,gog,steam` |
 | `CMD_ARGUMENTS` | 字符串（可选） / `node epic-games ; node prime-gaming ; node gog` | 已废弃的兼容选项；识别的旧命令名会转换为 `STORES` |
-| `env_vars` | 列表 / 空 | 额外环境变量（大写或小写命名） |
-| `env_vars.name` | 字符串 | 环境变量名，须匹配 `^[A-Za-z0-9_]+$` |
-| `env_vars.value` | 字符串（可选） | 环境变量值 |
+| `env_vars` | 列表 / 空 | 额外环境变量（大写或小写命名）；列表项含 `name`（环境变量名，须匹配 `^[A-Za-z0-9_]+$`）与 `value`（环境变量值，可选） |
 
 配置保存在 `CONFIG_LOCATION`（默认 `/config/config.env`，在 Home Assistant 中位于加载项私有 addon_configs 目录），首次启动会生成模板。常用变量包括 `EG_EMAIL`、`EG_PASSWORD`、`PG_EMAIL`、`PG_PASSWORD`、`GOG_EMAIL`、`GOG_PASSWORD`、`NOTIFY` 等。
 

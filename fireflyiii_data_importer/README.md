@@ -28,9 +28,7 @@ Firefly III 是一款自托管的个人财务管理工具，帮助你记录支�
 | `CAN_POST_FILES` | 布尔（可选） / 空 | 允许上传文件 |
 | `Updates` | 枚举（hourly / daily / weekly）（可选） / 空 | 自动导入计划：每小时 / 每日 / 每周 |
 | `silent` | 布尔（可选） / 空 | 抑制调试信息输出 |
-| `env_vars` | 列表 / 空 | 额外环境变量（大写或小写命名） |
-| `env_vars.name` | 字符串 | 环境变量名，须匹配 `^[A-Za-z0-9_]+$` |
-| `env_vars.value` | 字符串（可选） | 环境变量值 |
+| `env_vars` | 列表 / 空 | 额外环境变量（大写或小写命名）；列表项含 `name`（环境变量名，须匹配 `^[A-Za-z0-9_]+$`）与 `value`（环境变量值，可选） |
 
 访问令牌的获取方式：登录 Firefly III → 选项 → 个人资料 → OAuth → 个人访问令牌，创建新令牌并填入 `FIREFLY_III_ACCESS_TOKEN`。
 

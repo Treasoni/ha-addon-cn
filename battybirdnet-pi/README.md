@@ -27,6 +27,10 @@ BattyBirdNET-Pi 是一款针对 Raspberry Pi 4/5 的实时声学蝙蝠与鸟类�
 | `keyfile` | 字符串，默认 `privkey.pem` | SSL 私钥文件，需存放在 `/ssl/` 目录下 |
 | `pi_password` | 密码，默认空 | Web 终端（terminal）用户 `pi` 的访问密码 |
 | `MQTT_DISABLED` | 可选布尔，默认空 | 设为 true 时禁用自动 MQTT 发布；仅当本地已有可用的 broker 时才应开启 |
+| `MQTT_HOST_manual` | 可选字符串，默认空 | 手动指定 MQTT broker 主机地址，用于覆盖自动发现的 broker |
+| `MQTT_USER_manual` | 可选字符串，默认空 | MQTT broker 用户名（配合 `MQTT_PASSWORD_manual` 使用） |
+| `MQTT_PASSWORD_manual` | 密码，默认空 | MQTT broker 密码 |
+| `MQTT_PORT_manual` | 整数，默认空 | MQTT broker 端口，留空时使用默认端口 |
 | `PROCESSED_FOLDER_ENABLED` | 可选布尔，默认空 | 启用后，需在 birdnet 设置中指定保留在临时目录 `/tmp/Processed` 的 wav 文件数量（存放在 tmpfs 中，不磨损磁盘） |
 | `NO_NOISE_MODEL` | 可选布尔，默认空 | 是否禁用噪声模型 |
 | `localdisks` | 可选字符串，默认空 | 要挂载的本地磁盘硬件名或标签，多个以逗号分隔，如 `sda1,sdb1,MYNAS` |

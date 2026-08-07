@@ -16,9 +16,7 @@ Epic Games Free 基于 claabs/epicgames-freegames-node，用于自动登录 Epic
 | 配置键 | 类型 / 默认值 | 说明 |
 |--------|---------------|------|
 | `disable_cron` | 布尔 / `false` | 关闭内置 cron 定时服务（当使用外部调度器时开启） |
-| `env_vars` | 列表 / 空 | 额外环境变量（大写或小写命名） |
-| `env_vars.name` | 字符串 | 环境变量名，须匹配 `^[A-Za-z0-9_]+$` |
-| `env_vars.value` | 字符串（可选） | 环境变量值 |
+| `env_vars` | 列表 / 空 | 额外环境变量（大写或小写命名）；列表项含 `name`（环境变量名，须匹配 `^[A-Za-z0-9_]+$`）与 `value`（环境变量值，可选） |
 
 在 `config.json` 中可配置 `accounts`（Epic 账户列表，含 email/password/totp）、`cronSchedule`（默认 `0 */6 * * *`）、`runOnStartup`、`logLevel`、`webPortalConfig.baseUrl`（Web 门户基础地址）以及 `notifiers`（邮件、Discord、Telegram、Apprise 等通知目标）。
 

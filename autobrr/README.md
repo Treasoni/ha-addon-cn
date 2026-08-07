@@ -41,5 +41,5 @@ Autobrr 是一款现代化的 BT（torrent）下载自动化工具，灵感与�
 - **如何开始使用？** 打开 Web 界面后，先修改登录凭据，再配置 RSS 索引源与下载客户端，然后设置自动化规则和过滤器，可用示例发布进行测试。
 
 ---
-- 英文原版：Home assistant add-on: Autobrrf；链接 https://github.com/alexbelgium/hassio-addons/blob/master/autobrr/README.md
+- 英文原版：Home assistant add-on: Autobrr；链接 https://github.com/alexbelgium/hassio-addons/blob/master/autobrr/README.md
 - 来源仓库：alexbelgium

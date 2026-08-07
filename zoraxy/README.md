@@ -1,78 +1,42 @@
-# Home assistant add-on: Zoraxy
+<!-- zh-guide -->
+# Zoraxy
 
+## 简介
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+Zoraxy 是一个通用 HTTP 请求反向代理与转发工具，带简洁的 Web 管理界面。它是 Nginx Proxy Manager 的现代、积极维护的替代品：可以创建反向代理主机、管理 TLS 证书（含 ACME / Let's Encrypt）、设置重定向、访问规则、基础 Web 服务器等。本加载项基于 [tobychui/zoraxy 官方 Docker 镜像](https://github.com/tobychui/zoraxy/tree/main/docker)构建。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 安装
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 zoraxy 并安装。
+3. 保存配置并启动加载项，然后打开 Web 界面创建管理员账户。
 
-## Addon informations
+## 配置
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fzoraxy%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fzoraxy%2Fconfig.yaml)
+所有配置项均可在加载项的「配置」页面编辑，保存并重启后生效。
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+| 配置键 | 类型 / 默认值 | 说明 |
+|--------|--------------|------|
+| `NOAUTH` | 布尔 / `false` | 关闭管理界面的登录认证（请谨慎使用） |
+| `ZEROTIER` | 布尔 / `false` | 启用 ZeroTier 全球局域网控制器（需要 `NET_ADMIN` 权限与 `/dev/net/tun`，本加载项已授予） |
+| `FASTGEOIP` | 布尔 / `false` | 启用高速 GeoIP 查询（约多占 1 GB 内存） |
+| `MDNS` | 布尔 / `true` | 启用 mDNS 服务发现 |
+| `TZ` | 字符串 / 空 | 时区（如 `Europe/Brussels`） |
+| `env_vars` | 对象列表 / `[]` | 附加环境变量列表（每项为 `name`/`value`），可传入上游支持的其他设置（如 `AUTORENEW`、`DB`、`MDNSNAME`） |
 
-## About
+## 使用 / 访问入口
 
-[Zoraxy](https://github.com/tobychui/zoraxy) is a general purpose HTTP request (reverse) proxy and forwarding tool with a clean web management UI. It can be used as a modern, actively-maintained alternative to Nginx Proxy Manager: create reverse proxy hosts, manage TLS certificates (including ACME / Let's Encrypt), set up redirections, access rules, a basic web server and more.
+- **管理界面**：由于 Zoraxy 作为反向代理需要占用标准 Web 端口，**不走 Home Assistant Ingress**，请直接访问 `http://homeassistant.local:8000`（宿主端口 8000）。
+- **反向代理**：监听宿主端口 `80`（HTTP）与 `443`（HTTPS）。请确保这两个端口在宿主机上空闲（未被其他代理加载项占用）；若需从外网访问，请在路由器上转发这些端口。
+- **数据持久化**：所有配置、数据库、日志与插件存储在加载项配置目录（`/addon_configs/<slug>_zoraxy/`，容器内为 `/config`），升级与重启后保留。
 
-This add-on is based on the official [docker image](https://github.com/tobychui/zoraxy/tree/main/docker) from tobychui.
+## 常见问题
 
-## Installation
+- **端口冲突**：`80`/`443` 是反向代理必需的标准端口。若宿主机上已有其他占用它们的服务（如 Nginx Proxy Manager），需先停用。
+- **管理员账户**：首次启动后打开管理界面，按提示创建管理员账户，才能进入设置。
 
-The installation of this add-on is pretty straightforward and not different in
-comparison to installing any other Hass.io add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Open the Web UI and create your administrator account.
-
-## Configuration
-
-The management Web UI is exposed on port `8000`. Because Zoraxy acts as a reverse
-proxy that must own the standard web ports, it is **not** served through Home
-Assistant ingress — open it directly:
-
-Webui can be found at `http://homeassistant.local:8000`
-
-The reverse proxy itself listens on ports `80` (HTTP) and `443` (HTTPS). Make
-sure these ports are free on the host (e.g. not used by another proxy add-on)
-and, if you want to reach your services from outside, forward them on your
-router.
-
-All configuration, the database, logs and plugins are stored persistently in the
-add-on configuration folder (`/addon_configs/<slug>_zoraxy/`, exposed inside the
-container as `/config`), so they survive add-on updates and restarts.
-
-### Options
-
-| Option      | Default | Description                                                                                  |
-| ----------- | ------- | -------------------------------------------------------------------------------------------- |
-| `NOAUTH`    | `false` | Disable authentication for the management interface (use with care).                          |
-| `ZEROTIER`  | `false` | Enable the ZeroTier global area network controller (uses the `NET_ADMIN` capability and `/dev/net/tun`, both granted by the add-on). |
-| `FASTGEOIP` | `false` | Enable high-speed GeoIP lookup (uses ~1 GB extra memory).                                      |
-| `MDNS`      | `true`  | Enable mDNS service discovery.                                                                 |
-| `TZ`        | -       | Timezone, e.g. `Europe/Brussels`.                                                             |
-| `env_vars`  | `[]`    | Pass any additional upstream environment variable (e.g. `AUTORENEW`, `DB`, `MDNSNAME`, ...).   |
-
-Any other upstream setting documented in the [Zoraxy docker README](https://github.com/tobychui/zoraxy/tree/main/docker) can be supplied through `env_vars`:
-
-```yaml
-env_vars:
-  - name: AUTORENEW
-    value: "86400"
-  - name: DB
-    value: "auto"
-```
-
-## Support
-
-Create an issue on the [repository](https://github.com/alexbelgium/hassio-addons).
+---
+- 英文原版：Home assistant add-on: Zoraxy；链接 https://github.com/alexbelgium/hassio-addons/blob/master/zoraxy/README.md
+- 来源仓库：alexbelgium

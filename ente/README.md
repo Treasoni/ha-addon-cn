@@ -19,9 +19,7 @@ Ente 是一个自托管、端到端加密的照片与视频存储方案。本加
 | `DB_PASSWORD` | 字符串 / `ente` | 内置 PostgreSQL 的数据库密码 |
 | `USE_EXTERNAL_DB` | 布尔 / `false` | 是否使用外部 PostgreSQL 数据库 |
 | `TZ` | 字符串（可选） / `Europe/Paris` | 时区设置 |
-| `env_vars` | 列表 / 空 | 额外环境变量（大写或小写命名） |
-| `env_vars.name` | 字符串 | 环境变量名，须匹配 `^[A-Za-z0-9_]+$` |
-| `env_vars.value` | 字符串（可选） | 环境变量值 |
+| `env_vars` | 列表 / 空 | 额外环境变量（大写或小写命名）；列表项含 `name`（环境变量名，须匹配 `^[A-Za-z0-9_]+$`）与 `value`（环境变量值，可选） |
 
 如需使用外部 PostgreSQL（`USE_EXTERNAL_DB: true`），再配置以下键：
 
@@ -32,7 +30,15 @@ Ente 是一个自托管、端到端加密的照片与视频存储方案。本加
 | `DB_USERNAME` | 字符串（可选） / 空 | 外部 PostgreSQL 用户名 |
 | `DB_DATABASE_NAME` | 字符串（可选） / 空 | 外部 PostgreSQL 数据库名 |
 
-本加载项还支持挂载本地磁盘与 SMB 远程共享，可设置 `localdisks`、`networkdisks`、`cifsusername`、`cifspassword`、`cifsdomain`（均为可选字符串）。
+本加载项还支持挂载本地磁盘与 SMB 远程共享：
+
+| 配置键 | 类型 / 默认值 | 说明 |
+|--------|---------------|------|
+| `localdisks` | 字符串（可选） / 空 | 要挂载的本地磁盘，例如 `sda1,sdb1,MYNAS` |
+| `networkdisks` | 字符串（可选） / 空 | 要挂载的 SMB 远程共享，例如 `//SERVER/SHARE` |
+| `cifsusername` | 字符串（可选） / 空 | SMB 共享的用户名 |
+| `cifspassword` | 字符串（可选） / 空 | SMB 共享的密码 |
+| `cifsdomain` | 字符串（可选） / 空 | SMB 共享的域 |
 
 ## 使用 / 访问入口
 本加载项未启用 Ingress，通过端口访问：

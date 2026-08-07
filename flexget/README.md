@@ -20,9 +20,7 @@ FlexGet 的 YAML 配置文件位于 `/config/flexget/config.yml`，用于定义�
 | `WebuiPass` | 字符串（可选） / `homeassistant123` | Web 界面密码 |
 | `FG_PLUGINS` | 字符串（可选） / 空 | 额外安装的插件包 |
 | `FG_LOG_LEVEL` | 枚举（critical / error / warning / info / verbose / debug / trace）（可选） / 空 | 日志级别 |
-| `env_vars` | 列表 / 空 | 额外环境变量（大写或小写命名） |
-| `env_vars.name` | 字符串 | 环境变量名，须匹配 `^[A-Za-z0-9_]+$` |
-| `env_vars.value` | 字符串（可选） | 环境变量值 |
+| `env_vars` | 列表 / 空 | 额外环境变量（大写或小写命名）；列表项含 `name`（环境变量名，须匹配 `^[A-Za-z0-9_]+$`）与 `value`（环境变量值，可选） |
 
 ## 使用 / 访问入口
 本加载项未启用 Ingress，通过端口访问：容器端口 `5050/tcp` 映射到宿主端口 `5050`，浏览器访问 http://homeassistant:5050 打开 Web 界面。

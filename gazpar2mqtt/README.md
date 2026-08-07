@@ -19,9 +19,7 @@ Gazpar2mqtt 是一个 Python 脚本，用于从 GRDF（法国燃气公司）获�
 | `TZ` | 字符串（可选） / `Europe/Paris` | 时区，例如 `Europe/London` |
 | `mqtt_autodiscover` | 布尔 / `true` | 启用 MQTT 自动发现 |
 | `verbose` | 布尔 / `true` | 启用详细日志输出 |
-| `env_vars` | 列表 / 空 | 额外环境变量（大写或小写命名） |
-| `env_vars.name` | 字符串 | 环境变量名，须匹配 `^[A-Za-z0-9_]+$` |
-| `env_vars.value` | 字符串（可选） | 环境变量值 |
+| `env_vars` | 列表 / 空 | 额外环境变量（大写或小写命名）；列表项含 `name`（环境变量名，须匹配 `^[A-Za-z0-9_]+$`）与 `value`（环境变量值，可选） |
 
 在配置文件 `config.yaml` 中填写 GRDF 凭据（`grdf` 的 username/password）与 MQTT 连接信息（`mqtt` 的 host/port/username/password/topic_prefix），并可设置 `update_frequency`（单位秒）控制更新频率。
 

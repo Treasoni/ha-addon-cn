@@ -15,9 +15,7 @@ FileBrowser Quantum 是一款现代、响应式的多源文件管理器，支持
 |--------|---------------|------|
 | `auth_method` | 枚举（password / noauth / proxy / oidc） / `noauth` | 认证方式：密码 / 免认证 / 代理 / OIDC |
 | `default_user_scope` | 字符串 / `/` | FileBrowser 文件源根路径与所有用户的默认作用域，须为已存在的绝对目录（如 `/share`、`/media`） |
-| `env_vars` | 列表 / 空 | 额外环境变量（大写或小写命名） |
-| `env_vars.name` | 字符串 | 环境变量名，须匹配 `^[A-Za-z0-9_]+$` |
-| `env_vars.value` | 字符串（可选） | 环境变量值 |
+| `env_vars` | 列表 / 空 | 额外环境变量（大写或小写命名）；列表项含 `name`（环境变量名，须匹配 `^[A-Za-z0-9_]+$`）与 `value`（环境变量值，可选） |
 | `localdisks` | 字符串（可选） / 空 | 要挂载的本地磁盘，例如 `sda1,sdb1,MYNAS` |
 | `networkdisks` | 字符串（可选） / 空 | 要挂载的 SMB 远程共享，例如 `//SERVER/SHARE` |
 | `cifsusername` | 字符串（可选） / 空 | SMB 共享的用户名 |
