@@ -40,6 +40,24 @@
 - After Dockerfile/template changes, run `.codex/scripts/check-docker.sh` to verify base-image pinning, non-root user, healthcheck, secrets, exec-form commands, and add-on template consistency.
 <!-- docker:codex:end -->
 
+<!-- addon-authoring:codex:begin -->
+## Add-on 编写规范
+
+- Follow `.codex/rules/common/addon-authoring.md` whenever creating or maintaining a `source: local` 自有 add-on（脚手架、config.yaml/Dockerfile/run.sh/README、check-addon 门禁）。
+- 建目录必须用脚手架：`python .codex/scripts/sync-addons.py --new-addon <slug>`，不得手工建目录/改 manifest；`source: local` 的 add-on 同步脚本永不触碰。
+- 动笔前先收集上游资料，落地为 config.yaml 头部 `# === 上游资料卡 ===` 注释块。
+- 提交前过门禁：`check-addon.py` 结构+完整度、README 过 `zh-guide-gate.py`、manifest 注册 `source: local`。
+<!-- addon-authoring:codex:end -->
+
+<!-- mirror-sources:codex:begin -->
+## 国内镜像源（registry proxy 与 image 重写）
+
+- Follow `.codex/rules/common/mirror-sources.md` whenever rewriting `image:` hosts or verifying registry proxies.
+- 镜像地址重写只由脚本完成（`rewrite-images.py` / 同步管道），agent 不手工编辑 config.yaml 的 `image:`。
+- 验证镜像源：打 manifest 端点 + config.yaml 真实 version，勿用 `tags/list`、勿用 `latest`。
+- 不碰 `source: local`、不碰 `build.json` 的 `build_from`、不改写官方 add-on。
+<!-- mirror-sources:codex:end -->
+
 <!-- prompt-cache-bootstrap:codex:begin -->
 ## Prompt Cache
 
