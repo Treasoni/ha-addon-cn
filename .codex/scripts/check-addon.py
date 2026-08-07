@@ -326,9 +326,13 @@ def check_addon(addon_dir: Path, is_fixture: bool, source: str | None) -> tuple[
             if not _valid_schema_type(val):
                 fails.append(f"[FAIL] C8 schema 类型非法：{key} = {val[:50]}")
 
-    # C9 本地 add-on 禁止 image 字段
-    if re.search(r"^image:", text, re.MULTILINE):
-        fails.append("[FAIL] C9 本地 add-on 禁止 image: 字段")
+    # C9 image 字段：默认禁止；预构建模式（上游资料卡 # prebuilt: true）例外
+    has_image = re.search(r"^image:", text, re.MULTILINE) is not None
+    prebuilt = re.search(r"^#\s*prebuilt\s*:\s*true\b", text, re.MULTILINE) is not None
+    if has_image and not prebuilt:
+        fails.append("[FAIL] C9 本地 add-on 禁止 image: 字段（预构建模式需在上游资料卡加 `# prebuilt: true` 注释）")
+    elif prebuilt and not has_image:
+        warns.append("[WARN] W3 声明了 # prebuilt: true 但缺少 image: 字段")
 
     # C10 build.json 存在、合法 JSON、build_from 覆盖全部 arch
     build_path = addon_dir / "build.json"

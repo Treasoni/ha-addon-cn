@@ -62,11 +62,18 @@ paths:
     `{arch}-base` 镜像 tag（注意：HA 已停发 armv7 base，版本止于 `3.22-2025.11.1`）。
   - `startup`/`boot`：`application` + `auto`；需手动启停用 `boot: manual`。
 - **`init: false`** 为惯例默认（无需 supervisor init 时显式声明）。
-- **禁止 `image:` 字段**：本地 add-on 本地构建，镜像由 Dockerfile/build 文件产出，
-  来源以 manifest 为准；镜像地址重写不适用于本地 add-on。
+- **`image:` 字段：默认禁止，预构建模式例外**：
+  - **本地构建模式**（默认）：config.yaml 不写 `image:`，Supervisor 本地构建，镜像由
+    Dockerfile/build.json 产出；镜像地址重写不适用于本地 add-on。
+  - **预构建模式（prebuilt mode）**：`source: local` 不变（仍以 manifest 判定），但
+    config.yaml 在上游资料卡加 `# prebuilt: true` 注释、并写
+    `image: ghcr.io/<owner>/<slug>-{arch}`（`{arch}` 后缀形态，check-docker D08 校验），
+    镜像由 `.github/workflows/build-addon.yml` CI 构建推送，Supervisor 只拉取、不本地构建。
+    适用场景：本地构建需预拉 Docker Hub 构建器 CLI 镜像（装前双通道鸡生蛋）的 add-on。
+  - **判定**：有 `image:` 则必须配 `# prebuilt: true`（门禁 C9），否则拒绝。
 - **`build.json` 必带**：Supervisor 本地构建依赖，`build_from` 为每个 `arch` 指向
   `ghcr.io/home-assistant/{arch}-base`。模板已内置（`templates/new-addon/build.json`），
-  脚手架原样带入。
+  脚手架原样带入；预构建模式下同时作为构建工作流读取 `build_from` 的单一事实源。
 
 ## options/schema 设计规范
 
@@ -124,8 +131,8 @@ paths:
 | `startup` | `application`/`services`/`system`/`initialize`/`once` | 必填 |
 | `boot` | `auto`/`manual` | 必填 |
 | `init` | `false`（默认）/`true` | 惯例 `false` |
-| `image` | 预构建镜像引用 | **禁止**（本地构建） |
-| `build.json` | 本地构建声明（`build_from` 每 arch） | 必填（模板已内置） |
+| `image` | 预构建镜像引用 | 本地构建模式**禁止**；预构建模式**必填**（须配 `# prebuilt: true`，`{arch}` 形态） |
+| `build.json` | 本地构建声明（`build_from` 每 arch） | 必填（模板已内置）；预构建模式兼作工作流 `build_from` 来源 |
 | `map` | 挂载路径（`addon_config:rw` 等） | 按需 |
 | `ports` / `ports_description` | 端口映射 + 用途 | 按需 |
 | `ingress` / `ingress_port` / `ingress_stream` | Web UI 内嵌 | 按需 |
@@ -145,6 +152,7 @@ paths:
 - `description` 非占位符（`在这里写`/`待补充`/`TODO`/lorem）。
 - `version` 引号包裹且非空；`arch` 非空且 ∈ 合法平台。
 - `options` 与 `schema` 键完全一致；schema 类型合法（附录 A 类型枚举 + `|`/`?`/`list(..)`/`match(..)`）。
-- 本地 add-on 无 `image:` 字段。
+- `image:` 字段仅在预构建模式允许：config.yaml 有 `image:` 时必须在上游资料卡带
+  `# prebuilt: true` 注释（门禁 C9）；`image` 值须为 `-{arch}`/`/{arch}` 合法形态（check-docker D08）。
 - `build.json` 存在且 `build_from` 覆盖 config.yaml 声明的每个 arch。
 - 有 `options` 必有 `schema`。

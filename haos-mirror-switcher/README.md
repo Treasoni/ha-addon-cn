@@ -14,16 +14,20 @@
 
 ## 安装
 
-> [!important] 手动换源前置步骤（首次必读）
-> 本加载项是自有本地构建（`source: local`）。构建分两步，**两条镜像通道都必须在安装前可用**，缺一不可：
-> 1. Supervisor 先要从 Docker Hub 拉**构建器 CLI 镜像**（`docker:*`，仓库 `library/docker`）——这走 **docker.io** 通道；
-> 2. 再用 `ghcr.io` 拉基础镜像（`{arch}-base`）——这走 **ghcr.io** 通道。
+> [!important] 前置步骤（首次必读）
+> 本加载项为**预构建模式**（`source: local` + 预构建镜像）：镜像已由 CI 构建并推送到
+> `ghcr.io/Treasoni/haos-mirror-switcher-{arch}`，Supervisor 安装时**只拉取一个预构建镜像**，
+> **不再本地构建**——不再需要 Docker Hub 的构建器 CLI 镜像（旧版要先拉 `docker:*` 才装得上，现已去掉）。
 >
-> 因此若你的 HA 拉不到这些镜像，请先按「HAOS 国内换源」教程手动把 Supervisor 的 `registries_mirror` **同时**配好两个映射再安装本加载项：
-> ```json
-> { "registries": {}, "registries_mirror": { "ghcr.io": "ghcr.nju.edu.cn", "docker.io": "docker.nju.edu.cn" } }
-> ```
-> 只配 ghcr.io 会在构建时因拉不到 Docker Hub 的构建器 CLI 镜像（报 `Can't pull image docker:...-cli` / `auth.docker.io ... EOF`）而失败。配好后重启 Supervisor、确认商店与加载项能正常安装，再安装本加载项接管后续维护。
+> 装前只剩两个前提：
+> 1. **商店仓库可达**：能添加 Gitee（`gitee.com/zhqznc_10603234_123/ha-addon`）或
+>    GitHub（`github.com/Treasoni/ha-addon-cn`）仓库；
+> 2. **ghcr.io 单通道可达**：Supervisor 拉预构建镜像走 `ghcr.io`（经 `ghcr.nju.edu.cn` pull-through）。
+>    若 ghcr.io 直连被墙，手动在 Supervisor `registries_mirror` 配一条
+>    `"ghcr.io": "ghcr.nju.edu.cn"` 即可（**只需这一条 ghcr 映射，无需 docker.io 映射**），
+>    配好后重启 Supervisor。
+>
+> 装完后本加载项会自动接管并维护 ghcr.io / docker.io / lscr.io 三个源的镜像映射与自动切换。
 
 1. 在 Home Assistant → 设置 → 加载项 → 右上角商店，添加本商店仓库：
    - Gitee：`https://gitee.com/zhqznc_10603234_123/ha-addon`
@@ -70,6 +74,7 @@ Web 界面分为「镜像源换源」和「OTA 固件升级」两个区域：
 
 ## 常见问题
 
+- **安装时报拉取镜像失败？** 请确认已添加商店仓库、且 Supervisor 能经 `ghcr.nju.edu.cn` 拉取 ghcr.io（按「安装」前置步骤第 2 条配 `registries_mirror` 单映射）。本加载项是预构建镜像，安装只拉一个 ghcr.io 镜像，不再需要 docker.io 映射。
 - **换源后 HA 启动不了怎么办？** 本加载项写入配置前会做 JSON 语法校验，并保留上次可用配置与系统内备份；若仍异常，打开 Web 界面点「恢复上次配置」或「恢复直连」，或按教程在宿主 shell 直接改 `/mnt/data/supervisor/docker.json`。镜像源失效只影响镜像拉取，不影响系统启动；真正会卡启动的是配置非法 JSON，本加载项已双重防住。
 - **系统升级后加速失效？** HAOS 升级可能重置 `docker.json`。本加载项启动时会自愈：检测到映射被重置，自动用上次保存的配置重写并重启。
 - **所有镜像源都挂了？** 点「恢复直连」移除全部映射回到官方源；同时可在 Web 界面新增可用的候选镜像源（先按教程的探测方法验证后再加）。
@@ -79,4 +84,4 @@ Web 界面分为「镜像源换源」和「OTA 固件升级」两个区域：
 
 ## 英文原版
 
-本加载项为自有开发工具（`source: local`），无上游英文 README；代码与版本历史见 [商店仓库](https://github.com/Treasoni/ha-addon-cn)。镜像源与 OTA 加速方案对齐社区教程「HAOS 国内换源」。
+本加载项为自有开发工具（`source: local`，预构建模式），无上游英文 README；代码与版本历史见 [商店仓库](https://github.com/Treasoni/ha-addon-cn)。镜像由 CI 构建推送至 ghcr.io，Supervisor 安装时只拉取；镜像源与 OTA 加速方案对齐社区教程「HAOS 国内换源」。
