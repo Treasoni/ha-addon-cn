@@ -31,6 +31,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+import catalog_policy
 import registry_mirror as rm  # 镜像地址重写共享模块（同目录）
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -95,6 +96,13 @@ def save_manifest(m: dict) -> None:
 
 def source_map(m: dict) -> dict:
     return {s["id"]: s for s in m.get("sources", DEFAULT_SOURCES)}
+
+
+def exclude_archived_owners(
+    owners: dict[str, tuple[str, Path, str]], archived: set[str]
+) -> dict[str, tuple[str, Path, str]]:
+    """Keep only upstream add-ons that the catalog policy permits publishing."""
+    return {slug: owner for slug, owner in owners.items() if slug not in archived}
 
 
 # --------------------------------------------------------------------------- #
@@ -269,6 +277,11 @@ def has_zh_guide(local_dir: Path) -> bool:
 # --------------------------------------------------------------------------- #
 def cmd_sync(dry_run: bool = False) -> int:
     manifest = load_manifest()
+    try:
+        archived = catalog_policy.load_archived_slugs(ROOT)
+    except ValueError as exc:
+        log(f"[policy] 无法读取归档策略：{exc}")
+        return 1
     srcs = manifest.get("sources", DEFAULT_SOURCES)
     addons = manifest.setdefault("addons", {})
     conflicts = manifest.setdefault("conflicts", [])
@@ -303,6 +316,11 @@ def cmd_sync(dry_run: bool = False) -> int:
                 summary["conflicts"].append(slug)
                 continue
             owners[slug] = (sid, addon_dir, ver)
+
+    excluded = sorted(set(owners) & archived)
+    owners = exclude_archived_owners(owners, archived)
+    if excluded:
+        log(f"[policy] 不发布归档 add-on ({len(excluded)}): {', '.join(excluded)}")
 
     # 1.5) 选定国内镜像源（每次同步复验一次；挂则回退默认并告警）
     mirror = pick_sync_mirror(srcs, owners)
@@ -351,6 +369,11 @@ def cmd_sync(dry_run: bool = False) -> int:
         entry = addons[slug]
         if entry.get("source") == "local":
             continue  # 自有 add-on，永不处理
+        if slug in archived:
+            local_dir = ROOT / slug
+            if local_dir.exists():
+                log(f"  [keep] {slug}：已归档但仍在根目录，等待显式迁移")
+            continue
         if slug in seen_slugs:
             continue
         local_dir = ROOT / slug
