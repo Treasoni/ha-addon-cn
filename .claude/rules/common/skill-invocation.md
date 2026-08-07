@@ -1,12 +1,13 @@
 # Skill Invocation
 
 ## 技能列表
-<!-- skill-registry:managed ["ask-matt","claude-handoff","code-review","codebase-design","diagnosing-bugs","digest","domain-modeling","git-guardrails-claude-code","grill-me","grill-with-docs","grilling","handoff","hassio-addon-sync","implement","improve-codebase-architecture","loop-me","maintain-learnings","manifest-platform","migrate-to-shoehorn","prompt-cache-optimizer","prototype","research","resolving-merge-conflicts","scaffold-exercises","setup-matt-pocock-skills","setup-pre-commit","setup-ts-deep-modules","sync-skill-registry","tdd","teach","to-questionnaire","to-spec","to-tickets","triage","wait-what","wayfinder","wizard","workflow-todo-state","writing-beats","writing-for-agents","writing-fragments","writing-shape","zh-guide-workflow"] -->
+<!-- skill-registry:managed ["addon-authoring","ask-matt","claude-handoff","code-review","codebase-design","diagnosing-bugs","digest","domain-modeling","git-guardrails-claude-code","grill-me","grill-with-docs","grilling","handoff","hassio-addon-sync","implement","improve-codebase-architecture","loop-me","maintain-learnings","manifest-platform","migrate-to-shoehorn","prompt-cache-optimizer","prototype","research","resolving-merge-conflicts","scaffold-exercises","setup-matt-pocock-skills","setup-pre-commit","setup-ts-deep-modules","sync-skill-registry","tdd","teach","to-questionnaire","to-spec","to-tickets","triage","wait-what","wayfinder","wizard","workflow-todo-state","writing-beats","writing-for-agents","writing-fragments","writing-shape","zh-guide-workflow"] -->
 
 #### 未分类
 
 | 技能 | 触发场景 | 关键触发词 |
 |------|----------|-----------|
+| `addon-authoring` | 从零开发或维护 source: local 自有 add-on：脚手架建目录、先收集上游资料（上游资料卡）、编写 config.yaml/Dockerfi… | 新建 add-on、开发 add-on、编写 add-on、写 add-on、创建 add-on、生成 add-on、add-on 脚手架、开发自有 add-on、自有 add-on。排除：同步 add-on、审校中文指南、批量中文指南、单个 add-on 手动翻译、只读问题 |
 | `ask-matt` | Ask which skill or flow fits your situation. A router over the skills in this… | Ask which skill or flow fits your situat… |
 | `claude-handoff` | Hand the current conversation off to a fresh background agent that picks up t… | Hand the current conversation off to a f… |
 | `code-review` | Review the changes since a fixed point (commit, branch, tag | review since X |

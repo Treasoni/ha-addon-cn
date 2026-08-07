@@ -90,6 +90,7 @@ python .claude/scripts/sync-addons.py --new-addon <slug> [--name "显示名"] [-
 - 从 `templates/new-addon/` 复制最小 run.sh 型模板，替换 slug/name/version，并在 manifest 注册为 `source: local`。
 - **`source: local` 的 add-on 同步脚本永不触碰、永不删除**。
 - 后续完善 `config.yaml` 的 `options`/`schema`、`Dockerfile`、`run.sh`、`icon.png`/`logo.png`，并按「中文指南流程」写中文 README。
+- **完整开发走 `addon-authoring` skill / `addon-authoring-workflow`**（先收集上游资料 → 编写 → `check-addon.py` 门禁 → 审校 → 人工确认 → 发布）。本流程的快速脚手架只建目录，**发布前必须过 `python .claude/scripts/check-addon.py <slug>`**。
 
 ## 禁止事项
 
