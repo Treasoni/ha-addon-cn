@@ -15,6 +15,7 @@ workspace/workflow-runs/*.workflow.md                   # active or historical r
 <!-- workflow-routing:generated:start -->
 | Workflow ID | Required | When To Use | Positive Triggers | Excludes | Definition | State File Pattern |
 | --- | --- | --- | --- | --- | --- | --- |
+| `addon-authoring-workflow` | yes | 从零开发或维护 source: local 自有 add-on：脚手架、先收集资料（上游资料卡）、编写 config.yaml/Dockerfile/run.sh/README、过 check-addon 门禁 | 新建 add-on; 开发 add-on; 编写 add-on; 写 add-on; 创建 add-on; 生成 add-on; add-on 脚手架; 开发自有 add-on; 自有 add-on | 同步 add-on; 审校中文指南; 批量中文指南; 单个 add-on 手动翻译; 只读问题 | `.claude/workflows/addon-authoring-workflow/workflow.md` | `workspace/workflow-runs/addon-authoring-{slug}.workflow.md` |
 | `zh-guide-workflow` | yes | 批量生成、审校或补充缺失的中文 add-on 指南（zh_guide=false 的 add-on） | 生成中文指南; 批量生成中文指南; 补充中文指南; 审校中文指南; zh-guide; 补全中文 | 同步 add-on; 新建 add-on; 单个 add-on 手动翻译; 只读问题 | `.claude/workflows/zh-guide-workflow/workflow.md` | `workspace/workflow-runs/zh-guide-batch-{run_id}.workflow.md` |
 <!-- workflow-routing:generated:end -->
 
