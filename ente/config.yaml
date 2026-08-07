@@ -73,7 +73,7 @@ environment:
   PGID: "0"
   PUID: "0"
   TZ: Europe/Paris
-image: ghcr.io/alexbelgium/ente-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/ente-{arch}
 init: false
 map:
   - addon_config:rw

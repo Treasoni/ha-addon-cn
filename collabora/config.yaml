@@ -5,7 +5,7 @@ description: Collabora Online office suite
 environment:
   PGID: "0"
   PUID: "0"
-image: ghcr.io/alexbelgium/collabora-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/collabora-{arch}
 init: false
 map:
   - addon_config:rw

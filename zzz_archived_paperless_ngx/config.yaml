@@ -73,7 +73,7 @@ environment:
   PAPERLESS_MEDIA_ROOT: /config/media
   PGID: "0"
   PUID: "0"
-image: ghcr.io/alexbelgium/paperless_ng-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/paperless_ng-{arch}
 init: false
 map:
   - addon_config:rw

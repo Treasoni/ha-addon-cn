@@ -74,7 +74,7 @@ devices:
 environment:
   BIRDNET_GID: "0"
   BIRDNET_UID: "0"
-image: ghcr.io/alexbelgium/birdnet-go-dev-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/birdnet-go-dev-{arch}
 ingress: true
 ingress_entry: "ui/dashboard"
 ingress_stream: true

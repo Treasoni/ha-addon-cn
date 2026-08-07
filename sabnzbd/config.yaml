@@ -69,7 +69,7 @@ devices:
 environment:
   PGID: "0"
   PUID: "0"
-image: ghcr.io/alexbelgium/sabnzbd-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/sabnzbd-{arch}
 ingress_entry: sabnzbd
 init: false
 map:

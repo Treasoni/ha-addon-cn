@@ -114,7 +114,7 @@ environment:
   PUID: "0"
   VERSION: docker
 host_network: true
-image: ghcr.io/alexbelgium/plex_nas-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/plex_nas-{arch}
 init: false
 map:
   - share:rw

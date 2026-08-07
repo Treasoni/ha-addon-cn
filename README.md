@@ -78,6 +78,9 @@
 **Q：add-on 安装很慢 / 卡在下载？**
 - 首次安装需要拉取容器镜像，取决于网络与机型；`aarch64`（树莓派等）比 `amd64` 慢。建议国内用户连接 Docker 镜像加速。
 
+**Q：为什么个别官方 add-on（`samba`、`ssh`、`mosquitto` 等）仍安装很慢/失败？**
+- 本商店 168 个社区 add-on 的镜像已改写为国内镜像源（`ghcr.nju.edu.cn`），国内可直接拉取；但 **24 个官方 add-on 的镜像在 Docker Hub**（`homeassistant/...`，不在 ghcr.io），本商店不改写它们。请给 HA 主机配置 **Docker Hub 镜像加速**（编辑 `/etc/docker/daemon.json` 的 `registry-mirrors` 后重启 Docker）即可加速这 24 个。
+
 **Q：为什么有的 add-on 只有英文说明？**
 - 中文指南在陆续补齐中（当前 45/192）。优先覆盖了主流 add-on；其余可按需在仓库里提需求。
 

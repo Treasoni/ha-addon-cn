@@ -3,7 +3,7 @@ arch:
   - amd64
 description: An open source command line RatioMaster with WebUI
 hassio_api: true
-image: ghcr.io/alexbelgium/joal-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/joal-{arch}
 ingress: true
 ingress_entry: entry
 map:

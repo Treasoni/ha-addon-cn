@@ -57,7 +57,7 @@ devices:
   - /dev/nvme0
   - /dev/nvme1
   - /dev/nvme2
-image: ghcr.io/alexbelgium/birdnet-pi-zach-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/birdnet-pi-zach-{arch}
 ingress: true
 init: false
 map:

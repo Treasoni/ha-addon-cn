@@ -67,7 +67,7 @@ devices:
 environment:
   PGID: "0"
   PUID: "0"
-image: ghcr.io/alexbelgium/nzbget-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/nzbget-{arch}
 ingress: true
 init: false
 map:

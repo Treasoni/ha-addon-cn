@@ -7,7 +7,7 @@ description: An agent used to manage all the resources in a Swarm cluster
 docker_api: true
 full_access: true
 hassio_api: true
-image: ghcr.io/alexbelgium/portainer_agent-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/portainer_agent-{arch}
 init: false
 map:
   - config:rw

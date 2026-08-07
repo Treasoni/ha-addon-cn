@@ -2,7 +2,7 @@ arch:
   - aarch64
   - amd64
 description: "🦓 General purpose request (reverse) proxy and forwarding tool with web management UI"
-image: ghcr.io/alexbelgium/zoraxy-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/zoraxy-{arch}
 name: Zoraxy
 slug: zoraxy
 url: https://github.com/alexbelgium/hassio-addons/tree/master/zoraxy

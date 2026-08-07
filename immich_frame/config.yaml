@@ -3,7 +3,7 @@ arch:
   - amd64
 description: Display your immich gallery as a digital photo frame
 hassio_api: true
-image: ghcr.io/alexbelgium/immich_frame-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/immich_frame-{arch}
 init: false
 map:
   - addon_config:rw

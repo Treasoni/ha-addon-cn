@@ -77,7 +77,7 @@ environment:
   FILEBROWSER_DATABASE: "/config/database.db"
   PGID: "0"
   PUID: "0"
-image: ghcr.io/alexbelgium/filebrowser_quantum-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/filebrowser_quantum-{arch}
 ingress: true
 ingress_port: 8071
 ingress_stream: true

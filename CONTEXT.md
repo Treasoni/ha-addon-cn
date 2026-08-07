@@ -35,3 +35,17 @@ _Avoid_: 不同步、漂移
 **质量维度**:
 本工作流强制校验的两个维度：`结构规范`（必含章节/标记/命名）与 `事实准确`（配置项与 add-on 配置声明对应、命令/端口/链接真实）。
 _Avoid_: 质量标准、规范
+
+**镜像地址重写（image rewrite）**:
+把 add-on `config.yaml` 里 `image:` 行的 registry 主机（`ghcr.io` 或已知镜像源）改写为国内镜像源的脚本化幂等变换。保留路径与 `{arch}` 占位符形状，支持换源迁移。
+_Avoid_: 换源、改镜像、本地化镜像
+
+**镜像源 / registry proxy**:
+pull-through 代理 `ghcr.io` 的国内镜像站（当前为 `ghcr.nju.edu.cn`）。与「镜像仓库」（上游代码仓库全量镜像）是两码事。
+_Avoid_: 加速器、Docker 镜像加速（那是 docker.io 的 daemon.json 配置，对 ghcr.io 无效）
+
+**同步后变换（post-sync transform）**:
+同步管道里对 config.yaml 的重写步骤：拷贝上游文件后立即套镜像地址重写，先变换再与本地对比，保证改写不被下次同步冲掉、幂等且不误报 updated。当前镜像源记录在 `addons-manifest.json` 的 `image_mirror` 字段。
+_Avoid_: 同步钩子、改写步骤
+
+> 「镜像」三义：**镜像仓库**（vendored add-on，代码全量拷贝）/ **镜像源**（registry proxy，代理 ghcr.io 的镜像站）/ **镜像地址重写**（image rewrite，改 `image:` 字段）。语境不同含义不同。

@@ -9,7 +9,7 @@ environment:
   PUID: "503"
   TS3SERVER_LICENSE: accept
   TS_UPDATE: "1"
-image: ghcr.io/alexbelgium/teamspeak-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/teamspeak-{arch}
 init: false
 map:
   - share:rw

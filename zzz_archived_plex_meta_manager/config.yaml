@@ -66,7 +66,7 @@ devices:
   - /dev/nvme0
   - /dev/nvme1
   - /dev/nvme2
-image: ghcr.io/alexbelgium/plex-media-manager-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/plex-media-manager-{arch}
 init: false
 map:
   - config:rw

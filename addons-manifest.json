@@ -5,6 +5,7 @@
     "url": "https://gitee.com/zhqznc_10603234_123/ha-addon",
     "maintainer": "zhq"
   },
+  "image_mirror": "ghcr.nju.edu.cn",
   "sources": [
     {
       "id": "alexbelgium",

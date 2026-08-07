@@ -67,7 +67,7 @@ devices:
 environment:
   PGID: "0"
   PUID: "0"
-image: ghcr.io/alexbelgium/calibre_web-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/calibre_web-{arch}
 init: false
 map:
   - share:rw

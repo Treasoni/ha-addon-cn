@@ -4,7 +4,7 @@ arch:
 description: Skip YouTube ads and sponsorships on all local Google Cast devices
 environment: {}
 host_network: true
-image: ghcr.io/alexbelgium/sponsorblockcast-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/sponsorblockcast-{arch}
 init: false
 map:
   - addon_config:rw

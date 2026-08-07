@@ -3,7 +3,7 @@ arch:
   - amd64
 description: Power tools for organizing your immich library
 hassio_api: true
-image: ghcr.io/alexbelgium/immich_power_tools-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/immich_power_tools-{arch}
 init: false
 map:
   - addon_config:rw

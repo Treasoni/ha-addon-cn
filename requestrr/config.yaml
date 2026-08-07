@@ -69,7 +69,7 @@ devices:
 environment:
   PGID: "0"
   PUID: "0"
-image: ghcr.io/alexbelgium/requestrr-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/requestrr-{arch}
 init: false
 map:
   - addon_config:rw

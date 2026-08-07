@@ -7,7 +7,7 @@ backup_exclude:
 description: Manage your Docker environment with ease (Business Edition)
 docker_api: true
 hassio_api: true
-image: ghcr.io/alexbelgium/portainer_be-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/portainer_be-{arch}
 ingress: true
 ingress_port: 1337
 ingress_stream: true

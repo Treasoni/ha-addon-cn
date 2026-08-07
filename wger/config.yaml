@@ -2,7 +2,7 @@ arch:
   - amd64
   - aarch64
 description: manage your personal workouts, weight and diet plans
-image: ghcr.io/alexbelgium/wger-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/wger-{arch}
 map:
   - share:rw
   - config:rw

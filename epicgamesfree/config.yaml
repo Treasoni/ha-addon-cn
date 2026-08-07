@@ -68,7 +68,7 @@ devices:
   - /dev/nvme2
 environment:
   CONFIG_DIR: /config/addons_config/epicgamesfree
-image: ghcr.io/alexbelgium/epicgamesfree-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/epicgamesfree-{arch}
 init: false
 map:
   - config:rw

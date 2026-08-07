@@ -64,7 +64,7 @@ devices:
   - /dev/nvme0
   - /dev/nvme1
   - /dev/nvme2
-image: ghcr.io/alexbelgium/baikal-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/baikal-{arch}
 map:
   - addon_config:rw
   - homeassistant_config:rw

@@ -2,7 +2,7 @@ arch:
   - aarch64
   - amd64
 description: "\U0001F426 NetBird self-hosted server stack (management, signal, relay, dashboard, Caddy)"
-image: ghcr.io/alexbelgium/netbird-server-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/netbird-server-{arch}
 init: false
 map:
   - addon_config:rw

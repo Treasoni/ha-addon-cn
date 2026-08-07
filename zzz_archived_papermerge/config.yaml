@@ -64,7 +64,7 @@ devices:
   - /dev/nvme0
   - /dev/nvme1
   - /dev/nvme2
-image: ghcr.io/alexbelgium/papermerge-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/papermerge-{arch}
 init: false
 map:
   - share:rw

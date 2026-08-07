@@ -70,7 +70,7 @@ devices:
 environment:
   PGID: "0"
   PUID: "0"
-image: ghcr.io/alexbelgium/jackett_nas-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/jackett_nas-{arch}
 init: false
 map:
   - config:rw

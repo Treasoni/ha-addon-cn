@@ -12,7 +12,9 @@ Home Assistant Add-on 商店同步脚本。
   - README.md 是"本地维护文件"：vendored add-on 已有本地 README.md 时永不被上游覆盖；
   - 只复制上游 add-on 文件夹，不复制上游根级工具文件；
   - 有未提交本地修改（git diff 相对 HEAD）的 add-on 会跳过并警告；
-  - source=local 的 add-on 永不处理、永不删除。
+  - source=local 的 add-on 永不处理、永不删除；
+  - 镜像地址重写（post-sync transform）：同步后把 config.yaml 的 image 主机改写为
+    国内镜像源（registry_mirror.py），改写后再对比避免误报 updated，天然幂等。
 
 无第三方依赖（不依赖 PyYAML）。
 """
@@ -28,6 +30,8 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+
+import registry_mirror as rm  # 镜像地址重写共享模块（同目录）
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 MANIFEST = ROOT / "addons-manifest.json"
@@ -163,17 +167,33 @@ def files_equal(a: Path, b: Path) -> bool:
         return False
 
 
-def copy_addon_dir(upstream_dir: Path, local_dir: Path, summary: dict) -> str:
+def copy_addon_dir(upstream_dir: Path, local_dir: Path, summary: dict, mirror: str | None = None) -> str:
     """复制一个新 add-on 目录（本地不存在）。返回 'added'。"""
     shutil.copytree(upstream_dir, local_dir, dirs_exist_ok=False)
+    if mirror:
+        _rewrite_config(local_dir / "config.yaml", mirror)
     summary["added"].append(local_dir.name)
     return "added"
 
 
-def sync_existing_dir(upstream_dir: Path, local_dir: Path, summary: dict, dry_run: bool = False) -> str:
+def _rewrite_config(cfg_path: Path, mirror: str) -> None:
+    """对 config.yaml 应用镜像地址重写（幂等，改写后不变则不动）。"""
+    try:
+        text = cfg_path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return
+    new = rm.transform_yaml(text, mirror)
+    if new != text:
+        cfg_path.write_text(new, encoding="utf-8")
+
+
+def sync_existing_dir(upstream_dir: Path, local_dir: Path, summary: dict, dry_run: bool = False, mirror: str | None = None) -> str:
     """
     同步已有 add-on：只 add/overwrite 上游变更文件，绝不删除本地文件，
     README.md 若本地已有则永不覆盖（本地维护）。返回 'updated'/'unchanged'。
+
+    config.yaml 先过镜像地址重写（transform）再与本地对比/写入：本地是改写版、
+    上游是原版，只有真实上游变更才算 updated（幂等，不误报）。
     """
     changed = 0
     for up_file in upstream_dir.rglob("*"):
@@ -183,17 +203,52 @@ def sync_existing_dir(upstream_dir: Path, local_dir: Path, summary: dict, dry_ru
         dst = local_dir / rel
         if rel == "README.md" and dst.exists():
             continue  # 本地维护 README，永不覆盖
-        if dst.exists() and files_equal(up_file, dst):
+        if rel == "config.yaml" and mirror:
+            up_text = up_file.read_text(encoding="utf-8", errors="replace")
+            up_norm = rm.transform_yaml(up_text, mirror)
+            try:
+                same = dst.exists() and dst.read_text(encoding="utf-8", errors="replace") == up_norm
+            except OSError:
+                same = False
+        else:
+            same = dst.exists() and files_equal(up_file, dst)
+        if same:
             continue
         changed += 1
         if not dry_run:
             dst.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(up_file, dst)
+            if rel == "config.yaml" and mirror:
+                dst.write_text(up_norm, encoding="utf-8")
+            else:
+                shutil.copy2(up_file, dst)
     if changed:
         summary["updated"].append(local_dir.name)
         return "updated"
     summary["unchanged"].append(local_dir.name)
     return "unchanged"
+
+
+def pick_sync_mirror(srcs: list[dict], owners: dict) -> str | None:
+    """按源优先级挑至多 3 个 ghcr 镜像作探测样本，选一个可用国内镜像源。
+
+    每次同步复验一次镜像源（每 registry 打一次 manifest，很便宜）。
+    无 ghcr 镜像或全失败时返回 None，调用方回退默认镜像源。
+    """
+    probes: list[tuple[str, str]] = []
+    for src in sorted(srcs, key=lambda s: s.get("priority", 99)):
+        sid = src["id"]
+        if len(probes) >= 3:
+            break
+        for slug, (osid, up_dir, up_ver) in sorted(owners.items()):
+            if osid != sid:
+                continue
+            img = yaml_field(up_dir / "config.yaml", "image")
+            if img and rm.classify(img) == "ghcr" and up_ver:
+                probes.append((rm.image_repo(img), up_ver))
+                break
+    if not probes:
+        return None
+    return rm.pick_mirror(probes, timeout=15.0)
 
 
 def has_zh_guide(local_dir: Path) -> bool:
@@ -246,6 +301,14 @@ def cmd_sync(dry_run: bool = False) -> int:
                 continue
             owners[slug] = (sid, addon_dir, ver)
 
+    # 1.5) 选定国内镜像源（每次同步复验一次；挂则回退默认并告警）
+    mirror = pick_sync_mirror(srcs, owners)
+    if mirror:
+        log(f"[mirror] 本次同步使用镜像源: {mirror}")
+    else:
+        mirror = rm.KNOWN_MIRRORS[0]
+        log(f"[mirror] 警告：无法验证镜像源，回退默认 {mirror}（可用 check-images.py 复核）")
+
     # 2) 同步每个归属 add-on
     seen_slugs = set()
     for slug, (sid, up_dir, up_ver) in sorted(owners.items()):
@@ -257,7 +320,7 @@ def cmd_sync(dry_run: bool = False) -> int:
                 log(f"  [dry] 新增 {slug} (来自 {sid})")
                 summary["added"].append(slug)
                 continue
-            copy_addon_dir(up_dir, local_dir, summary)
+            copy_addon_dir(up_dir, local_dir, summary, mirror)
             addons[slug] = {
                 "source": sid,
                 "upstream_version": up_ver,
@@ -270,7 +333,7 @@ def cmd_sync(dry_run: bool = False) -> int:
                 summary["skipped"].append(slug)
                 log(f"  [skip] {slug}：目录有未提交本地修改，跳过（不覆盖）")
                 continue
-            status = sync_existing_dir(up_dir, local_dir, summary, dry_run=dry_run)
+            status = sync_existing_dir(up_dir, local_dir, summary, dry_run=dry_run, mirror=mirror)
             if not dry_run and status == "updated":
                 addons[slug] = {
                     "source": sid,
@@ -314,6 +377,7 @@ def cmd_sync(dry_run: bool = False) -> int:
             per_source[sid] = {"last_commit": commit}
         manifest["upstream"] = per_source
         manifest["synced_at"] = now_iso()
+        manifest["image_mirror"] = mirror
         manifest["addons"] = addons
         manifest["conflicts"] = conflicts
         save_manifest(manifest)

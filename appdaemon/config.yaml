@@ -32,4 +32,4 @@ schema:
   - str
   init_commands:
   - str
-image: ghcr.io/hassio-addons/appdaemon
+image: ghcr.nju.edu.cn/hassio-addons/appdaemon

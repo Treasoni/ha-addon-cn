@@ -65,7 +65,7 @@ devices:
   - /dev/nvme0
   - /dev/nvme1
   - /dev/nvme2
-image: ghcr.io/alexbelgium/cleanuparr-{arch}
+image: ghcr.nju.edu.cn/alexbelgium/cleanuparr-{arch}
 ingress: true
 ingress_stream: true
 init: false
