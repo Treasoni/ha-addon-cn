@@ -1,0 +1,19 @@
+apiVersion: agent-platform/v1
+kind: Skill
+metadata:
+  name: wait-what
+  version: 0.1.0
+  description: "Stop. That last message did not land — re-pitch it."
+spec:
+  entrypoint: SKILL.md
+  capabilities:
+    - skill.execute
+  permissions:
+    filesystem: read
+    network: none
+    subprocess: none
+    git: none
+  dependsOn: []
+  lifecycle:
+    discoverable: true
+    deprecated: false

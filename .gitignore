@@ -1,0 +1,51 @@
+# === 依赖 ===
+node_modules/
+.pnp/
+.pnp.js
+
+# === Python 缓存 ===
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# === 构建产物 ===
+dist/
+build/
+.next/
+out/
+.cache/
+.turbo/
+
+# === 环境与密钥 ===
+# 提交模板 .env.example，但忽略真实环境文件
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.production.local
+*.pem
+*.key
+
+# === 大文件 ===
+*.onnx
+*.pkl
+*.bin
+*.pt
+
+# === 自动生成 ===
+generated/
+coverage/
+.nyc_output/
+
+# === 日志 ===
+*.log
+npm-debug.log*
+
+# === 嵌套模板仓库（独立 git 仓库，不纳入本项目） ===
+Agent-Template-Kits-main/
+
+# === 系统文件 ===
+.DS_Store
+Thumbs.db

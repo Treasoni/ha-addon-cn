@@ -1,0 +1,19 @@
+apiVersion: agent-platform/v1
+kind: Skill
+metadata:
+  name: setup-ts-deep-modules
+  version: 0.1.0
+  description: "Wire dependency-cruiser into a TypeScript repo so each package is a deep module — implementation hidden in subfolders, reachable only through its entry-point files. User-invoked."
+spec:
+  entrypoint: SKILL.md
+  capabilities:
+    - skill.execute
+  permissions:
+    filesystem: write
+    network: allow
+    subprocess: allow
+    git: none
+  dependsOn: []
+  lifecycle:
+    discoverable: true
+    deprecated: false

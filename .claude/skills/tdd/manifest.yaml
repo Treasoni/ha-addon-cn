@@ -1,0 +1,19 @@
+apiVersion: agent-platform/v1
+kind: Skill
+metadata:
+  name: tdd
+  version: 0.1.0
+  description: "Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions \"red-green-refactor\", or wants integration tests."
+spec:
+  entrypoint: SKILL.md
+  capabilities:
+    - skill.execute
+  permissions:
+    filesystem: write
+    network: none
+    subprocess: allow
+    git: none
+  dependsOn: []
+  lifecycle:
+    discoverable: true
+    deprecated: false

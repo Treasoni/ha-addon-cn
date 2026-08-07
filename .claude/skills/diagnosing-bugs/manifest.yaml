@@ -1,0 +1,19 @@
+apiVersion: agent-platform/v1
+kind: Skill
+metadata:
+  name: diagnosing-bugs
+  version: 0.1.0
+  description: "Diagnosis loop for hard bugs and performance regressions. Use when the user says \"diagnose\"/\"debug this\", or reports something broken/throwing/failing/slow."
+spec:
+  entrypoint: SKILL.md
+  capabilities:
+    - skill.execute
+  permissions:
+    filesystem: read
+    network: allow
+    subprocess: allow
+    git: none
+  dependsOn: []
+  lifecycle:
+    discoverable: true
+    deprecated: false

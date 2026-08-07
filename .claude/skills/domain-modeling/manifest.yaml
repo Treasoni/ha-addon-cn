@@ -1,0 +1,19 @@
+apiVersion: agent-platform/v1
+kind: Skill
+metadata:
+  name: domain-modeling
+  version: 0.1.0
+  description: "Build and sharpen a project's domain model. Use when the user wants to pin down domain terminology or a ubiquitous language, record an architectural decision, or when another skill needs to maintain the domain model."
+spec:
+  entrypoint: SKILL.md
+  capabilities:
+    - skill.execute
+  permissions:
+    filesystem: read
+    network: none
+    subprocess: none
+    git: none
+  dependsOn: []
+  lifecycle:
+    discoverable: true
+    deprecated: false
