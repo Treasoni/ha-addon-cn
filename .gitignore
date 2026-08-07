@@ -49,3 +49,6 @@ Agent-Template-Kits-main/
 # === 系统文件 ===
 .DS_Store
 Thumbs.db
+
+# === 工作流运行状态（瞬时文件，不入库） ===
+workspace/workflow-runs/

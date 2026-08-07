@@ -1,0 +1,19 @@
+apiVersion: agent-platform/v1
+kind: Skill
+metadata:
+  name: zh-guide-workflow
+  version: 0.1.0
+  description: "批量生成、审校或补充缺失的中文 add-on 使用指南（zh_guide=false），由结构门禁 + 审校 subagent 保证质量。"
+spec:
+  entrypoint: SKILL.md
+  capabilities:
+    - skill.execute
+  permissions:
+    filesystem: write
+    network: none
+    subprocess: none
+    git: read
+  dependsOn: []
+  lifecycle:
+    discoverable: true
+    deprecated: false

@@ -15,6 +15,7 @@ workspace/workflow-runs/*.workflow.md                   # active or historical r
 <!-- workflow-routing:generated:start -->
 | Workflow ID | Required | When To Use | Positive Triggers | Excludes | Definition | State File Pattern |
 | --- | --- | --- | --- | --- | --- | --- |
+| `zh-guide-workflow` | yes | 批量生成、审校或补充缺失的中文 add-on 指南（zh_guide=false 的 add-on） | 生成中文指南; 批量生成中文指南; 补充中文指南; 审校中文指南; zh-guide; 补全中文 | 同步 add-on; 新建 add-on; 单个 add-on 手动翻译; 只读问题 | `.claude/workflows/zh-guide-workflow/workflow.md` | `workspace/workflow-runs/zh-guide-batch-{run_id}.workflow.md` |
 <!-- workflow-routing:generated:end -->
 
 ## Routing Rules
