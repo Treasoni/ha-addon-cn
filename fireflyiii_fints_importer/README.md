@@ -1,112 +1,34 @@
-# Home assistant add-on: Fireflyiii fints importer
+<!-- zh-guide -->
+# Firefly iii FinTS Importer
 
+## 简介
+Firefly III 是一款自托管的个人财务管理工具，帮助你记录支出与收入，从而更合理地消费和储蓄。本加载项用于将支持 FinTS 协议的银行（主要是德国银行）中的交易记录导入 Firefly III，并带有引导式的 Web 界面。本加载项基于 benkl/firefly-iii-fints-importer 的 Docker 镜像构建。
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+## 安装
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 fireflyiii_fints_importer 并安装。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 配置
+| 配置键 | 类型 / 默认值 | 说明 |
+|--------|---------------|------|
+| `Updates` | 枚举（hourly / daily2 / daily4 / daily6 / daily8 / daily10 / daily12 / weekly）（可选） / 空 | 自动导入计划：每小时 / 每天2点 / 4点 / 6点 / 8点 / 10点 / 12点 / 每周（周日2点） |
+| `silent` | 布尔（可选） / 空 | 抑制调试信息输出 |
+| `env_vars` | 列表 / 空 | 额外环境变量（大写或小写命名） |
+| `env_vars.name` | 字符串 | 环境变量名，须匹配 `^[A-Za-z0-9_]+$` |
+| `env_vars.value` | 字符串（可选） | 环境变量值 |
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+银行连接与各账户的导入配置在 Web 界面中完成，配置存储于 `/config/addons_config/fireflyiii_fints_importer/`。
 
-## Addon informations
+## 使用 / 访问入口
+本加载项未启用 Ingress，通过端口访问：容器端口 `8080/tcp` 映射到宿主端口 `3476`，浏览器访问 http://homeassistant:3476 打开 Web 界面。
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Ffireflyiii_fints_importer%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Ffireflyiii_fints_importer%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Ffireflyiii_fints_importer%2Fconfig.yaml)
+## 常见问题
+1. 使用前请确保有一个已运行的 Firefly III 实例。
+2. 该导入器支持使用 FinTS（Financial Transaction Services）协议的银行，主要针对德国银行，多数德国主要银行支持通过 FinTS 自动获取交易。
+3. 在 Web 界面中为每个银行账户配置连接与导入设置，并按需在 `Updates` 中选择自动导入计划。
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
-
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
-
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
-
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
-
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/fireflyiii_fints_importer/stats.png)
-
-## About
-
-["Firefly III"](https://www.firefly-iii.org) is a (self-hosted) manager for your personal finances. It can help you keep track of your expenses and income, so you can spend less and save more. This tool allows you to import transactions from your FinTS enabled bank into Firefly III. It comes with a web GUI that guides you through the process.
-
-This addon is based on the docker image https://hub.docker.com/r/benkl/firefly-iii-fints-importer
-
-## Configuration
-
-Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-Webui can be found at <http://homeassistant:3476>.
-
-This tool allows you to import transactions from your FinTS enabled bank (primarily German banks) into Firefly III.
-
-### Setup Steps
-
-1. Ensure you have a running Firefly III instance
-2. Access the web interface to configure bank connections
-3. Set up import configurations for each bank account
-4. Configure automatic import schedules if desired
-
-For detailed setup documentation, see: https://github.com/bnw/firefly-iii-fints-importer
-
-### Options
-
-| Option | Type | Description |
-|--------|------|-------------|
-| `Updates` | list | Automatic import schedule (hourly, daily2, daily4, daily6, daily8, daily10, daily12, weekly) |
-| `silent` | bool | Suppress debug messages |
-
-### Example Configuration
-
-```yaml
-Updates: ["daily6"]  # Run daily at 6 AM
-silent: false
-```
-
-### Automatic Import Schedule
-
-The `Updates` option allows you to schedule automatic imports:
-
-- `hourly`: Every hour
-- `daily2`: Daily at 2:00 AM
-- `daily4`: Daily at 4:00 AM
-- `daily6`: Daily at 6:00 AM
-- `daily8`: Daily at 8:00 AM
-- `daily10`: Daily at 10:00 AM
-- `daily12`: Daily at 12:00 PM
-- `weekly`: Weekly (Sunday at 2:00 AM)
-
-### Configuration Storage
-
-Bank configurations and import settings are stored in:
-`/config/addons_config/fireflyiii_fints_importer/`
-
-For configuration file format, see: https://github.com/bnw/firefly-iii-fints-importer#storing-configurations
-
-### FinTS Support
-
-This importer supports German banks that use the FinTS (Financial Transaction Services) protocol. Most major German banks support FinTS for automated transaction retrieval.
-
-## Installation
-
-The installation of this add-on is pretty straightforward and not different in comparison to installing any other add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Set the add-on options to your preferences
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Open the webUI and adapt the software options
-
-## Support
-
-Create an issue on github
-
-## Illustration
-
-[repository]: https://github.com/alexbelgium/hassio-addons
-
-
+---
+- 英文原版：Home assistant add-on: Fireflyiii fints importer；链接 https://github.com/alexbelgium/hassio-addons/blob/master/fireflyiii_fints_importer/README.md
+- 来源仓库：alexbelgium

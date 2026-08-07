@@ -1,116 +1,35 @@
-# Home assistant add-on: elasticsearch server
+<!-- zh-guide -->
+# Elasticsearch server
 
+## 简介
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+Elasticsearch 是分布式、RESTful 的搜索与分析引擎，是 Elastic Stack 的核心，可用于存储、搜索和管理日志、指标、搜索后端、应用监控、端点安全等数据。本 add-on 以单节点形式运行，供其他需要它的 add-on 调用。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 安装
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 `elasticsearch` 并安装。
+3. 安装完成后启动 add-on，点击「保存」并设置你的偏好选项，然后查看日志确认运行正常。
 
-## Addon informations
+## 配置
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Felasticsearch%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Felasticsearch%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Felasticsearch%2Fconfig.yaml)
+| 配置键 | 类型 / 默认值 | 说明 |
+| --- | --- | --- |
+| `env_vars` | 列表 / 空 | 传入容器的额外环境变量（`name`/`value` 形式）；例如 `ES_SETTING_XPACK_SECURITY_ENABLED=true` 对应 `xpack.security.enabled=true` |
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+## 使用 / 访问入口
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+本 add-on 没有 Web 界面，仅提供 API 端点供其他应用调用：HTTP API 端口 9200 用于 REST API 调用，传输端口 9300 用于集群内部通信。单节点集群可通过 `http://<宿主地址>:9200` 访问（默认无认证，仅限本地网络）。
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
+## 常见问题
 
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
-
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/elasticsearch/stats.png)
-
-## About
-
----
-
-[Elasticsearch](https://github.com/elastic/elasticsearch) is the distributed, RESTful search and analytics engine at the heart of the [Elastic Stack](https://www.elastic.co/fr/products/).
-You can use Elasticsearch to store, search, and manage data for:
-
-- Logs
-- Metrics
-- A search backend
-- Application monitoring
-- Endpoint security
-- ... and more!
-
-To learn more about Elasticsearch’s features and capabilities, see their [product page](https://www.elastic.co/fr/elasticsearch/) .
-
-Here, this addon is used to single node that can be called from other addons needing it.
-
-## Installation
+- 为保持与旧版相同的纯 HTTP 行为（以及与 Home Assistant Elasticsearch 集成的兼容性），`xpack.security.enabled` 默认关闭；如需启用安全功能，可在 `env_vars` 中添加 `ES_SETTING_XPACK_SECURITY_ENABLED=true`。
+- 从 7.x 升级到 8.x 是自动且单向的：升级前请先备份，首次启动时 Elasticsearch 会在原地升级现有索引（大数据集可能耗时，切勿在首次启动时停止 add-on）。
+- 可通过 `ES_SETTING_<SETTING_WITH_UNDERSCORES>` 形式的环境变量覆盖 Elasticsearch 设置。
+- 集成示例：Nextcloud 的全文搜索应用、Home Assistant 的 Elasticsearch 组件。
 
 ---
-
-The installation of this add-on is pretty straightforward and not different in comparison to installing any other add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA) [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-2. Install this add-on.
-3. Click the `Save` button to store your configuration.
-4. Set the add-on options to your preferences
-5. Start the add-on.
-6. Check the logs of the add-on to see if everything went well.
-
-## Configuration
-
-Elasticsearch runs as a single-node cluster accessible at <http://homeassistant:9200>.
-This addon has no web interface - it provides API endpoints for other applications.
-
-### API Endpoints
-
-- **HTTP API**: Port 9200 for REST API calls
-- **Transport**: Port 9300 for internal cluster communication
-
-### Options
-
-No configuration options are available through the addon interface. Elasticsearch is pre-configured for single-node operation with:
-- Memory allocation: 1GB heap (ES_JAVA_OPTS)
-- Discovery type: single-node
-- Memory lock: enabled
-- Tini subreaper: enabled
-
-### Example Usage
-
-Connect other applications to Elasticsearch using:
-- URL: `http://homeassistant:9200`
-- No authentication required (local network only)
-
-### Integration Examples
-
-- **Nextcloud**: Configure Full Text Search app to use this Elasticsearch instance
-- **Home Assistant**: Use with the Elasticsearch component for event publishing
-
-### Environment variables
-
-Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-Elasticsearch settings can be set through variables named `ES_SETTING_<SETTING_WITH_UNDERSCORES>`; for example `ES_SETTING_XPACK_SECURITY_ENABLED` maps to `xpack.security.enabled`.
-
-### Security
-
-To preserve the plain-HTTP behavior of previous versions (and compatibility with the Home Assistant Elasticsearch integration), `xpack.security.enabled` defaults to `false`. To enable Elasticsearch security, add `ES_SETTING_XPACK_SECURITY_ENABLED` with value `true` in `env_vars`.
-
-## Upgrading from 7.x
-
-The upgrade to Elasticsearch 8.x is automatic and **one-way**:
-
-1. Take a Home Assistant backup of the add-on before updating.
-2. Update the add-on and start it. Elasticsearch upgrades the existing indices in place on first start — this can take a while on large datasets; do **not** stop the add-on during the first start.
-3. The previous bundled config directory is archived to `/data/config.bak-<old-version>`; re-apply any custom settings to the new config.
-
-Downgrading afterwards is not supported by Elasticsearch — restore the backup instead.
-
-## Integration with HA
-
-Component : https://community.home-assistant.io/t/elasticsearch-component-publish-home-assistant-events-to-elasticsearch/66877
-
-## Support
-
-Create an issue on github
+- 英文原版：[Home assistant add-on: elasticsearch server](https://github.com/alexbelgium/hassio-addons/blob/master/elasticsearch/README.md)
+- 来源仓库：alexbelgium

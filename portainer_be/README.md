@@ -1,110 +1,47 @@
+<!-- zh-guide -->
+# Portainer Business Edition
 
-# Home assistant add-on: Portainer Business Edition
+## 简介
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+Portainer 是一款开源的轻量级 Docker 管理界面，可以轻松管理一个或多个 Docker 主机或 Swarm 集群，提供容器、镜像、网络和卷的详细概览与便捷管理。本加载项是 Portainer 的 **Business Edition（商业版）** 变体，内置 `portainer/portainer-ee` 构建。商业版在注册获得授权密钥后，最多可免费用于 3 个节点（在 <https://www.portainer.io/take-3> 注册）；首次启动时在 Web 界面中输入密钥即可解锁，未输入密钥则按限期试用版运行。其余行为与社区版加载项一致。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+> 警告：Portainer 功能非常强大，几乎可以访问你的整个系统。虽然本加载项在安全方面经过了仔细设计与维护，但若被不当使用或交给缺乏经验的人操作，可能会损坏系统，请谨慎使用。
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+## 安装
 
-## Addon informations
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 portainer_be 并安装。
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fportainer_be%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fportainer_be%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fportainer_be%2Fconfig.yaml)
+## 配置
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+可配置选项如下：
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+| 配置键 | 类型 / 默认值 | 说明 |
+| ------ | ------------- | ---- |
+| `ssl` | 布尔，默认 `false` | 是否为 Web 界面启用 HTTPS |
+| `certfile` | 字符串，默认 `fullchain.pem` | SSL 证书文件（位于 `/ssl/` 目录） |
+| `keyfile` | 字符串，默认 `privkey.pem` | SSL 私钥文件（位于 `/ssl/` 目录） |
+| `password` | 字符串（可选），默认 `homeassistant` | 管理员密码（至少 12 个字符；留空可恢复备份） |
+| `env_vars` | 列表（可选） | 附加环境变量列表，每项包含 `name`（变量名）与 `value`（变量值） |
 
-This is the **Business Edition** variant of the [Portainer add-on](https://github.com/alexbelgium/hassio-addons/tree/master/portainer). It ships the `portainer/portainer-ee` build instead of the Community Edition. Business Edition is free for up to 3 nodes with a license key you obtain by registering at <https://www.portainer.io/take-3>; enter that key in the web UI on first launch. Without a key it runs in a time-limited trial.
+默认登录用户名是 `admin`，密码是你在此 `password` 选项中设置的值（默认 `homeassistant`），首次登录后请尽快修改。
 
-Forked from : https://github.com/hassio-addons/addon-portainer
-Implemented changes : Business Edition image ; update to latest versions ; ingress ; ssl ; password setting through addon option ; allow manual override
+## 使用 / 访问入口
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
+启动后可在 Home Assistant 侧边栏看到 Portainer Business Edition 图标，点击进入。若需要直接访问，Web 界面端口 `9099/tcp` 映射到宿主端口 `9000`；端口 `8000/tcp` 为 Edge Agent API（管理远程 Edge Agent 时启用，未发布到宿主机）。
 
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
+首次使用建议：在加载项配置面板中设置密码，关闭保护模式（Protection mode）后启动加载项，打开 Web 界面登录（默认 `admin` / `homeassistant`），首次启动时输入商业版授权密钥。
 
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/portainer_be/stats.png)
+## 常见问题
 
-## About
-
----
-
-Portainer is an open-source lightweight management UI which allows you to
-easily manage your a Docker host(s) or Docker swarm clusters.
-
-It has never been so easy to manage Docker. Portainer provides a detailed
-overview of Docker and allows you to manage containers, images, networks and
-volumes.
-
-## RESTORE BACKUP
-
-Open the addon options and set the password to "empty". Restart the addon, it will allow to restore portainer from a backup. You need to put your backup in an accessible folder such as /share to have it mounted in the addon
-
-## WARNING
-
-The Portainer add-on is really powerful and gives you virtually access to
-your whole system. While this add-on is created and maintained with care and
-with security in mind, in the wrong or inexperienced hands,
-it could damage your system.
-
-## Installation
+- **如何恢复备份？** 打开加载项选项，将 `password` 设置为空并重启加载项，即可进入从备份恢复的流程。请将备份放在 `/share` 等可访问目录中以便挂载。
+- **如何重置数据库？** 只需修改加载项选项中的 `password`，数据库即会被重置。
+- **通过反向代理访问超时？** 加载项自身包含很长的超时时间，但如果你使用 Nginx Proxy Manager 等额外代理层，其默认超时为 60 秒，需要相应调大代理层的超时设置。
+- **安装了自定义容器会影响 Home Assistant 吗？** 手动安装自定义容器会把 Home Assistant 状态标记为不受支持/异常，期间会被阻止升级 Home Assistant 及加载项；停止该自定义容器即可恢复正常状态。
+- **如何远程管理 Edge Agent？** 启用并开放 Edge Agent API 端口 `8000/tcp`，在 Portainer 中添加 Edge Agent 环境。
 
 ---
-
-The installation of this add-on is pretty straightforward and not different in comparison to installing any other add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Set the add-on options to your preferences
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Open the webUI and adapt the software options
-
-## Configuration
-
-Webui can be found at <http://homeassistant:port> or in your sidebar using Ingress.
-The default username is "admin" and the password is the value you set in the add-on `password` option (default `homeassistant`).
-
-### Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `ssl` | bool | `false` | Enable HTTPS for web interface |
-| `certfile` | str | `fullchain.pem` | SSL certificate file (in `/ssl/`) |
-| `keyfile` | str | `privkey.pem` | SSL private key file (in `/ssl/`) |
-| `password` | str | `homeassistant` | Admin password (min 12 characters, leave blank to restore backup) |
-
-### Example Configuration
-
-```yaml
-ssl: true
-certfile: "fullchain.pem"
-keyfile: "privkey.pem"
-password: "your-secure-password-123"
-```
-
-### Custom Scripts and Environment Variables
-
-This addon supports custom scripts and environment variables through the `addon_config` mapping:
-
-- **Custom scripts**: See [Running Custom Scripts in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Running-custom-scripts-in-Addons)
-- **env_vars option**: Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-## Support
-
-Create an issue on github
-
-## Illustration
-
----
-
-![illustration](https://github.com/hassio-addons/addon-portainer/raw/main/images/screenshot.png)
+- 英文原版：Home assistant add-on: Portainer Business Edition；链接 https://github.com/alexbelgium/hassio-addons/blob/master/portainer_be/README.md
+- 来源仓库：alexbelgium

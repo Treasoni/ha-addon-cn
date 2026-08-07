@@ -1,86 +1,35 @@
-# Home assistant add-on: Joal
+<!-- zh-guide -->
+# Joal
 
+## 简介
+Joal 是一个开源的命令行 RatioMaster，带 WebUI，可模拟 BT 客户端的上传流量，用于提升种子 Ratio。本加载项基于 anthonyraymond/joal 的 Docker 镜像构建，支持通过侧边栏 Ingress 访问。
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+## 安装
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 joal 并安装。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 配置
+除下表列出的选项外，其余设置可在加载项日志与 WebUI 中完成。
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+| 配置键 | 类型 / 默认值 | 说明 |
+|--------|--------------|------|
+| `secret_token` | 字符串 / 默认 `lrMY24Byhx` | Web 界面访问的认证令牌，建议修改为自定义值 |
+| `ui_path` | 字符串 / 默认 `joal` | Web UI 路径 |
+| `run_duration` | 字符串 / 默认 `12h` | 运行时长，如 `5s`、`2m`、`12h`、`5d`，到期自动停止 |
+| `verbose` | 布尔（可选） | 是否输出详细日志 |
+| `env_vars` | 列表 / 默认 `[]` | 额外传给容器的环境变量（键名需匹配 `^[A-Za-z0-9_]+$`） |
 
-## Addon informations
+## 使用 / 访问入口
+- 启动后可在 Home Assistant 侧边栏看到 Joal 图标，点击进入；也可通过浏览器访问宿主端口 8091（对应容器端口 8081）。
+- BT 流量端口 49152 可选，如使用请在路由器上开放相关端口。
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fjoal%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fjoal%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fjoal%2Fconfig.yaml)
+## 常见问题
+- **Web 界面如何登录？** 打开 WebUI 时使用 `secret_token` 作为认证令牌，登录信息与配置详情会在加载项日志中提示。
+- **需要开放哪些端口？** 建议在路由器上开放 Web UI 端口 8081 与 BT 流量端口 49152。
+- **如何自动停止？** 通过 `run_duration` 设置运行时长（如 `12h`），到期后 Joal 会自动停止。
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
-
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
-
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
-
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
-
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/joal/stats.png)
-
-## About
-
-An open source command line RatioMaster with WebUI.
-This addon is based on the [docker image](https://hub.docker.com/r/anthonyraymond/joal) from Anthony Raymond.
-All credits for the app go to Anthony Raymond, please visit his repository here : https://github.com/anthonyraymond/joal
-
-## Configuration
-
-Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-Webui can be found at <http://homeassistant:PORT> or through the sidebar using Ingress.
-Configuration details are available in the addon logs.
-
-### Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `secret_token` | str | `lrMY24Byhx` | Authentication token for the web interface |
-| `ui_path` | str | `joal` | Web UI path |
-| `run_duration` | str | `12h` | Runtime duration (e.g., 5s, 2m, 12h, 5d) |
-| `verbose` | bool | | Enable verbose logging |
-
-### Example Configuration
-
-```yaml
-secret_token: "your-custom-token-here"
-ui_path: "joal"
-run_duration: "24h"
-verbose: true
-```
-
-## Installation
-
-The installation of this add-on is pretty straightforward and not different in
-comparison to installing any other Hass.io add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Make sure that the two ports are open on your router
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Carefully configure the add-on to your preferences, see the official documentation for for that.
-
-## Support
-
-For HA : create an issue on github
-For Joal : see the upstream repo here https://github.com/anthonyraymond/joal
-
-## Illustration
-
-![image](https://user-images.githubusercontent.com/44178713/117990142-29c3b200-b33d-11eb-86c8-a3007d73c3da.png)
-
-[repository]: https://github.com/alexbelgium/hassio-addons
-
-
+---
+- 英文原版：[Home assistant add-on: Joal](https://github.com/alexbelgium/hassio-addons/blob/master/joal/README.md)
+- 来源仓库：alexbelgium

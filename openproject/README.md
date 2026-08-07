@@ -1,61 +1,43 @@
-# Home assistant add-on: Openproject
+<!-- zh-guide -->
+# Openproject
 
+## 简介
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+OpenProject 是一款开源的项目管理与协作平台，支持任务/问题跟踪、甘特图、看板、时间跟踪、文档管理与团队协作等功能，适合家庭或小团队进行项目管理。本加载项基于 OpenProject 官方 Docker 镜像构建，为 Home Assistant 提供开箱即用的项目管理能力。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 安装
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 openproject 并安装。
 
-## Addon informations
+## 配置
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fopenproject%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fopenproject%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fopenproject%2Fconfig.yaml)
+启动前请填写默认选项，尤其是 `OPENPROJECT_HOST__NAME` 需要配置为你的 Home Assistant IP 加加载项暴露的端口。可配置选项如下：
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+| 配置键 | 类型 / 默认值 | 说明 |
+| ------ | ------------- | ---- |
+| `OPENPROJECT_HOST__NAME` | 字符串，默认 `homeassistant:8080` | OpenProject 的访问主机名，配置为你的 Home Assistant IP 加端口（如 `homeassistant:8080`） |
+| `OPENPROJECT_HTTPS` | 布尔，默认 `false` | 是否通过 HTTPS 访问 OpenProject |
+| `OPENPROJECT_DEFAULT__LANGUAGE` | 字符串，默认 `en` | OpenProject 的默认界面语言 |
+| `OPENPROJECT_SECRET_KEY_BASE` | 字符串（可选） | OpenProject 的加密密钥基础，用于会话与数据加密 |
+| `env_vars` | 列表（可选） | 附加环境变量列表，每项包含 `name`（变量名）与 `value`（变量值），用于传入额外的 OpenProject 配置 |
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee%20Paypal-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
+其他高级选项可通过 `env_vars` 传入对应的环境变量，参考上游的 config.yaml 环境变量文档。
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
+## 使用 / 访问入口
 
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
+启动后打开 Web 界面（端口 `8080/tcp` 映射到宿主端口 `8080`，访问 `http://homeassistant.local:8080`），在界面中完成应用初始化。默认管理员账号为 `admin`，密码为 `admin`，首次登录后请立即修改。修改选项后需要重启加载项才能生效。
 
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/openproject/stats.png)
+## 常见问题
 
-## About
+- **无法访问 Web 界面？** 请确认 `OPENPROJECT_HOST__NAME` 已配置为你的 Home Assistant IP 加端口（如 `homeassistant:8080`），并确认宿主端口 `8080` 未被占用。
+- **默认管理员账号是什么？** 默认登录为 `admin`，密码为 `admin`，首次登录后务必修改。
+- **修改选项后为什么不生效？** OpenProject 的部分选项需要重启加载项才会应用，修改配置后请重启。
+- **需要更多配置项怎么办？** 可通过 `env_vars` 选项传入额外的 OpenProject 环境变量（如数据库、邮件等高级配置）。
+- **数据保存在哪里？** 加载项数据与附件持久化在 `/config` 与 `/data` 中，升级后会保留。
 
-This addon is based on the [docker image](https://hub.docker.com/r/openproject/openproject).
-
-## Configuration
-
-Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-Fill the default addon options to be able to start the addon. Be sure especially to configure the hostname with your homeassistant ip + addon exposed port
-For additional options, use the config.yaml system : https://github.com/alexbelgium/hassio-addons/wiki/Addons-feature:-add-env-variables
-
-Webui can be found at `<your-ip>:port`.
-
-## Installation
-
-The installation of this add-on is pretty straightforward and not different in
-comparison to installing any other Hass.io add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Go to the webui, where you will initialize the app
-1. Restart the addon, to apply any option that should be applied
-
-Default administration password (login: admin, password: admin).
-
-[repository]: https://github.com/alexbelgium/hassio-addons
-
-
+---
+- 英文原版：Home assistant add-on: Openproject；链接 https://github.com/alexbelgium/hassio-addons/blob/master/openproject/README.md
+- 来源仓库：alexbelgium

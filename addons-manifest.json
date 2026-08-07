@@ -28,20 +28,20 @@
       "license": "MIT"
     }
   ],
-  "synced_at": "2026-08-07T07:01:47+00:00",
+  "synced_at": "2026-08-07T08:37:05+00:00",
   "addons": {
     "addons_updater": {
       "source": "alexbelgium",
       "upstream_version": "2026.08",
       "local_version": "2026.08",
       "synced_at": "2026-08-07T06:52:42+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "adguard": {
       "source": "frenck",
       "upstream_version": "6.2.0",
       "local_version": "6.2.0",
-      "synced_at": "2026-08-07T06:52:42+00:00",
+      "synced_at": "2026-08-07T08:27:16+00:00",
       "zh_guide": true
     },
     "aircast": {
@@ -49,63 +49,63 @@
       "upstream_version": "5.1.1",
       "local_version": "5.1.1",
       "synced_at": "2026-08-07T06:52:42+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "airsonos": {
       "source": "frenck",
       "upstream_version": "5.1.1",
       "local_version": "5.1.1",
       "synced_at": "2026-08-07T06:52:42+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "appdaemon": {
       "source": "frenck",
       "upstream_version": "0.18.5",
       "local_version": "0.18.5",
       "synced_at": "2026-08-07T06:52:42+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "arpspoof": {
       "source": "alexbelgium",
       "upstream_version": "1.0.0-2",
       "local_version": "1.0.0-2",
       "synced_at": "2026-08-07T06:52:42+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "assist_microphone": {
       "source": "official",
       "upstream_version": "1.3.0",
       "local_version": "1.3.0",
       "synced_at": "2026-08-07T06:52:42+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "aurral": {
       "source": "alexbelgium",
       "upstream_version": "2.0.3",
       "local_version": "2.0.3",
       "synced_at": "2026-08-07T06:52:42+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "autobrr": {
       "source": "alexbelgium",
       "upstream_version": "1.83.0",
       "local_version": "1.83.0",
       "synced_at": "2026-08-07T06:52:42+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "baikal": {
       "source": "alexbelgium",
       "upstream_version": "0.10.1-hafix4",
       "local_version": "0.10.1-hafix4",
       "synced_at": "2026-08-07T06:52:42+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "battybirdnet-pi": {
       "source": "alexbelgium",
       "upstream_version": "2026.02.28",
       "local_version": "2026.02.28",
       "synced_at": "2026-08-07T06:52:42+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "bazarr": {
       "source": "alexbelgium",
@@ -119,49 +119,49 @@
       "upstream_version": "2.8.4",
       "local_version": "2.8.4",
       "synced_at": "2026-08-07T06:52:42+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "binance-trading-bot": {
       "source": "alexbelgium",
       "upstream_version": "0.0.101",
       "local_version": "0.0.101",
       "synced_at": "2026-08-07T06:52:42+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "birdnet-go": {
       "source": "alexbelgium",
       "upstream_version": "20260716",
       "local_version": "20260716",
       "synced_at": "2026-08-07T06:52:42+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "birdnet-go-dev": {
       "source": "alexbelgium",
       "upstream_version": "20260729.1",
       "local_version": "20260729.1",
       "synced_at": "2026-08-07T06:52:42+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "birdnet-pi": {
       "source": "alexbelgium",
       "upstream_version": "2026.08.02",
       "local_version": "2026.08.02",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "birdnet-pi-zach": {
       "source": "alexbelgium",
       "upstream_version": "2026.07.10.2",
       "local_version": "2026.07.10.2",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "birdnet-pipy": {
       "source": "alexbelgium",
       "upstream_version": "0.8.5",
       "local_version": "0.8.5",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "bitwarden": {
       "source": "alexbelgium",
@@ -175,35 +175,35 @@
       "upstream_version": "2201.1.0",
       "local_version": "2201.1.0",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "bookstack": {
       "source": "frenck",
       "upstream_version": "4.0.2",
       "local_version": "4.0.2",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "browser_brave": {
       "source": "alexbelgium",
       "upstream_version": "1.93.129-ls119",
       "local_version": "1.93.129-ls119",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "browser_chromium": {
       "source": "alexbelgium",
       "upstream_version": "2026.08.01.1",
       "local_version": "2026.08.01.1",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "browserless_chrome": {
       "source": "alexbelgium",
       "upstream_version": "2.55.2",
       "local_version": "2.55.2",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "calibre": {
       "source": "alexbelgium",
@@ -224,7 +224,7 @@
       "upstream_version": "4.0",
       "local_version": "4.0",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "changedetection.io": {
       "source": "alexbelgium",
@@ -237,56 +237,56 @@
       "source": "frenck",
       "upstream_version": "6.0.1",
       "local_version": "6.0.1",
-      "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "synced_at": "2026-08-07T08:27:17+00:00",
+      "zh_guide": true
     },
     "claude_desktop": {
       "source": "alexbelgium",
       "upstream_version": "2026.08.04",
       "local_version": "2026.08.04",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "cleanuparr": {
       "source": "alexbelgium",
       "upstream_version": "2.10.2",
       "local_version": "2.10.2",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "cloudcommander": {
       "source": "alexbelgium",
       "upstream_version": "19.19.1",
       "local_version": "19.19.1",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "codex": {
       "source": "alexbelgium",
       "upstream_version": "2.2.5",
       "local_version": "2.2.5",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "collabora": {
       "source": "alexbelgium",
       "upstream_version": "26.04.2.4.1",
       "local_version": "26.04.2.4.1",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "comixed": {
       "source": "alexbelgium",
       "upstream_version": "1.4",
       "local_version": "1.4",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "configurator": {
       "source": "official",
       "upstream_version": "6.1.0",
       "local_version": "6.1.0",
-      "synced_at": "2026-08-07T06:52:43+00:00",
+      "synced_at": "2026-08-07T08:27:18+00:00",
       "zh_guide": true
     },
     "deconz": {
@@ -294,20 +294,20 @@
       "upstream_version": "8.7.2",
       "local_version": "8.7.2",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "dnsmasq": {
       "source": "official",
       "upstream_version": "2.1.0",
       "local_version": "2.1.0",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "duckdns": {
       "source": "official",
       "upstream_version": "2.0.0",
       "local_version": "2.0.0",
-      "synced_at": "2026-08-07T06:52:43+00:00",
+      "synced_at": "2026-08-07T08:27:18+00:00",
       "zh_guide": true
     },
     "elasticsearch": {
@@ -315,7 +315,7 @@
       "upstream_version": "8.19.19.2",
       "local_version": "8.19.19.2",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "emby": {
       "source": "alexbelgium",
@@ -336,14 +336,14 @@
       "upstream_version": "0.8.1",
       "local_version": "0.8.1",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "enedisgateway2mqtt": {
       "source": "alexbelgium",
       "upstream_version": "0.13.4",
       "local_version": "0.13.4",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "enedisgateway2mqtt_dev": {
       "source": "alexbelgium",
@@ -357,20 +357,20 @@
       "upstream_version": "4.4.23",
       "local_version": "4.4.23",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "epicgamesfree": {
       "source": "alexbelgium",
       "upstream_version": "2026.08.01",
       "local_version": "2026.08.01",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "example": {
       "source": "frenck",
       "upstream_version": "14.0.0",
       "local_version": "14.0.0",
-      "synced_at": "2026-08-07T06:52:43+00:00",
+      "synced_at": "2026-08-07T08:27:18+00:00",
       "zh_guide": false
     },
     "filebrowser": {
@@ -385,7 +385,7 @@
       "upstream_version": "1.5.0",
       "local_version": "1.5.0",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "fireflyiii": {
       "source": "alexbelgium",
@@ -399,14 +399,14 @@
       "upstream_version": "2.3.4",
       "local_version": "2.3.4",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "fireflyiii_fints_importer": {
       "source": "alexbelgium",
       "upstream_version": "1.3.0-6",
       "local_version": "1.3.0-6",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "flaresolverr": {
       "source": "alexbelgium",
@@ -420,41 +420,41 @@
       "upstream_version": "3.19.31",
       "local_version": "3.19.31",
       "synced_at": "2026-08-07T06:52:43+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "foldingathome": {
       "source": "frenck",
       "upstream_version": "0.7.2",
       "local_version": "0.7.2",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "free_games_claimer": {
       "source": "alexbelgium",
       "upstream_version": "2.0.1",
       "local_version": "2.0.1",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "ftp": {
       "source": "frenck",
       "upstream_version": "6.0.1",
       "local_version": "6.0.1",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "gazpar2mqtt": {
       "source": "alexbelgium",
       "upstream_version": "0.2.5",
       "local_version": "0.2.5",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "git_pull": {
       "source": "official",
       "upstream_version": "9.0.1",
       "local_version": "9.0.1",
-      "synced_at": "2026-08-07T06:52:44+00:00",
+      "synced_at": "2026-08-07T08:27:19+00:00",
       "zh_guide": true
     },
     "gitea": {
@@ -469,42 +469,42 @@
       "upstream_version": "0.22.0",
       "local_version": "0.22.0",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "grafana": {
       "source": "frenck",
       "upstream_version": "12.1.0",
       "local_version": "12.1.0",
-      "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "synced_at": "2026-08-07T08:27:19+00:00",
+      "zh_guide": true
     },
     "grampsweb": {
       "source": "alexbelgium",
       "upstream_version": "26.7.1",
       "local_version": "26.7.1",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "grav": {
       "source": "alexbelgium",
       "upstream_version": "2.0.14",
       "local_version": "2.0.14",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "grocy": {
       "source": "frenck",
       "upstream_version": "0.25.1",
       "local_version": "0.25.1",
-      "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "synced_at": "2026-08-07T08:27:19+00:00",
+      "zh_guide": true
     },
     "guacamole": {
       "source": "alexbelgium",
       "upstream_version": "1.6.0-bullseye-3",
       "local_version": "1.6.0-bullseye-3",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "immich": {
       "source": "alexbelgium",
@@ -525,7 +525,7 @@
       "upstream_version": "1.0.37.0",
       "local_version": "1.0.37.0",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "immich_noml": {
       "source": "alexbelgium",
@@ -553,14 +553,14 @@
       "upstream_version": "2.12.0-2",
       "local_version": "2.12.0-2",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "influxdb": {
       "source": "frenck",
       "upstream_version": "5.0.2",
       "local_version": "5.0.2",
-      "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "synced_at": "2026-08-07T08:27:19+00:00",
+      "zh_guide": true
     },
     "jackett": {
       "source": "alexbelgium",
@@ -581,34 +581,34 @@
       "upstream_version": "2.1.37-4",
       "local_version": "2.1.37-4",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "joplin": {
       "source": "alexbelgium",
       "upstream_version": "3.7.1",
       "local_version": "3.7.1",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "jupyterlab": {
       "source": "frenck",
       "upstream_version": "0.17.0",
       "local_version": "0.17.0",
-      "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "synced_at": "2026-08-07T08:27:19+00:00",
+      "zh_guide": true
     },
     "kometa": {
       "source": "alexbelgium",
       "upstream_version": "2.4.6",
       "local_version": "2.4.6",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "letsencrypt": {
       "source": "official",
       "upstream_version": "6.4.0",
       "local_version": "6.4.0",
-      "synced_at": "2026-08-07T06:52:44+00:00",
+      "synced_at": "2026-08-07T08:27:19+00:00",
       "zh_guide": true
     },
     "librespeed": {
@@ -616,7 +616,7 @@
       "upstream_version": "6.2.0",
       "local_version": "6.2.0",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "lidarr": {
       "source": "alexbelgium",
@@ -630,34 +630,34 @@
       "upstream_version": "2.16.0",
       "local_version": "2.16.0",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "log-viewer": {
       "source": "frenck",
       "upstream_version": "0.17.1",
       "local_version": "0.17.1",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "maintainerr": {
       "source": "alexbelgium",
       "upstream_version": "3.21.1",
       "local_version": "3.21.1",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "manyfold": {
       "source": "alexbelgium",
       "upstream_version": "0.147.1",
       "local_version": "0.147.1",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "mariadb": {
       "source": "official",
       "upstream_version": "3.0.1",
       "local_version": "3.0.1",
-      "synced_at": "2026-08-07T06:52:44+00:00",
+      "synced_at": "2026-08-07T08:27:20+00:00",
       "zh_guide": true
     },
     "matter_server": {
@@ -665,7 +665,7 @@
       "upstream_version": "9.1.1",
       "local_version": "9.1.1",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "mealie": {
       "source": "alexbelgium",
@@ -679,13 +679,13 @@
       "upstream_version": "5.0.0.5.3",
       "local_version": "5.0.0.5.3",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "mosquitto": {
       "source": "official",
       "upstream_version": "7.1.0",
       "local_version": "7.1.0",
-      "synced_at": "2026-08-07T06:52:44+00:00",
+      "synced_at": "2026-08-07T08:27:20+00:00",
       "zh_guide": true
     },
     "motioneye": {
@@ -693,35 +693,35 @@
       "upstream_version": "0.23.0",
       "local_version": "0.23.0",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "mqtt-io": {
       "source": "frenck",
       "upstream_version": "0.4.0",
       "local_version": "0.4.0",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "mylar3": {
       "source": "alexbelgium",
       "upstream_version": "0.10.0",
       "local_version": "0.10.0",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "navidrome": {
       "source": "alexbelgium",
       "upstream_version": "0.63.2",
       "local_version": "0.63.2",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "netalertx": {
       "source": "alexbelgium",
       "upstream_version": "26.7.1",
       "local_version": "26.7.1",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "netalertx_fa": {
       "source": "alexbelgium",
@@ -735,7 +735,7 @@
       "upstream_version": "0.64.5-8",
       "local_version": "0.64.5-8",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "nextcloud": {
       "source": "alexbelgium",
@@ -748,7 +748,7 @@
       "source": "official",
       "upstream_version": "4.5.1",
       "local_version": "4.5.1",
-      "synced_at": "2026-08-07T06:52:44+00:00",
+      "synced_at": "2026-08-07T08:27:20+00:00",
       "zh_guide": true
     },
     "nginx_webserver_proxy": {
@@ -756,20 +756,20 @@
       "upstream_version": "2.14.1.1",
       "local_version": "2.14.1.1",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "nginxproxymanager": {
       "source": "frenck",
       "upstream_version": "2.1.0",
       "local_version": "2.1.0",
-      "synced_at": "2026-08-07T06:52:44+00:00",
+      "synced_at": "2026-08-07T08:27:20+00:00",
       "zh_guide": true
     },
     "node-red": {
       "source": "frenck",
       "upstream_version": "22.0.1",
       "local_version": "22.0.1",
-      "synced_at": "2026-08-07T06:52:44+00:00",
+      "synced_at": "2026-08-07T08:27:20+00:00",
       "zh_guide": true
     },
     "nut": {
@@ -777,55 +777,55 @@
       "upstream_version": "0.18.0",
       "local_version": "0.18.0",
       "synced_at": "2026-08-07T06:52:44+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "nzbget": {
       "source": "alexbelgium",
       "upstream_version": "v26.2.256",
       "local_version": "v26.2.256",
       "synced_at": "2026-08-07T06:52:45+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "omni-tools": {
       "source": "alexbelgium",
       "upstream_version": "0.6.1",
       "local_version": "0.6.1",
       "synced_at": "2026-08-07T06:52:45+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "openproject": {
       "source": "alexbelgium",
       "upstream_version": "17.6.0",
       "local_version": "17.6.0",
       "synced_at": "2026-08-07T06:52:45+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "openthread_border_router": {
       "source": "official",
       "upstream_version": "3.1.0",
       "local_version": "3.1.0",
       "synced_at": "2026-08-07T06:52:45+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "openwakeword": {
       "source": "official",
       "upstream_version": "2.1.1",
       "local_version": "2.1.1",
       "synced_at": "2026-08-07T06:52:45+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "organizr": {
       "source": "alexbelgium",
       "upstream_version": "v2.7",
       "local_version": "v2.7",
       "synced_at": "2026-08-07T06:52:45+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "overseerr": {
       "source": "frenck",
       "upstream_version": "0.1.0",
       "local_version": "0.1.0",
-      "synced_at": "2026-08-07T06:52:45+00:00",
+      "synced_at": "2026-08-07T08:27:21+00:00",
       "zh_guide": true
     },
     "photoprism": {
@@ -840,13 +840,13 @@
       "upstream_version": "0.13.0",
       "local_version": "0.13.0",
       "synced_at": "2026-08-07T06:52:45+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "piper": {
       "source": "official",
       "upstream_version": "2.3.2",
       "local_version": "2.3.2",
-      "synced_at": "2026-08-07T06:52:45+00:00",
+      "synced_at": "2026-08-07T08:27:21+00:00",
       "zh_guide": true
     },
     "piwigo": {
@@ -854,7 +854,7 @@
       "upstream_version": "16.4.0",
       "local_version": "16.4.0",
       "synced_at": "2026-08-07T06:52:45+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "plex": {
       "source": "alexbelgium",
@@ -875,28 +875,28 @@
       "upstream_version": "2025.12.6",
       "local_version": "2025.12.6",
       "synced_at": "2026-08-07T06:52:45+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "portainer_be": {
       "source": "alexbelgium",
       "upstream_version": "2026.08.01",
       "local_version": "2026.08.01",
       "synced_at": "2026-08-07T06:52:45+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "postgres_15": {
       "source": "alexbelgium",
       "upstream_version": "15.7.47",
       "local_version": "15.7.47",
       "synced_at": "2026-08-07T06:52:45+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "postgres_17": {
       "source": "alexbelgium",
       "upstream_version": "17.4.13",
       "local_version": "17.4.13",
       "synced_at": "2026-08-07T06:52:45+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "prowlarr": {
       "source": "alexbelgium",
@@ -924,28 +924,28 @@
       "upstream_version": "0.4.18-2",
       "local_version": "0.4.18-2",
       "synced_at": "2026-08-07T06:52:45+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "requestrr": {
       "source": "alexbelgium",
       "upstream_version": "2.1.10",
       "local_version": "2.1.10",
       "synced_at": "2026-08-07T06:52:45+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "resiliosync": {
       "source": "alexbelgium",
       "upstream_version": "3.1.2.1076",
       "local_version": "3.1.2.1076",
       "synced_at": "2026-08-07T06:52:45+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "rpc_shutdown": {
       "source": "official",
       "upstream_version": "3.0",
       "local_version": "3.0",
       "synced_at": "2026-08-07T06:52:45+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "sabnzbd": {
       "source": "alexbelgium",
@@ -958,7 +958,7 @@
       "source": "official",
       "upstream_version": "12.10.0",
       "local_version": "12.10.0",
-      "synced_at": "2026-08-07T06:52:45+00:00",
+      "synced_at": "2026-08-07T08:27:22+00:00",
       "zh_guide": true
     },
     "scrutiny": {
@@ -994,42 +994,42 @@
       "upstream_version": "12.0.18-4",
       "local_version": "12.0.18-4",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "seerr": {
       "source": "alexbelgium",
       "upstream_version": "3.4.1",
       "local_version": "3.4.1",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "signalk": {
       "source": "alexbelgium",
       "upstream_version": "2.30.0",
       "local_version": "2.30.0",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "silabs-multiprotocol": {
       "source": "official",
       "upstream_version": "2.4.5",
       "local_version": "2.4.5",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "silabs_flasher": {
       "source": "official",
       "upstream_version": "0.5.0",
       "local_version": "0.5.0",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "social_to_mealie": {
       "source": "alexbelgium",
       "upstream_version": "1.7.2",
       "local_version": "1.7.2",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "sonarr": {
       "source": "alexbelgium",
@@ -1043,55 +1043,55 @@
       "upstream_version": "1.4.3",
       "local_version": "1.4.3",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "sponsorblockcast": {
       "source": "alexbelgium",
       "upstream_version": "0.8.3",
       "local_version": "0.8.3",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "spotify": {
       "source": "frenck",
       "upstream_version": "0.18.0",
       "local_version": "0.18.0",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "spotify_to_plex": {
       "source": "alexbelgium",
       "upstream_version": "1.0.104",
       "local_version": "1.0.104",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "spotweb": {
       "source": "alexbelgium",
       "upstream_version": "1.5.8-5",
       "local_version": "1.5.8-5",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "sqlite-web": {
       "source": "frenck",
       "upstream_version": "6.0.1",
       "local_version": "6.0.1",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "ssh": {
       "source": "official",
       "upstream_version": "10.3.0",
       "local_version": "10.3.0",
-      "synced_at": "2026-08-07T06:52:46+00:00",
+      "synced_at": "2026-08-07T08:27:22+00:00",
       "zh_guide": true
     },
     "tailscale": {
       "source": "frenck",
       "upstream_version": "0.28.1",
       "local_version": "0.28.1",
-      "synced_at": "2026-08-07T06:52:46+00:00",
+      "synced_at": "2026-08-07T08:27:22+00:00",
       "zh_guide": true
     },
     "tandoor_recipes": {
@@ -1099,20 +1099,20 @@
       "upstream_version": "2.6.13",
       "local_version": "2.6.13",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "tasmoadmin": {
       "source": "frenck",
       "upstream_version": "0.33.0",
       "local_version": "0.33.0",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "tautulli": {
       "source": "frenck",
       "upstream_version": "5.0.0",
       "local_version": "5.0.0",
-      "synced_at": "2026-08-07T06:52:46+00:00",
+      "synced_at": "2026-08-07T08:27:22+00:00",
       "zh_guide": true
     },
     "tdarr": {
@@ -1120,62 +1120,62 @@
       "upstream_version": "2.85.01",
       "local_version": "2.85.01",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "teamspeak": {
       "source": "alexbelgium",
       "upstream_version": "3.13.6-8",
       "local_version": "3.13.6-8",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "thelounge": {
       "source": "frenck",
       "upstream_version": "0.22.0",
       "local_version": "0.22.0",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "tor": {
       "source": "frenck",
       "upstream_version": "8.0.0",
       "local_version": "8.0.0",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "traccar": {
       "source": "frenck",
       "upstream_version": "0.25.0",
       "local_version": "0.25.0",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "transmission": {
       "source": "alexbelgium",
       "upstream_version": "4.1.3",
       "local_version": "4.1.3",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "transmission_openvpn": {
       "source": "alexbelgium",
       "upstream_version": "v5.4.2",
       "local_version": "v5.4.2",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "ubooquity": {
       "source": "alexbelgium",
       "upstream_version": "3.1.0",
       "local_version": "3.1.0",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "unifi": {
       "source": "frenck",
       "upstream_version": "5.1.1",
       "local_version": "5.1.1",
-      "synced_at": "2026-08-07T06:52:46+00:00",
+      "synced_at": "2026-08-07T08:27:23+00:00",
       "zh_guide": true
     },
     "unpackerr": {
@@ -1183,13 +1183,13 @@
       "upstream_version": "v0.15.2-2",
       "local_version": "v0.15.2-2",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "uptime-kuma": {
       "source": "frenck",
       "upstream_version": "0.18.0",
       "local_version": "0.18.0",
-      "synced_at": "2026-08-07T06:52:46+00:00",
+      "synced_at": "2026-08-07T08:27:23+00:00",
       "zh_guide": true
     },
     "vlc": {
@@ -1197,62 +1197,62 @@
       "upstream_version": "1.1.0",
       "local_version": "1.1.0",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "vscode": {
       "source": "frenck",
       "upstream_version": "6.0.1",
       "local_version": "6.0.1",
       "synced_at": "2026-08-07T06:52:46+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "webtop": {
       "source": "alexbelgium",
       "upstream_version": "4.16.0.95.7",
       "local_version": "4.16.0.95.7",
       "synced_at": "2026-08-07T06:52:47+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "webtop_kde": {
       "source": "alexbelgium",
       "upstream_version": "4.16.0.94",
       "local_version": "4.16.0.94",
       "synced_at": "2026-08-07T06:52:47+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "webtrees": {
       "source": "alexbelgium",
       "upstream_version": "2.2.6.1",
       "local_version": "2.2.6.1",
       "synced_at": "2026-08-07T06:52:47+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "wger": {
       "source": "alexbelgium",
       "upstream_version": "2.6.3",
       "local_version": "2.6.3",
       "synced_at": "2026-08-07T06:52:47+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "whatsapper": {
       "source": "alexbelgium",
       "upstream_version": "1.2.0",
       "local_version": "1.2.0",
       "synced_at": "2026-08-07T06:52:47+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "whisparr": {
       "source": "frenck",
       "upstream_version": "0.5.0",
       "local_version": "0.5.0",
       "synced_at": "2026-08-07T06:52:47+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "whisper": {
       "source": "official",
       "upstream_version": "3.5.1",
       "local_version": "3.5.1",
-      "synced_at": "2026-08-07T06:52:47+00:00",
+      "synced_at": "2026-08-07T08:27:23+00:00",
       "zh_guide": true
     },
     "whoogle": {
@@ -1260,28 +1260,28 @@
       "upstream_version": "1.2.4",
       "local_version": "1.2.4",
       "synced_at": "2026-08-07T06:52:47+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "wireguard": {
       "source": "frenck",
       "upstream_version": "0.13.0",
       "local_version": "0.13.0",
       "synced_at": "2026-08-07T06:52:47+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "xteve": {
       "source": "alexbelgium",
       "upstream_version": "2.5.3-4",
       "local_version": "2.5.3-4",
       "synced_at": "2026-08-07T06:52:47+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "zerotier": {
       "source": "frenck",
       "upstream_version": "0.26.0",
       "local_version": "0.26.0",
       "synced_at": "2026-08-07T06:52:47+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "zoneminder": {
       "source": "alexbelgium",
@@ -1302,13 +1302,13 @@
       "upstream_version": "7.4.0",
       "local_version": "7.4.0",
       "synced_at": "2026-08-07T06:52:47+00:00",
-      "zh_guide": false
+      "zh_guide": true
     },
     "zwave_js": {
       "source": "official",
       "upstream_version": "1.6.0",
       "local_version": "1.6.0",
-      "synced_at": "2026-08-07T06:52:47+00:00",
+      "synced_at": "2026-08-07T08:27:24+00:00",
       "zh_guide": true
     },
     "zzz_archived_code-server": {

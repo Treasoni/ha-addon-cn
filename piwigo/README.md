@@ -1,98 +1,50 @@
-# Home assistant add-on: Piwigo
+<!-- zh-guide -->
+# Piwigo
 
+## 简介
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+Piwigo 是一款面向 Web 的照片画廊软件，可以组织、管理并展示你的照片集，支持相册、标签、插件扩展等功能。本加载项基于 linuxserver.io 的 Piwigo Docker 镜像构建，让你在 Home Assistant 上轻松运行自己的照片画廊。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 安装
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 piwigo 并安装。
 
-## Addon informations
+## 配置
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fpiwigo%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fpiwigo%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fpiwigo%2Fconfig.yaml)
+Piwigo 的配置大多在 Web 界面中完成，加载项选项主要用于文件权限、时区与磁盘挂载。可配置选项如下：
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+| 配置键 | 类型 / 默认值 | 说明 |
+| ------ | ------------- | ---- |
+| `PUID` | 整数，默认 `0` | 文件权限的用户 ID |
+| `PGID` | 整数，默认 `0` | 文件权限的用户组 ID |
+| `TZ` | 字符串（可选） | 时区（如 `Europe/London`） |
+| `localdisks` | 字符串（可选） | 需要挂载的本地磁盘（如 `sda1,sdb1,MYNAS`） |
+| `networkdisks` | 字符串（可选） | 需要挂载的 SMB 共享（如 `//SERVER/SHARE`） |
+| `cifsusername` | 字符串（可选） | 网络共享的 SMB 用户名 |
+| `cifspassword` | 字符串（可选） | 网络共享的 SMB 密码 |
+| `cifsdomain` | 字符串（可选） | 网络共享的 SMB 域 |
+| `env_vars` | 列表（可选） | 附加环境变量列表，每项包含 `name`（变量名）与 `value`（变量值），用于向容器传入额外环境变量 |
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+## 使用 / 访问入口
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
+启动后打开 Web 界面（端口 `80/tcp` 映射到宿主端口 `81`，访问 `http://homeassistant.local:81`）。首次安装建议按以下步骤设置：
 
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
+1. 在 MySQL/MariaDB 服务器中为 Piwigo 创建专用的用户和数据库。
+2. 在 Piwigo 的数据库设置页面中，使用 IP 地址而不是主机名填写数据库服务器。
+3. 如需 HTTPS（端口 443），可编辑 `/config/piwigo/nginx/site-confs` 下的 nginx 配置。
+4. 自签名证书位于 `/data/keys`，如有需要可替换为你自己的证书。
+5. 邮件相关设置可在 `/config/piwigo` 下的配置文件中修改。
 
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/piwigo/stats.png)
+## 常见问题
 
-## About
+- **为什么打不开相册？** Piwigo 依赖 MySQL/MariaDB 数据库，请先在数据库服务器中为 Piwigo 创建用户和数据库，并在设置页中正确填写。
+- **数据库连接失败？** 在 Piwigo 的数据库设置页面中请使用 IP 地址而非主机名填写数据库服务器地址。
+- **如何启用 HTTPS？** 编辑 `/config/piwigo/nginx/site-confs` 下的 nginx 配置启用 SSL，自签名证书位于 `/data/keys`，建议替换为正式证书。
+- **需要挂载额外磁盘吗？** 可通过 `localdisks`（本地磁盘）和 `networkdisks`（SMB 共享）选项挂载照片目录，配合 `cifsusername`、`cifspassword`、`cifsdomain` 填写网络共享凭据。
 
-Piwigo is a photo gallery software for the Web.
-This addon is based on the [docker image](https://github.com/linuxserver/piwigo) from linuxserver.io.
-
-## Installation
-
-The installation of this add-on is pretty straightforward and not different in
-comparison to installing any other Hass.io add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Carefully configure the add-on to your preferences, see the official documentation for for that.
-
-## Configuration
-
-Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-Webui can be found at <http://homeassistant:81> or through the sidebar using Ingress.
-Configurations can be done through the app webUI, except for the following options.
-
-### Setup Steps
-
-1. Create a user and database for Piwigo in a MySQL/MariaDB server
-2. In the database setup page, use IP address rather than hostname
-3. Edit nginx configuration in `/config/piwigo/nginx/site-confs` for SSL (port 443)
-4. Self-signed keys are in `/data/keys` (replace with your own if needed)
-5. Edit configuration files in `/config/piwigo` for email settings
-
-### Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `PGID` | int | `0` | Group ID for file permissions |
-| `PUID` | int | `0` | User ID for file permissions |
-| `TZ` | str | | Timezone (e.g., `Europe/London`) |
-| `localdisks` | str | | Local drives to mount (e.g., `sda1,sdb1,MYNAS`) |
-| `networkdisks` | str | | SMB shares to mount (e.g., `//SERVER/SHARE`) |
-| `cifsusername` | str | | SMB username for network shares |
-| `cifspassword` | str | | SMB password for network shares |
-| `cifsdomain` | str | | SMB domain for network shares |
-
-### Example Configuration
-
-```yaml
-PGID: 1000
-PUID: 1000
-TZ: "Europe/London"
-localdisks: "sda1,sdb1"
-networkdisks: "//192.168.1.100/gallery"
-cifsusername: "galleryuser"
-cifspassword: "password123"
-cifsdomain: "workgroup"
-```
-
-### Mounting Drives
-
-This addon supports mounting both local drives and remote SMB shares:
-
-- **Local drives**: See [Mounting Local Drives in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Mounting-Local-Drives-in-Addons)
-- **Remote shares**: See [Mounting Remote Shares in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Mounting-remote-shares-in-Addons)
-
-[repository]: https://github.com/alexbelgium/hassio-addons
-
-
+---
+- 英文原版：Home assistant add-on: Piwigo；链接 https://github.com/alexbelgium/hassio-addons/blob/master/piwigo/README.md
+- 来源仓库：alexbelgium

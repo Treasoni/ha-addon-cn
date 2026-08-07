@@ -1,83 +1,39 @@
-# Home Assistant add-on: Seerr
+<!-- zh-guide -->
+# Seerr
 
-## About
+## 简介
 
-This add-on packages [Seerr](https://seerr.dev/), an open-source media request and discovery manager for Jellyfin, Plex, and Emby.
+Seerr 是一个开源的媒体请求与发现管理器，用于 Jellyfin、Plex 和 Emby。用户可以在其中搜索电影与剧集并发起观看请求，再交由下载与媒体管理工具处理。本加载项基于 Overseerr 的加载项结构改造，适配 Seerr 上游项目与容器镜像，并通过内部 NGINX 反向代理支持 Home Assistant Ingress。
 
-This add-on is based on the existing Overseerr add-on structure, adapted for the Seerr upstream project and container image. It supports Home Assistant Ingress via an internal NGINX reverse proxy.
+## 安装
 
-Upstream repositories reviewed:
-- Overseerr: https://github.com/sct/overseerr
-- Seerr: https://github.com/seerr-team/seerr
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 `seerr` 并安装。
 
-## Installation
+## 配置
 
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-2. Install **Seerr**.
-3. Configure options, then start the add-on.
-4. Open the Web UI on port `5055` or via Home Assistant Ingress.
+| 配置键 | 类型 / 默认值 | 说明 |
+|--------|--------------|------|
+| `NODE_MEMORY_LIMIT` | 整数 / 默认 `512` | Node.js 堆内存上限（MB）。媒体库很大导致 Seerr 崩溃时调大，内存紧张时可调小 |
+| `env_vars` | 列表 / 空 | 额外环境变量列表（每项含 `name` 和 `value`），用于向容器传递自定义环境变量 |
+| `PGID` | 整数 / 默认 `0` | 文件权限组 ID |
+| `PUID` | 整数 / 默认 `0` | 文件权限用户 ID |
+| `TZ` | 字符串 / 空 | 时区（如 `Europe/London`） |
 
-## Configuration
+## 使用 / 访问入口
 
-Use `env_vars` to pass extra environment variables when needed. Seerr configuration is stored in `/config`.
+启动后可在 Home Assistant 侧边栏看到 Seerr 图标，点击进入。也可通过宿主端口 5055 直接访问 Web 界面。
 
-### Options
+## 常见问题
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `NODE_MEMORY_LIMIT` | int | `512` | Maximum Node.js heap memory in MB. Increase if Seerr crashes with large libraries; decrease on memory-constrained systems. |
-| `PGID` | int | `0` | Group ID for file permissions |
-| `PUID` | int | `0` | User ID for file permissions |
-| `TZ` | str | | Timezone (e.g. `Europe/London`) |
-
-### Example
-
-```yaml
-NODE_MEMORY_LIMIT: 512
-env_vars: []
-PGID: 0
-PUID: 0
-TZ: Europe/London
-```
-
-## Migration
-
-### From Overseerr
-
-Seerr is compatible with Overseerr's data format. To migrate your existing configuration:
-
-1. Stop the **Overseerr** add-on.
-2. Install and start the **Seerr** add-on once to create its config directory (`/addon_configs/db21ed7f_seerr/`), then stop it.
-3. Open the **[Filebrowser](https://github.com/alexbelgium/hassio-addons/tree/master/filebrowser)** add-on (or any file manager with access to `/addon_configs/`).
-4. Navigate to `/addon_configs/db21ed7f_overseerr/` and copy all files into `/addon_configs/db21ed7f_seerr/`.
-5. Start the **Seerr** add-on. Your existing settings, users, and requests will be preserved.
+- **从 Overseerr 迁移**：Seerr 兼容 Overseerr 的数据格式。先安装并启动一次 Seerr 生成配置目录 `/addon_configs/db21ed7f_seerr/`，再停止；然后用 Filebrowser 把 `/addon_configs/db21ed7f_overseerr/` 下的文件全部复制到 Seerr 的配置目录，最后启动 Seerr 即可保留原有设置、用户和请求。
+- **从 Jellyseerr 迁移**：操作方式与 Overseerr 相同，把 `/addon_configs/db21ed7f_jellyseerr/` 的文件复制到 `/addon_configs/db21ed7f_seerr/`。
+- **从 Ombi 迁移**：Ombi 数据格式不同，没有自动迁移路径，需要手动记录媒体服务器、用户与通知设置，再在 Seerr 界面重新配置。
+- **搜索含特殊字符的标题**：通过 Ingress 搜索如 `Monsters, Inc.`、`Ocean's Eleven` 等含特殊字符的标题时，NGINX 已做重新编码处理；直接使用 5055 端口不受影响。
+- **内存设置**：库较大或出现 OOM 导致加载项无响应时，可适当增大 `NODE_MEMORY_LIMIT`。
 
 ---
-
-### From Jellyseerr
-
-Seerr is compatible with Jellyseerr's data format. To migrate your existing configuration:
-
-1. Stop the **Jellyseerr** add-on.
-2. Install and start the **Seerr** add-on once to create its config directory (`/addon_configs/db21ed7f_seerr/`), then stop it.
-3. Open the **[Filebrowser](https://github.com/alexbelgium/hassio-addons/tree/master/filebrowser)** add-on (or any file manager with access to `/addon_configs/`).
-4. Navigate to `/addon_configs/db21ed7f_jellyseerr/` and copy all files into `/addon_configs/db21ed7f_seerr/`.
-5. Start the **Seerr** add-on. Your existing settings, users, and requests will be preserved.
-
----
-
-### From Ombi
-
-Ombi uses a different data format and there is no automated migration path to Seerr. You will need to configure Seerr from scratch:
-
-1. Note down your Ombi configuration (media servers, users, notification settings, etc.).
-2. Stop the **Ombi** add-on.
-3. Install and start the **Seerr** add-on.
-4. Use the Seerr web UI to reconnect your media server(s) and reconfigure your preferences.
-
----
-
-## Support
-
-If you find a bug, open an issue in this repository.
+- 英文原版：[Seerr](https://github.com/alexbelgium/hassio-addons/blob/master/seerr/README.md)
+- 来源仓库：alexbelgium

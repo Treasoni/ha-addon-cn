@@ -1,107 +1,47 @@
-# Hass.io Add-ons: Tandoor recipes
+<!-- zh-guide -->
+# Tandoor recipes
 
+## 简介
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+Tandoor recipes 是一个面向个人与家庭的菜谱管理器，适合拥有一批菜谱、希望与亲友分享或整理收藏的用户。它带有基础的权限系统，但设计上不适合作为公开页面对外运行。本加载项基于 TandoorRecipes/recipes 镜像构建。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 安装
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 `tandoor_recipes` 并安装。
 
-## Addon informations
+## 配置
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Ftandoor_recipes%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Ftandoor_recipes%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Ftandoor_recipes%2Fconfig.yaml)
+| 配置键 | 类型 / 默认值 | 说明 |
+|--------|--------------|------|
+| `env_vars` | 列表 / 空 | 额外环境变量列表（每项含 `name` 和 `value`） |
+| `ALLOWED_HOSTS` | 字符串 / 默认 `*` | 允许访问的主机名列表（逗号分隔）；通过 Ingress 使用时请填 Home Assistant 地址 |
+| `DB_TYPE` | 枚举（sqlite / postgresql_external）/ 默认 `sqlite` | 数据库类型：`sqlite` 或外部 PostgreSQL |
+| `DEBUG` | 枚举（0 / 1）/ 默认 `0` | 调试模式（0=正常，1=调试） |
+| `SECRET_KEY` | 字符串 / 默认 `YOUR_SECRET_KEY` | Django 安全密钥（必填，请改为随机长字符串） |
+| `externalfiles_folder` | 字符串 / 默认 `/config/addons_config/tandoor_recipes/externalfiles` | 外部菜谱文件导入目录 |
+| `POSTGRES_DB` | 字符串 / 空 | 外部 PostgreSQL 数据库名（`DB_TYPE` 为 `postgresql_external` 时必填） |
+| `POSTGRES_HOST` | 字符串 / 空 | 外部 PostgreSQL 主机 |
+| `POSTGRES_PASSWORD` | 字符串（密码）/ 空 | 外部 PostgreSQL 密码 |
+| `POSTGRES_PORT` | 字符串 / 空 | 外部 PostgreSQL 端口 |
+| `POSTGRES_USER` | 字符串 / 空 | 外部 PostgreSQL 用户名 |
+| `AI_API_KEY` | 字符串 / 空 | 访问 LLM 的 API 密钥 |
+| `AI_MODEL_NAME` | 字符串 / 空 | 用于 LLM 的模型名称（支持的服务商见 litellm 文档） |
+| `AI_RATELIMIT` | 字符串 / 空 | LLM 访问速率限制（使用 DRF 语法） |
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+## 使用 / 访问入口
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+Web 界面位于宿主端口 9928。
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
+## 常见问题
 
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
+- **安全密钥**：`SECRET_KEY` 为必填项，请务必改成一段随机长字符串，不要使用默认值。
+- **数据库选择**：默认使用 SQLite；需要外部 PostgreSQL 时，将 `DB_TYPE` 设为 `postgresql_external` 并填写 `POSTGRES_*` 系列选项。
+- **外部菜谱导入**：`externalfiles_folder` 目录可用于导入外部菜谱文件，更多说明见 Tandoor 官方文档的 External Recipes 章节。
+- **Ingress 支持**：如需通过 Home Assistant Ingress 访问，请参考社区相关帖子并正确配置 `ALLOWED_HOSTS`。
 
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/tandoor_recipes/stats.png)
-
-## About
-
-[Tandoor recipes](https://github.com/TandoorRecipes/recipes), made by [vabene1111](https://github.com/vabene1111) is meant for people with a collection of recipes they want to share with family and friends or simply store them in a nicely organized way. A basic permission system exists but this application is not meant to be run as a public page.
-
-## Configuration
-
-Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-Webui can be found at <http://homeassistant:PORT> or through the sidebar using Ingress.
-Configurations can be done through the app webUI, except for the following options.
-
-For Ingress support, see: https://community.home-assistant.io/t/ingress-access-for-tandoor-recipes/717859
-Complete documentation: https://docs.tandoor.dev/install/docker/
-
-### Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `SECRET_KEY` | str | `YOUR_SECRET_KEY` | **REQUIRED**: Django secret key for security |
-| `ALLOWED_HOSTS` | str | | **REQUIRED**: Comma-separated Home Assistant URLs for ingress |
-| `DB_TYPE` | list | `sqlite` | Database type (sqlite or postgresql_external) |
-| `DEBUG` | list | `0` | Debug mode (0=normal, 1=debug) |
-| `externalfiles_folder` | str | | Folder for external recipe file imports |
-| `POSTGRES_HOST` | str | | PostgreSQL host (required for postgresql_external) |
-| `POSTGRES_PORT` | str | | PostgreSQL port (required for postgresql_external) |
-| `POSTGRES_USER` | str | | PostgreSQL username (required for postgresql_external) |
-| `POSTGRES_PASSWORD` | str | | PostgreSQL password (required for postgresql_external) |
-| `POSTGRES_DB` | str | | PostgreSQL database name (required for postgresql_external) |
-| `AI_MODEL_NAME` | str | | Used for configuring LLMs, supported providers can be found [here](https://docs.litellm.ai/docs/providers/) |
-| `AI_API_KEY` | str | | API key for accessing LLMs |
-| `AI_RATELIMIT` | str | | Ratelimit for LLM access, specified with [DRF syntax](https://www.django-rest-framework.org/api-guide/throttling/) |
-
-### Example Configuration
-
-```yaml
-SECRET_KEY: "your-very-long-secret-key-here"
-ALLOWED_HOSTS: "homeassistant.local,192.168.1.100"
-DB_TYPE: "sqlite"
-DEBUG: "0"
-externalfiles_folder: "/config/addons_config/tandoor_recipes/externalfiles"
-# For external PostgreSQL:
-# POSTGRES_HOST: "core-postgres"
-# POSTGRES_PORT: "5432"
-# POSTGRES_USER: "tandoor"
-# POSTGRES_PASSWORD: "secure_password"
-# POSTGRES_DB: "tandoor_recipes"
-# AI_MODEL_NAME: "anthropic/claude-4"
-# AI_API_KEY: "SECRET KEY"
-```
-
-## Installation
-
-The installation of this add-on is pretty straightforward and not different in
-comparison to installing any other Hass.io add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Carefully configure the add-on to your preferences, see the official documentation for for that.
-
-## Support
-
-If you have in issue with your installation, please be sure to checkout github.
-
-## Screenshot
-
-![image](https://github.com/TandoorRecipes/recipes/raw/develop/docs/preview.png)
-
-[repository]: https://github.com/alexbelgium/hassio-addons
-
-## External Recipe files
-The directory /config/addons_config/tandoor_recipes/externalfiles can be used for importing external files in to Tandoor. You can map this with /opt/recipes/externalfiles within Docker.
-As per directions here: https://docs.tandoor.dev/features/external_recipes/
-
-
+---
+- 英文原版：[Tandoor recipes](https://github.com/alexbelgium/hassio-addons/blob/master/tandoor_recipes/README.md)
+- 来源仓库：alexbelgium

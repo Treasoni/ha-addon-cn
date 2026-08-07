@@ -1,154 +1,44 @@
-# Home assistant add-on: Inadyn
+<!-- zh-guide -->
+# Inadyn
 
+## 简介
+Inadyn（In-a-Dyn）是一个小巧简单的动态 DNS（DDNS）客户端，支持 HTTPS，可自动将你的域名与公网 IP 保持同步，常见于路由器与上网网关中，也适用于带冗余（备份）连接的环境。它支持大量 DDNS 提供商，未内置支持的提供商可通过自定义 provider 配置。本加载项没有 Web 界面，所有配置均在加载项选项中完成。
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+## 安装
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 inadyn 并安装。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 配置
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+| 配置键 | 类型 / 默认值 | 说明 |
+|--------|--------------|------|
+| `verify_address` | 布尔（可选） | 是否通过检查 IP 的服务验证公网 IP 地址 |
+| `fake_address` | 布尔（可选） | 是否使用模拟地址用于测试 |
+| `allow_ipv6` | 布尔（可选） | 是否启用 IPv6 支持 |
+| `iface` | 字符串（可选） | 要使用的网络接口，如 `eth0` |
+| `iterations` | 整数（可选） | 迭代次数（0 表示无限） |
+| `period` | 整数（可选） | 更新周期（秒），默认 300 秒 |
+| `forced_update` | 整数（可选） | 强制更新间隔（秒） |
+| `secure_ssl` | 布尔（可选） | 是否启用严格的 SSL 校验 |
+| `providers` | 列表（对象） | DDNS 提供商配置列表，每个条目需 `provider`、`username`、`password`、`hostname`，可选字段见下方说明 |
+| `env_vars` | 列表 / 默认 `[]` | 额外传给容器的环境变量（键名需匹配 `^[A-Za-z0-9_]+$`） |
 
-## Addon informations
+### DDNS 提供商配置（providers）
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Finadyn%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Finadyn%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Finadyn%2Fconfig.yaml)
+每个 provider 条目支持以下字段：`provider`（提供商名称或自定义标识）、`custom_provider`（是否为自定义提供商）、`username`（用户名或令牌）、`password`（密码或 API 密钥）、`hostname`（要更新的域名）、`ssl`（更新时是否使用 SSL）、`ddns_server`/`ddns_path`（自定义 DDNS 服务器与更新路径）、`checkip_server`/`checkip_path`/`checkip_ssl`（自定义 IP 检查）、`append_myip`（是否在请求中附带 IP）、`ttl`、`wildcard`、`proxied`、`user_agent`。
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
-
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
-
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
-
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
-
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/inadyn/stats.png)
-
-## About
-
-[Inadyn](https://github.com/troglobit/inadyn), or In-a-Dyn, is a small and simple Dynamic DNS, DDNS, client with HTTPS support. Commonly available in many GNU/Linux distributions, used in off the shelf routers and Internet gateways to automate the task of keeping your Internet name in sync with your public¹ IP address. It can also be used in installations with redundant (backup) connections to the Internet.
-Based on https://hub.docker.com/r/troglobit/inadyn
-Project house : https://github.com/troglobit/inadyn
-Some code borrowed from https://github.com/nalipaz/hassio-addons
-
-## Installation
-
-The installation of this add-on is pretty straightforward and not different in
-comparison to installing any other Hass.io add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Carefully configure the add-on to your preferences, see the official documentation for for that.
-
-## Configuration
-
-Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-This addon has no web interface - all configuration is done through addon options.
-For detailed configuration information, see the [official documentation](https://github.com/troglobit/inadyn).
-
-### Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `verify_address` | bool | | Verify the IP address with check IP service |
-| `fake_address` | bool | | Use fake address for testing |
-| `allow_ipv6` | bool | | Enable IPv6 support |
-| `iface` | str | | Network interface to use (e.g., `eth0`) |
-| `iterations` | int | | Number of iterations (0 = infinite) |
-| `period` | int | `300` | Update period in seconds |
-| `forced_update` | int | | Forced update interval in seconds |
-| `secure_ssl` | bool | | Enable secure SSL verification |
-| `providers` | list | | List of DDNS provider configurations |
-
-### Provider Configuration
-
-Each provider in the `providers` list supports these options:
-
-| Option | Type | Description |
-|--------|------|-------------|
-| `provider` | str | Provider name or custom identifier |
-| `custom_provider` | bool | Whether this is a custom provider |
-| `username` | str | Username or token for authentication |
-| `password` | str | Password or API key |
-| `hostname` | str | Domain/hostname to update |
-| `ssl` | bool | Use SSL for updates |
-| `ddns_server` | str | Custom DDNS server |
-| `ddns_path` | str | Custom update path |
-| `checkip_server` | str | Custom IP check server |
-| `checkip_path` | str | Custom IP check path |
-| `checkip_ssl` | bool | Use SSL for IP checking |
-| `append_myip` | bool | Append IP to request |
-
-### Example Configurations
-
+简单的 DuckDNS 示例：
 ```json
 {
-  "verify_address": false,
-  "fake_address": false,
-  "allow_ipv6": true,
-  "iface": "eth0",
-  "iterations": 0,
-  "period": 300,
-  "forced_update": 300,
-  "secure_ssl": true,
   "providers": [
-    {
-      "provider": "providerslug",
-      "custom_provider": false,
-      "username": "yourusername",
-      "password": "yourpassword_or_token",
-      "ssl": true,
-      "hostname": "dynamic-subdomain.example.com",
-      "checkip_ssl": false,
-      "checkip_server": "api.example.com",
-      "checkip_command": "/sbin/ifconfig eth0 | grep 'inet6 addr'",
-      "checkip_path": "/",
-      "user_agent": "Mozilla/5.0",
-      "ddns_server": "ddns.example.com",
-      "ddns_path": "",
-      "append_myip": false
-    }
+    { "provider": "duckdns", "username": "your-token", "hostname": "sub.duckdns.org" }
   ]
 }
 ```
 
-You should not fill in all of these, only use what is necessary. A typical example would look like:
-
-```json
-{
-    {
-      "provider": "duckdns",
-      "username": "your-token",
-      "hostname": "sub.duckdns.org"
-    }
-}
-```
-
-or:
-
-```json
-{
-  "providers": [
-    {
-      "provider": "someprovider",
-      "username": "username",
-      "password": "password",
-      "hostname": "your.domain.com"
-    }
-  ]
-}
-```
-
-for a custom provider that is not supported by inadyn you can do:
-
+自定义提供商示例（`custom_provider` 设为 `true`，`ddns_path` 中的令牌含义见 inadyn.conf(5) 手册页）：
 ```json
 {
   "providers": [
@@ -165,39 +55,14 @@ for a custom provider that is not supported by inadyn you can do:
 }
 ```
 
-the tokens in ddns_path are outlined in the `inadyn.conf(5)` man page.
+## 使用 / 访问入口
+- 本加载项没有 Web 界面，配置完成后启动即可在后台持续更新 DDNS。
 
-### Multiple subdomains with same provider
+## 常见问题
+- **同一提供商下多个子域名怎么配置？** 需要为每个子域名分别列举 provider，并用 `domains.google.com:1`、`domains.google.com:2`、`domains.google.com:3` 这样的形式区分。
+- **不支持的提供商怎么办？** 可将 `custom_provider` 设为 `true`，并用 `ddns_server`、`ddns_path` 等字段按 inadyn 的规则自定义更新请求。
+- **配置项很多，需要都填吗？** 不需要，只填写必要的即可，一个典型的 DuckDNS 配置只需要 `provider`、`username` 与 `hostname`。
 
-Related to https://github.com/troglobit/inadyn#example
-
-If you want use this add-on with several subdomains with the same provider, you have to enumerate domains like:
-
-```json
-{
-  "providers": [
-    {
-      "hostname": "first.mydomain.dev",
-      "provider": "domains.google.com:1",
-      "username": "xxxxxxxxxxxxxxxx",
-      "password": "xxxxxxxxxxxxxxxx"
-    },
-    {
-      "hostname": "second.mydomain.dev",
-      "provider": "domains.google.com:2",
-      "username": "xxxxxxxxxxxxxxxx",
-      "password": "xxxxxxxxxxxxxxxx"
-    },
-    {
-      "hostname": "another.mydomain.dev",
-      "provider": "domains.google.com:3",
-      "username": "xxxxxxxxxxxxxxxx",
-      "password": "xxxxxxxxxxxxxxxx"
-    }
-  ]
-}
-```
-
-[repository]: https://github.com/alexbelgium/hassio-addons
-
-
+---
+- 英文原版：[Home assistant add-on: Inadyn](https://github.com/alexbelgium/hassio-addons/blob/master/inadyn/README.md)
+- 来源仓库：alexbelgium

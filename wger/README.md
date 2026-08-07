@@ -1,77 +1,43 @@
+<!-- zh-guide -->
+# Wger
 
-# Hass.io Add-ons: Wger
+## 简介
 
+wger Workout Manager 是一款免费、开源的 Web 应用，帮助你管理个人健身训练、体重与饮食计划，也可用作简单的健身房管理工具。它还提供 REST API，便于与其他项目或工具集成。
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+## 安装
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 wger 并安装。
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+## 配置
 
-## Addon informations
+修改配置后需要重启加载项才能生效。可选配置键如下：
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fwger%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fwger%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fwger%2Fconfig.yaml)
+| 配置键 | 类型/默认值 | 说明 |
+| ------ | ----------- | ---- |
+| `env_vars` | 列表，默认空 | 传入容器的自定义环境变量列表，每项包含 `name`（变量名，须匹配 `^[A-Za-z0-9_]+$`）与 `value`（变量值，可选）。 |
+| `CONFIG_LOCATION` | 字符串，默认 `/config/addons_config/wger/config.yaml` | 高级配置使用的 config.yaml 文件位置，可在此文件中以环境变量方式添加更多设置。 |
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+## 使用 / 访问入口
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+本加载项不提供 Ingress，通过端口访问：
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
+- Web 界面容器端口 `80/tcp`，宿主端口 9927，访问地址为 `你的HomeAssistant地址:9927`。
+- 默认账号：用户名 `admin`，密码 `adminadmin`。**首次登录后请立即修改密码。**
 
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
+首次启动可能需要等待较长时间（最长约 15 分钟），期间请查看加载项「日志」确认是否正常启动。
 
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/wger/stats.png)
+## 常见问题
 
-## About
+- **启动很慢？** 首次启动（数据库初始化等）最多可能需要 15 分钟，请耐心等待并留意日志中的错误。
+- **默认账号密码是什么？** 默认用户名 `admin`、密码 `adminadmin`，登录后请尽快修改。
+- **如何配置高级环境变量？** 在 `CONFIG_LOCATION` 指定的 config.yaml 中添加环境变量即可（须为合法 YAML 格式），完整变量列表参见上游文档。
+- **需要自定义环境变量？** 通过 `env_vars` 选项传入（变量名支持大小写），参见上游 wiki「Add environment variables to your add-on」。
+- 从 2.6-dev-3 起修复了全新安装时 `/data/static` 与 `/data/media` 目录的写权限，确保数据可持久保存；如遇 Web 端口无法访问，可先检查加载项日志中的 nginx 配置错误提示。
 
-[wger](https://github.com/wger-project/wger) Workout Manager is a free, open source web application that helps you manage your personal workouts, weight and diet plans and can also be used as a simple gym management utility. It offers a REST API as well, for easy integration with other projects and tools.
-
-## Configuration
-
-Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-- Start the addon. Wait a while and check the log for any errors. Initial start can take up to 15 minutes !
-- Open yourdomain.com:9927 (default host mapping for the add-on port `80/tcp`, as indicated by the `webui` hint).
-- Default
-  - Username: `admin`
-  - Password: `adminadmin`
-
-Options can be configured through two ways :
-
-- Addon options
-
-```yaml
-"CONFIG_LOCATION": location of the config.yaml # Sets the location of the config.yaml (see below)
-```
-
-- Config.yaml (advanced usage)
-
-Additional variables can be set as ENV variables by adding them in the config.yaml in the location defined in your addon options according to this guide : https://github.com/alexbelgium/hassio-addons/wiki/Addons-feature:-add-env-variables
-
-The complete list of ENV variables can be seen here : not available
-
-## Installation
-
-The installation of this add-on is pretty straightforward and not different in
-comparison to installing any other Hass.io add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Carefully configure the add-on to your preferences, see the official documentation for for that.
-
-## Support
-
-If you have in issue with your installation, please be sure to checkout github.
-
-[repository]: https://github.com/alexbelgium/hassio-addons
-
+---
+- 英文原版：Hass.io Add-ons: Wger；链接 https://github.com/alexbelgium/hassio-addons/blob/master/wger/README.md
+- 来源仓库：alexbelgium

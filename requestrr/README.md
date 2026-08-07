@@ -1,95 +1,38 @@
-# Home assistant add-on: requestrr
+<!-- zh-guide -->
+# Requestrr
 
+## 简介
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+Requestrr 是一个聊天机器人，用于通过聊天的方式简化 Sonarr、Radarr、Ombi 等服务的使用。当前仅支持 Discord 平台，但设计上便于快速扩展新功能和新平台。本加载项基于 linuxserver/docker-requestrr 镜像构建。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 安装
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 `requestrr` 并安装。
 
-## Addon informations
+## 配置
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Frequestrr%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Frequestrr%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Frequestrr%2Fconfig.yaml)
+主要配置可直接在应用网页界面中完成，以下选项可在加载项配置中设置。
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+| 配置键 | 类型 / 默认值 | 说明 |
+|--------|--------------|------|
+| `env_vars` | 列表 / 空 | 额外环境变量列表（每项含 `name` 和 `value`），用于向容器传递自定义环境变量 |
+| `PGID` | 整数 / 默认 `0` | 文件权限组 ID |
+| `PUID` | 整数 / 默认 `0` | 文件权限用户 ID |
+| `TZ` | 字符串 / 空 | 时区（如 `Europe/London`） |
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+## 使用 / 访问入口
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
+启动后通过浏览器访问宿主端口 4545（Web 界面）。默认用户名与密码见加载项启动日志，首次运行后可在配置目录中的配置文件内修改。
 
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
+## 常见问题
 
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/requestrr/stats.png)
-
-## About
-
----
-
-[Requestrr](https://github.com/darkalfx/requestrr) is a chatbot used to simplify using services like Sonarr/Radarr/Ombi via the use of chat. Current platform is Discord only, but the bot was built around the ideology of quick adaptation for new features as well as new platforms.
-This addon is based on the docker image https://github.com/linuxserver/docker-requestrr
-
-## Installation
+- **默认账号密码在哪**：默认用户名与密码会打印在加载项启动日志中。建议先启动一次加载项，再用 Filebrowser 修改 `/addon_configs/db21ed7f_requestrr` 下的配置文件。
+- **配置文件位置**：自 2.1.6 起配置从 `/config/hassio_addons/requestrr` 迁移到 `/addon_configs/db21ed7f_requestrr`（仅可通过 Filebrowser 加载项访问），迁移与自定义脚本会自动处理，请更新相关链接。
+- **如何添加自定义环境变量**：可通过 `env_vars` 选项向容器传递额外的环境变量。
 
 ---
-
-The installation of this add-on is pretty straightforward and not different in comparison to installing any other add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Set the add-on options to your preferences
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Open the webUI and adapt the software options
-
-## Configuration
-
-Webui can be found at <http://homeassistant:4545> or through the sidebar using Ingress.
-Configurations can be done through the app webUI, except for the following options.
-
-The default username/password is described in the startup log.
-Run the addon first, then customize the config file created in `/addon_configs/db21ed7f_requestrr` using the Filebrowser addon.
-
-### Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `PGID` | int | `0` | Group ID for file permissions |
-| `PUID` | int | `0` | User ID for file permissions |
-| `TZ` | str | | Timezone (e.g., `Europe/London`) |
-
-### Example Configuration
-
-```yaml
-PGID: 1000
-PUID: 1000
-TZ: "Europe/London"
-```
-
-### Custom Scripts and Environment Variables
-
-This addon supports custom scripts and environment variables:
-
-- **Custom scripts**: See [Running Custom Scripts in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Running-custom-scripts-in-Addons)
-- **env_vars option**: Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-## Support
-
-Create an issue on github
-
-## Illustration
-
-![illustration](https://nashosted.com/wp-content/uploads/2020/04/requestrr-discord-nashosted.com_-1024x680.jpg)
-
----
-
-[repository]: https://github.com/alexbelgium/hassio-addons
-
-
+- 英文原版：[Requestrr](https://github.com/alexbelgium/hassio-addons/blob/master/requestrr/README.md)
+- 来源仓库：alexbelgium

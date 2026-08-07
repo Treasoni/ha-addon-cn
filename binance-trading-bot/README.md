@@ -1,62 +1,52 @@
-# Home assistant add-on: Binance Trading Bot (do not use with real money!)
+<!-- zh-guide -->
+# Binance Trading Bot
 
+## 简介
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+Binance Trading Bot 是一个自动化的 Binance 加密货币交易机器人，支持同时交易多种加密货币，通过网格交易（Grid Trading）实现低买高卖，并集成了 TradingView 技术分析信号。它基于 [chrisleekr/binance-trading-bot](https://github.com/chrisleekr/binance-trading-bot) 构建。**请注意：这是一个测试性质的应用，请勿使用真实资金运行实盘模式。**
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 安装
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 binance-trading-bot 并安装。
+3. 按你的偏好仔细配置加载项选项（尤其是 API 密钥与交易模式），保存并启动。
 
-## Addon informations
+## 配置
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fbinance-trading-bot%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fbinance-trading-bot%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fbinance-trading-bot%2Fconfig.yaml)
+| 配置键 | 类型 / 默认值 | 说明 |
+| ------ | ----------- | ---- |
+| `BINANCE_MODE` | 枚举 `live\|test`，默认 `test` | 交易模式：`test` 使用 Binance 测试网（模拟盘），`live` 为实盘；实盘存在风险，请谨慎使用 |
+| `BINANCE_AUTHENTICATION_ENABLED` | 布尔，默认开启 | 是否启用 Web 界面的登录认证 |
+| `BINANCE_AUTHENTICATION_PASSWORD` | 字符串，默认空 | Web 界面登录密码，启用认证时必填 |
+| `BINANCE_SLACK_ENABLED` | 布尔，默认关闭 | 是否启用 Slack 通知 |
+| `BINANCE_SLACK_WEBHOOK_URL` | 可选字符串，默认空 | Slack 的 Incoming Webhook 地址 |
+| `BINANCE_SLACK_CHANNEL` | 可选字符串，默认空 | 接收通知的 Slack 频道 |
+| `BINANCE_SLACK_USERNAME` | 可选字符串，默认空 | Slack 通知显示的用户名 |
+| `BINANCE_TEST_API_KEY` | 可选字符串，默认空 | Binance 测试网（testnet）API 密钥 |
+| `BINANCE_TEST_SECRET_KEY` | 可选字符串，默认空 | Binance 测试网 API 私钥 |
+| `BINANCE_LIVE_API_KEY` | 可选字符串，默认空 | Binance 实盘 API 密钥 |
+| `BINANCE_LIVE_SECRET_KEY` | 可选字符串，默认空 | Binance 实盘 API 私钥 |
+| `BINANCE_LOCAL_TUNNEL_ENABLED` | 可选布尔，默认空 | 是否启用本地隧道，用于外部远程访问 |
+| `BINANCE_LOCAL_TUNNEL_SUBDOMAIN` | 可选字符串，默认空 | 本地隧道使用的子域名 |
+| `env_vars` | 列表，默认空 | 附加环境变量，通过此选项传入额外环境变量（变量名大小写均可） |
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+> 说明：更完整的配置说明请参见上游项目 https://github.com/chrisleekr/binance-trading-bot 。机器人依赖本地 Redis（环境变量 `BINANCE_REDIS_HOST`/`BINANCE_REDIS_PORT`）。
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+## 使用 / 访问入口
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
+- **侧边栏**：加载项支持 Ingress，启动后可在 Home Assistant 侧边栏看到 Binance Trading Bot 图标，点击进入。
+- **直接访问**：Web 界面为 http://homeassistant:80（容器端口 `80/tcp`）；TradingView 信号集成使用端口 8080（容器端口 `8080/tcp`）。
+- **首次使用**：先在 `test` 模式下用测试网 API 密钥验证流程，确认无误后再考虑实盘。
 
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
+## 常见问题
 
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/binance-trading-bot/stats.png)
+- **可以用真实资金吗？** 上游明确标注这是测试应用，**请勿使用真实资金**运行；默认模式为 `test`（模拟盘）。
+- **如何接入 Binance？** 在 Binance 后台创建 API 密钥，将密钥填入 `BINANCE_TEST_API_KEY`/`BINANCE_TEST_SECRET_KEY`（测试网）或 `BINANCE_LIVE_API_KEY`/`BINANCE_LIVE_SECRET_KEY`（实盘）。
+- **登录被拒绝？** 确认已启用 `BINANCE_AUTHENTICATION_ENABLED` 并正确设置 `BINANCE_AUTHENTICATION_PASSWORD`。
+- **如何接收通知？** 启用 `BINANCE_SLACK_ENABLED` 并填写 `BINANCE_SLACK_WEBHOOK_URL` 即可通过 Slack 接收交易通知。
 
-## About
-
-Automated Binance trading bot - Trade multiple cryptocurrencies. Buy low/sell high with Grid Trading. Integrated with TradingView technical analysis.
-This addon is based on https://github.com/chrisleekr/binance-trading-bot.
-
-This is a test app ; for any issues please contact the link above.
-
-## Configuration
-
-Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-Webui can be found at <http://homeassistant:80>.
-Please see https://github.com/chrisleekr/binance-trading-bot for configuration.
-
-## Installation
-
-The installation of this add-on is pretty straightforward and not different in
-comparison to installing any other Hass.io add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Carefully configure the add-on to your preferences, see the official documentation for for that.
-
-[repository]: https://github.com/alexbelgium/hassio-addons
-[aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
-[amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
-[armv7-shield]: https://img.shields.io/badge/armv7-yes-green.svg
-
-
+---
+- 英文原版：Home assistant add-on: Binance Trading Bot (do not use with real money!)；链接 https://github.com/alexbelgium/hassio-addons/blob/master/binance-trading-bot/README.md
+- 来源仓库：alexbelgium

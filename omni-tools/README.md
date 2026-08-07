@@ -1,101 +1,36 @@
-# Home Assistant Add-on: Omni Tools
+<!-- zh-guide -->
+# Omni Tools
 
-## About
+## 简介
 
-Omni Tools is a self-hosted web application offering a variety of online utilities for everyday tasks. All file processing is done entirely client-side, ensuring privacy and security.
+Omni Tools 是一个自托管的 Web 应用，汇集了多种日常常用的在线小工具，包括图片缩放与格式转换、视频裁剪、PDF 拆分与合并、文本/列表处理、日期时间计算、数学计算，以及 JSON/CSV/XML 数据处理等。所有文件处理都在浏览器端本地完成，不上传服务器，保障隐私与安全。无广告、无追踪，打开即可使用。
 
-![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield]
+## 安装
 
-## Features
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 omni-tools 并安装。
 
-- **Image Tools**: Image resizer, converter
-- **Video Tools**: Video trimmer
-- **PDF Tools**: PDF splitter, merger
-- **Text/List Tools**: Various text manipulation utilities
-- **Date and Time Tools**: Date/time calculators and converters
-- **Math Tools**: Mathematical calculators and converters
-- **Data Tools**: JSON, CSV, XML processors
+## 配置
 
-## Installation
+本加载项默认即可直接使用，无需复杂配置。可配置选项如下：
 
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-2. Install the "Omni Tools" add-on
-3. Start the add-on
-4. Open the web UI
+| 配置键 | 类型 / 默认值 | 说明 |
+| ------ | ------------- | ---- |
+| `env_vars` | 列表（可选） | 附加环境变量列表，每项包含 `name`（变量名）与 `value`（变量值），用于向容器传入额外环境变量 |
 
-## Configuration
+## 使用 / 访问入口
 
-### Option: `PUID`
+打开加载项的 Web 界面（端口 `80/tcp` 映射到宿主端口 `8188`，访问 `http://homeassistant.local:8188`），从各个工具分类中选择所需功能即可使用。所有处理都在浏览器本地完成，隐私安全。
 
-User ID to run the application with. Default is `0`.
+## 常见问题
 
-### Option: `PGID`
+- **文件会上传到服务器吗？** 不会。所有文件处理都在浏览器端本地进行，不上传任何数据，保障隐私与安全。
+- **有哪些工具可用？** 图片工具（缩放、转换）、视频工具（裁剪）、PDF 工具（拆分、合并）、文本/列表工具、日期时间工具、数学工具以及 JSON/CSV/XML 数据处理工具。
+- **如何传递自定义环境变量？** 使用 `env_vars` 选项，每项填写 `name` 与 `value`，加载项会将其注入容器环境。
+- **需要配置什么吗？** 大多数场景直接启动即可使用，无需额外配置。
 
-Group ID to run the application with. Default is `0`.
-
-### Option: `TZ`
-
-Timezone setting for the application.
-
-## Usage
-
-1. Access the web interface through the Home Assistant sidebar or by navigating to the add-on's web UI
-2. Choose from various tool categories:
-   - Image/Video/Audio processing
-   - PDF manipulation
-   - Text and list processing
-   - Date and time utilities
-   - Mathematical tools
-   - Data format conversions
-
-All processing is done locally in your browser for maximum privacy and security.
-
-### Environment variables
-
-Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-## Support
-
-Got questions?
-
-You have several options to get them answered:
-
-- The [Home Assistant Discord Chat Server][discord]
-- The Home Assistant [Community Forum][forum]
-- Join the [Reddit subreddit][reddit] in [/r/homeassistant][reddit]
-
-## Authors & contributors
-
-The original setup of this repository is by [Alex Belgium][alexbelgium].
-
-## License
-
-MIT License
-
-Copyright (c) 2017-2024 Alex Belgium
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-[aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
-[amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
-[alexbelgium]: https://github.com/alexbelgium
-[discord]: https://discord.gg/c5DvZ4e
-[forum]: https://community.home-assistant.io
-[reddit]: https://reddit.com/r/homeassistant
+---
+- 英文原版：Home Assistant Add-on: Omni Tools；链接 https://github.com/alexbelgium/hassio-addons/blob/master/omni-tools/README.md
+- 来源仓库：alexbelgium

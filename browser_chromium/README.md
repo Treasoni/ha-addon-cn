@@ -1,79 +1,46 @@
-# Home assistant add-on: chromium
+<!-- zh-guide -->
+# chromium
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+## 简介
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+Chromium 是一款面向 PC、Mac 和移动端的快速、隐私且安全的网页浏览器。本 add-on 基于 linuxserver 的 docker-chromium 镜像，将 Chromium 浏览器运行在 Home Assistant 中，可通过 Ingress 在侧边栏直接使用。
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+## 安装
 
-## Addon informations
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 `browser_chromium` 并安装。
+3. 安装完成后启动 add-on，点击「保存」并设置你的偏好选项，然后查看日志确认运行正常。
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fchromium%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fchromium%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fchromium%2Fconfig.yaml)
+## 配置
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+| 配置键 | 类型 / 默认值 | 说明 |
+| --- | --- | --- |
+| `env_vars` | 列表 / 空 | 传入容器的额外环境变量（`name`/`value` 形式） |
+| `DNS_server` | 字符串 / 默认 `8.8.8.8` | 自定义 DNS 服务器，留空使用路由器 DNS |
+| `PUID` | 整数 / 默认 `0` | 运行用户的用户 ID |
+| `PGID` | 整数 / 默认 `0` | 运行用户的组 ID |
+| `certfile` | 字符串 / 默认 `fullchain.pem` | 自定义证书文件名（位于 /ssl） |
+| `keyfile` | 字符串 / 默认 `privkey.pem` | 自定义证书私钥文件名（位于 /ssl） |
+| `use_own_certs` | 布尔 / 默认 `false` | 是否使用自定义证书 |
+| `additional_apps` | 字符串（可选） / 空 | 额外安装的应用，如 `engrampa,thunderbird`（应用不持久，需在选项中安装） |
+| `DRINODE` | 枚举（GPU 设备） / 默认 `/dev/dri/renderD128` | 指定图形设备，图形不工作时使用此项选择设备 |
+| `KEYBOARD` | 枚举（键盘布局） / 空 | 键盘布局，如 `en-us-qwerty` |
+| `PASSWORD` | 字符串（可选） / 空 | 访问界面时所需的密码 |
+| `TZ` | 字符串（可选） / 空 | 时区，如 `Europe/London` |
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+## 使用 / 访问入口
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
+启动后可在 Home Assistant 侧边栏看到 chromium 图标，点击进入。Web 界面（HTTP）容器端口 3000/tcp 默认映射到宿主端口 3000，HTTPS 界面端口 3001/tcp 映射到宿主端口 3001；Chrome 调试端口 9221/tcp 默认禁用。
 
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
+## 常见问题
 
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/chromium/stats.png)
+- 默认基于 `abc` 用户，默认密码为 `abc`；如需设置密码，可在容器内的图形终端执行 `passwd`，然后通过 `http://localhost:3000/?login=true` 访问界面。
+- 应用安装不持久，需要通过 add-on 选项安装；但应用的配置会保留。
+- 如果图形界面不工作，使用 `DRINODE` 选项指定图形设备。
+- 可参考 linuxserver 文档查看所有可选的环境变量。
 
-## About
-
-[chromium](https://chromium.com/) is a fast, private and secure web browser for PC, Mac and mobile.
-This addon is based on the docker image https://github.com/linuxserver/docker-chromium
-
-## Configuration
-
-Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-Webui can be found with ingress or at <http://homeassistant:PORT>. The port is by default disabled but can be enabled through the addon options.
-
-By default the image is based around the abc user and we recommend using this user as all of the init/config is based around it. The default password is also abc . If you want to change this password and require authentication when accessing the interface simply issue passwd inside a GUI terminal in the container. Then when accessing the web interface use the path:
-
-http://localhost:3000/?login=true
-
-Apps installations are not remanent, you need to do it via addon options. Their config, however, is.
-
-If graphics don't work, use the DRINODE feature to select your graphic device.
-
-See all potential ENV variables here : https://docs.linuxserver.io/images/docker-chromium#optional-environment-variables
-
-```yaml
-TZ: timezone ; Country/City according to https://manpages.ubuntu.com/manpages/trusty/man3/DateTime::TimeZone::Catalog.3pm.html
-additional_apps: engrampa,thunderbird # Allows installation of apps, as they are not persistent
-DRINODE: specify a custom graphic device, default is /dev/dri/renderD128
-DNS_servers: 8.8.8.8,1.1.1.1 # Keep blank to use router’s DNS, or set custom DNS to avoid spamming in case of local DNS ad-remover
-localdisks: sda1 #put the hardware name of your drive to mount separated by commas, or its label. ex. sda1, sdb1, MYNAS...
-networkdisks: "//SERVER/SHARE" # optional, list of smb servers to mount, separated by commas
-cifsusername: "username" # optional, smb username, same for all smb shares
-cifspassword: "password" # optional, smb password
-cifsdomain: "domain" # optional, allow setting the domain for the smb share
-```
-
-## Installation
-
-The installation of this add-on is pretty straightforward and not different in comparison to installing any other add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Set the add-on options to your preferences
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Open the webUI and adapt the software options
-
-## Support
-
-Create an issue on github
-
-## Illustration
+---
+- 英文原版：[Home assistant add-on: chromium](https://github.com/alexbelgium/hassio-addons/blob/master/chromium/README.md)
+- 来源仓库：alexbelgium

@@ -1,123 +1,45 @@
+<!-- zh-guide -->
+# Repository Updater
 
-# Home assistant add-on: addons updater
+## 简介
 
+Repository Updater（addons_updater）是一个面向 add-on 开发者的辅助工具，它通过比对上游新版本，自动更新 add-on 仓库中 `config.yaml` 的版本号与 `updater.json` 信息，并在有新版发布时自动提交更新。普通用户无需安装此加载项——Home Assistant 本身会自动提示 add-on 更新。仅当你在维护自己的 add-on 仓库时才需要它。
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+## 安装
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 addons_updater 并安装。
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+## 配置
 
-## Addon informations
+本加载项没有 Web 界面，配置分两部分完成：在 `addon_config` 中填写的加载项配置（用于连接仓库），以及仓库内 add-on 文件夹下的 `updater.json` 文件（用于描述每个 add-on 的上游来源）。加载项配置键如下：
 
-![Version](https://img.shields.io/badge/dynamic/json?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Faddons_updater%2Fconfig.json)
-![Ingress](https://img.shields.io/badge/dynamic/json?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Faddons_updater%2Fconfig.json)
-![Arch](https://img.shields.io/badge/dynamic/json?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Faddons_updater%2Fconfig.json)
+| 配置键 | 类型 / 默认值 | 说明 |
+| ------ | ----------- | ---- |
+| `date_iso8601` | 布尔，默认 `true` | 使用 ISO8601 日期格式（YYYY-MM-DD）记录 `last_update`/`changelog` 条目，而不是 DD-MM-YYYY |
+| `env_vars` | 列表，默认空 | 附加环境变量配置列表，每项由 `name` 与 `value` 组成，用于注入自定义脚本或运行环境 |
+| `gitapi` | 字符串，默认 `gitapi` | 你的 GitHub API 令牌（classic），用于提交更新，在 https://github.com/settings/tokens 创建 |
+| `gituser` | 字符串，默认 `gituser` | 你的 GitHub 用户名 |
+| `repository` | 字符串，默认 `alexbelgium/hassio-addons` | 要更新的 add-on 仓库，格式为 `name/repo`（来自 GitHub） |
+| `dry_run` | 可选布尔，默认空 | 试运行模式：测试更新但不会真正提交 |
+| `gitmail` | 可选字符串，默认空 | 你的 GitHub 邮箱，用于提交记录 |
+| `verbose` | 可选布尔，默认空 | 是否输出更详细的运行日志 |
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+> 补充说明：仓库内每个 add-on 文件夹下都需要一个 `updater.json` 文件，加载项只会更新包含该文件的 add-on。文件中可配置 `github_fulltag`、`github_beta`、`github_havingasset`、`github_tagfilter`、`github_exclude`、`paused`、`source`、`upstream_repo`、`dockerhub_by_date`、`dockerhub_list_size` 等标签，参见上游 README。
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+## 使用 / 访问入口
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
+本加载项没有 Web 界面，属于后台开发者工具。安装并启动后，它会按计划自动比对上游发布，更新 add-on 版本号并提交；请通过加载项日志查看运行结果。
 
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
+## 常见问题
 
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/addons_updater/stats.png)
+- **普通用户需要安装它吗？** 不需要。这个工具面向 add-on 开发者。普通用户的 add-on 更新由 Home Assistant 自动提示。
+- **为什么某些 add-on 没有被更新？** 只有在其仓库内包含 `updater.json` 文件的 add-on 才会被自动更新；此外可用 `paused: true` 暂停某个 add-on 的更新。
+- **add-on 版本号为什么和上游标签不一样？** Home Assistant 无法排序 `version-bf9e0b4f` 或 `ubuntu-2026-06-01` 这类标签，加载项会保留原始上游标签在 `updater.json` 中，而在 `config.yaml` 里写 Home Assistant 可排序的版本号，避免同一发布重复触发更新。
+- **更新失败怎么办？** 先确认 `gitapi` 令牌有效且具备提交权限、`repository` 与 `gituser` 填写正确，再查看日志定位具体错误。
 
-## About
-
-This script allows to automatically update addons based on upstream new releases. This is only an helper tool for developers. End users don’t need that to update their addons - they are automatically alerted by HA when an update is available
-
-## Installation
-
-The installation of this add-on is pretty straightforward and not different in
-comparison to installing any other Hass.io add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Configure the add-on to your preferences, see below
-1. Click the `Save` button to store your configuration.
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-
-## Configuration
-
-No webUI. Configuration is set in 2 ways.
-
-### Updater.json
-
-In the addon folder of your repository (where is located you config.json), create a "updater.json" file.
-This file will be used by the addon to fetch the addon upstream informations.
-Only addons with an updater.json file will be updated.
-Here is [an example](https://github.com/alexbelgium/hassio-addons/blob/master/arpspoof/updater.json).
-
-You can add the following tags in the file :
-
-- github_fulltag: true is for example "v3.0.1-ls67" false is "3.0.1"
-- github_beta: true/false ; should it look only for releases or prereleases ok
-- github_havingasset : true if there is a requirement that a release has binaries and not just source
-- github_tagfilter: filter a text in the release name
-- github_exclude: exclude a text in the release name
-- last_update: automatically populated, date of last upstream update
-- repository: 'name/repo' coming from github
-- paused: true # Pauses the updates
-- slug: the slug name from your addon
-- source: dockerhub/github,gitlab,bitbucket,pip,hg,sf,website-feed,local,helm_chart,wiki,system,wp,codeberg (Codeberg is supported via its Gitea API, which is configured automatically)
-- upstream_repo: name/repo, example is 'linuxserver/docker-emby'
-- upstream_version: automatically populated, corresponds to the current upstream version referenced in the addon
-- dockerhub_by_date: in dockerhub, uses the last_update date instead of the version
-- dockerhub_list_size: in dockerhub, how many containers to consider for latest version
-
-### Addon version numbering
-
-The `version` written in the addon `config.yaml` is the one Home Assistant compares to decide whether an update is available. Home Assistant hides the update when it can order both versions and the new one is not strictly newer (`1.2.3` -> `1.2.3-2` is a semver pre-release, so it is *older*), and it cannot order tags such as `version-bf9e0b4f` or `ubuntu-2026-06-01` at all.
-
-The addon version is therefore derived from the upstream tag:
-
-- a tag Home Assistant can order and that is newer is used as it is
-- `1.2.3-4` and `1.2.3+4` become `1.2.3.4`
-- a pre-release marker becomes a section of its own, so the number it carries keeps ordering the addon: `5.0.0b5` -> `5.0.0.5`
-- a tag it cannot order keeps every number it carries, in order: `v26.2-ls256` -> `v26.2.256`, `nightly-2.6.1.5509-ls8` -> `2.6.1.5509.8`, `4.16-r0-ls94` -> `4.16.0.94`, `ubuntu-2026-07-28` -> `2026.07.28`. Words holding no number, an architecture, and anything else such as a commit hash are left out
-- a tag holding no number at all (`version-bf9e0b4f`, `sts`) increments the current addon version (`1.37` -> `1.38`), or uses the date when there is nothing to increment (`2026.08.01`, then `2026.08.01.1` for a second update the same day)
-
-`updater.json` always keeps the raw upstream tag, so the next run still compares upstream with upstream and a single upstream release never triggers two addon updates. The raw tag is also kept in the Dockerfile and the build files, and is added to the changelog entry when it differs from the addon version.
-
-These rules are checked by `python3 /usr/bin/ha_version.py --selftest`, which can be run from a terminal in the addon container.
-
-### Addon configuration
-
-Here you define the values that will allow the addon to connect to your repository.
-
-```yaml
-repository: 'name/repo' coming from github
-gituser: your github username
-gitapi: your github api token(classic) https://github.com/settings/tokens
-gitmail: your github email
-date_iso8601: true # use ISO8601 dates (YYYY-MM-DD) instead of DD-MM-YYYY
-verbose: 'false'
-```
-
-Example:
-
-```yaml
-repository: alexbelgium/hassio-addons
-gituser: your github username
-gitapi: your github api token
-gitmail: your github email
-date_iso8601: true
-verbose: "false"
-```
-
-### Custom Scripts and Environment Variables
-
-This addon supports custom scripts and environment variables through the `addon_config` mapping:
-
-- **Custom scripts**: See [Running Custom Scripts in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Running-custom-scripts-in-Addons)
-- **Environment variables**: Use the add-on `env_vars` option and see [Add Environment Variables to your Addon](https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon) for details.
-
-[repository]: https://github.com/alexbelgium/hassio-addons
+---
+- 英文原版：Home assistant add-on: addons updater；链接 https://github.com/alexbelgium/hassio-addons/blob/master/addons_updater/README.md
+- 来源仓库：alexbelgium

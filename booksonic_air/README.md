@@ -1,116 +1,43 @@
-# Home assistant add-on: booksonic-air
+<!-- zh-guide -->
+# Booksonic air
 
+## 简介
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+Booksonic air 是一个用于在任意地点访问你自己有声读物的平台。它由 Booksonic Air——一个用于流式播放有声读物的服务器（原 Booksonic 服务器的继任者，基于 Airsonic）——以及基于 DSub 协议的 Booksonic App 组成。本 add-on 基于 linuxserver 的 docker-booksonic-air 镜像。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 安装
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 `booksonic_air` 并安装。
+3. 安装完成后启动 add-on，点击「保存」并设置你的偏好选项，然后查看日志确认运行正常。
 
-## Addon informations
+## 配置
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fbooksonic_air%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fbooksonic_air%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fbooksonic_air%2Fconfig.yaml)
+| 配置键 | 类型 / 默认值 | 说明 |
+| --- | --- | --- |
+| `env_vars` | 列表 / 空 | 传入容器的额外环境变量（`name`/`value` 形式） |
+| `PGID` | 整数 / 默认 `0` | 文件权限所属组 ID |
+| `PUID` | 整数 / 默认 `0` | 文件权限所属用户 ID |
+| `TZ` | 字符串（可选） / 空 | 时区，如 `Europe/London` |
+| `localdisks` | 字符串（可选） / 空 | 需要挂载的本地磁盘，如 `sda1,sdb1,MYNAS` |
+| `networkdisks` | 字符串（可选） / 空 | 需要挂载的 SMB 共享，如 `//SERVER/SHARE` |
+| `cifsusername` | 字符串（可选） / 空 | SMB 用户名 |
+| `cifspassword` | 字符串（可选） / 空 | SMB 密码 |
+| `cifsdomain` | 字符串（可选） / 空 | SMB 域 |
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+## 使用 / 访问入口
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+Web 界面可通过 `http://<宿主地址>:4040` 访问（端口 4040）。启动后查看 add-on 日志可获取默认登录凭据。首次使用会进入初始化向导，通过 Web 界面添加你的有声读物目录，并按需配置转码设置。
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
+## 常见问题
 
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
-
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/booksonic_air/stats.png)
-
-## About
-
----
-
-[Booksonic-air](http://booksonic.org/) is a platform for accessing the audiobooks you own wherever you are. At the moment the platform consists of Booksonic Air - A server for streaming your audiobooks, successor to the original Booksonic server and based on Airsonic. Booksonic App - An DSub based Android app for connection to Booksonic-Air servers.
-This addon is based on the docker image https://github.com/linuxserver/docker-booksonic-air
-
-## Installation
-
----
-
-The installation of this add-on is pretty straightforward and not different in comparison to installing any other add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Set the add-on options to your preferences
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Open the webUI and adapt the software options
-
-## Configuration
-
-Webui can be found at <http://homeassistant:4040>.
-Default credentials are shown in the startup logs.
-
-### Setup Steps
-
-1. Access the web interface after starting the addon
-2. Initial setup wizard will guide you through configuration
-3. Add your audiobook directories via the web interface
-4. Configure transcoding settings if needed
-
-### Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `PGID` | int | `0` | Group ID for file permissions |
-| `PUID` | int | `0` | User ID for file permissions |
-| `TZ` | str | | Timezone (e.g., `Europe/London`) |
-| `localdisks` | str | | Local drives to mount (e.g., `sda1,sdb1,MYNAS`) |
-| `networkdisks` | str | | SMB shares to mount (e.g., `//SERVER/SHARE`) |
-| `cifsusername` | str | | SMB username for network shares |
-| `cifspassword` | str | | SMB password for network shares |
-| `cifsdomain` | str | | SMB domain for network shares |
-
-### Example Configuration
-
-```yaml
-PGID: 1000
-PUID: 1000
-TZ: "Europe/London"
-localdisks: "sda1,sdb1"
-networkdisks: "//192.168.1.100/audiobooks"
-cifsusername: "audiobookuser"
-cifspassword: "password123"
-cifsdomain: "workgroup"
-```
-
-### Mounting Drives
-
-This addon supports mounting both local drives and remote SMB shares:
-
-- **Local drives**: See [Mounting Local Drives in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Mounting-Local-Drives-in-Addons)
-- **Remote shares**: See [Mounting Remote Shares in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Mounting-remote-shares-in-Addons)
-
-### Custom Scripts and Environment Variables
-
-This addon supports custom script execution and environment variable injection:
-
-- **Custom scripts**: See [Running Custom Scripts in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Running-custom-scripts-in-Addons)
-- **env_vars option**: Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-## Support
-
-Create an issue on github
-
-## Illustration
+- 默认登录凭据显示在启动日志中。
+- 首次启动后进入初始化向导，按提示完成配置。
+- 通过 Web 界面添加有声读物目录，并配置转码选项。
+- 支持挂载本地磁盘与远程 SMB 共享。
 
 ---
-
-![illustration](https://booksonic-air.com/img/slider/artistdetails.png)
-
-[repository]: https://github.com/alexbelgium/hassio-addons
-
-
+- 英文原版：[Home assistant add-on: booksonic-air](https://github.com/alexbelgium/hassio-addons/blob/master/booksonic_air/README.md)
+- 来源仓库：alexbelgium

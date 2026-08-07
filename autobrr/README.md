@@ -1,113 +1,45 @@
+<!-- zh-guide -->
+# Autobrr
 
-# Home assistant add-on: Autobrrf
+## 简介
 
+Autobrr 是一款现代化的 BT（torrent）下载自动化工具，灵感与思路来自 trackarr、autodl-irssi 和 flexget 等工具，集成了 RSS 订阅监控、下载客户端对接与自动化规则/过滤器等能力。它基于 [autobrr/autobrr](https://github.com/autobrr/autobrr) 镜像构建。
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+## 安装
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 autobrr 并安装。
+3. 按偏好设置加载项选项，保存并启动，然后打开 Web 界面调整软件设置。
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+## 配置
 
-## Addon informations
+| 配置键 | 类型 / 默认值 | 说明 |
+| ------ | ----------- | ---- |
+| `PGID` | 整数，默认 `0` | 文件权限组 ID（Group ID），用于文件权限 |
+| `PUID` | 整数，默认 `0` | 文件权限用户 ID（User ID），用于文件权限 |
+| `env_vars` | 列表，默认空 | 附加环境变量，通过此选项传入额外环境变量（变量名大小写均可） |
+| `TZ` | 可选字符串，默认空 | 时区，例如 `Europe/London` |
+| `localdisks` | 可选字符串，默认空 | 要挂载的本地磁盘，例如 `sda1,sdb1` |
+| `networkdisks` | 可选字符串，默认空 | 要挂载的 SMB 网络共享，例如 `//192.168.1.100/downloads` |
+| `cifsusername` | 可选字符串，默认空 | SMB 网络共享的用户名 |
+| `cifspassword` | 可选字符串，默认空 | SMB 网络共享的密码 |
+| `cifsdomain` | 可选字符串，默认空 | SMB 网络共享的域名/工作组 |
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fautobrr%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fautobrr%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fautobrr%2Fconfig.yaml)
+## 使用 / 访问入口
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+- **侧边栏**：加载项支持 Ingress，启动后可在 Home Assistant 侧边栏看到 Autobrr 图标，点击进入。
+- **Web 界面**：也可通过 http://homeassistant:7474 访问（容器端口 `7474/tcp` 映射到宿主端口 `7474`）。
+- **首次登录**：默认账号为 `admin`，密码为 `password`，首次登录后请立即修改。
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+## 常见问题
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
-
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
-
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/autobrr/stats.png)
-
-## About
+- **默认密码是什么？** 默认账号 `admin` / 密码 `password`，首次登录后请务必修改。
+- **挂载本地磁盘/网络共享不生效？** `localdisks` 用于挂载本地磁盘（如 `sda1,sdb1`），`networkdisks` 用于挂载 SMB 共享并配合 `cifsusername`/`cifspassword`/`cifsdomain` 使用，参见上游关于挂载磁盘的说明。
+- **文件权限不对？** 通过调整 `PUID`/`PGID` 为本地用户 ID/组 ID 来匹配文件权限。
+- **如何开始使用？** 打开 Web 界面后，先修改登录凭据，再配置 RSS 索引源与下载客户端，然后设置自动化规则和过滤器，可用示例发布进行测试。
 
 ---
-
-[Autobrr](https://autobrr.com/) autobrr is the modern download automation tool for torrents. With inspiration and ideas from tools like trackarr, autodl-irssi and flexget we built one tool that can do it all, and then some.
-
-This addon is based on the docker image https://github.com/autobrr/autobrr
-
-## Installation
-
----
-
-The installation of this add-on is pretty straightforward and not different in comparison to installing any other add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Set the add-on options to your preferences
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Open the webUI and adapt the software options
-
-## Configuration
-
-Webui can be found at <http://homeassistant:7474> or through Ingress.
-Default credentials: `admin` / `password` (change after first login).
-
-### Setup Steps
-
-1. Access the web interface after starting the addon
-2. Change default login credentials
-3. Configure RSS indexers and download clients
-4. Set up automation rules and filters
-5. Test with sample releases
-
-### Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `PGID` | int | `0` | Group ID for file permissions |
-| `PUID` | int | `0` | User ID for file permissions |
-| `TZ` | str | | Timezone (e.g., `Europe/London`) |
-| `localdisks` | str | | Local drives to mount (e.g., `sda1,sdb1`) |
-| `networkdisks` | str | | SMB shares to mount (e.g., `//SERVER/SHARE`) |
-| `cifsusername` | str | | SMB username for network shares |
-| `cifspassword` | str | | SMB password for network shares |
-| `cifsdomain` | str | | SMB domain for network shares |
-
-### Example Configuration
-
-```yaml
-PGID: 1000
-PUID: 1000
-TZ: "Europe/London"
-localdisks: "sda1,sdb1"
-networkdisks: "//192.168.1.100/downloads"
-cifsusername: "dluser"
-cifspassword: "password123"
-cifsdomain: "workgroup"
-```
-
-### Mounting Drives
-
-This addon supports mounting both local drives and remote SMB shares:
-
-- **Local drives**: See [Mounting Local Drives in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Mounting-Local-Drives-in-Addons)
-- **Remote shares**: See [Mounting Remote Shares in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Mounting-remote-shares-in-Addons)
-
-### Custom Scripts and Environment Variables
-
-This addon supports custom script execution and environment variable injection:
-
-- **Custom scripts**: See [Running Custom Scripts in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Running-custom-scripts-in-Addons)
-- **env_vars option**: Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-## Support
-
-Create an issue on github
-
-[repository]: https://github.com/alexbelgium/hassio-addons
-
-
+- 英文原版：Home assistant add-on: Autobrrf；链接 https://github.com/alexbelgium/hassio-addons/blob/master/autobrr/README.md
+- 来源仓库：alexbelgium

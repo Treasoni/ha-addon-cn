@@ -1,118 +1,52 @@
-# Home assistant add-on: Navidrome
+<!-- zh-guide -->
+# Navidrome
 
+## 简介
+Navidrome 是一个开源、轻量的音乐服务器/流媒体服务，可自托管个人音乐库，兼容 Subsonic-API，支持多种客户端。本加载项对 Navidrome 做了多种配置增强，默认在 WebUI 中完成初始化。
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+## 安装
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 navidrome 并安装。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 配置
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+| 配置键 | 类型 / 默认值 | 说明 |
+|--------|--------------|------|
+| `base_url` | 字符串 / 默认 `/` | 反向代理下的基础 URL |
+| `music_folder` | 字符串 / 默认 `/data/music` | 音乐库所在目录 |
+| `data_folder` | 字符串 / 默认 `/data` | 应用数据（数据库）存放目录 |
+| `log_level` | 字符串 / 默认 `info` | 日志级别：`error`、`warn`、`info`、`debug`、`trace` |
+| `ssl` | 布尔 / 默认 `false` | 是否为 Web 界面启用 HTTPS |
+| `certfile` | 字符串 / 默认 `fullchain.pem` | TLS 证书文件路径 |
+| `keyfile` | 字符串 / 默认 `privkey.pem` | TLS 私钥文件路径 |
+| `default_language` | 字符串（可选） | 界面默认语言 |
+| `image_cache_size` | 字符串（可选） | 图片缓存大小 |
+| `transcoding_cache_size` | 字符串（可选） | 转码缓存大小 |
+| `scan_schedule` | 字符串（可选） | 自动扫描音乐库的 cron 表达式 |
+| `password_encryption_key` | 字符串（可选） | 密码加密密钥 |
+| `welcome_message` | 字符串（可选） | 自定义欢迎消息 |
+| `lastfm_api_key` | 字符串（可选） | Last.fm API 密钥（用于 Scrobble） |
+| `lastfm_secret` | 字符串（可选） | Last.fm 密钥 |
+| `spotify_id` | 字符串（可选） | Spotify Client ID（用于元数据） |
+| `spotify_secret` | 字符串（可选） | Spotify Client Secret |
+| `localdisks` | 字符串（可选） | 要挂载的本地磁盘，如 `sda1,sdb1,MYNAS` |
+| `networkdisks` | 字符串（可选） | 要挂载的 SMB 共享，如 `//SERVER/SHARE` |
+| `cifsusername` | 字符串（可选） | SMB 网络共享用户名 |
+| `cifspassword` | 字符串（可选） | SMB 网络共享密码 |
+| `cifsdomain` | 字符串（可选） | SMB 网络共享域/工作组 |
+| `env_vars` | 列表 / 默认 `[]` | 额外传给容器的环境变量（键名需匹配 `^[A-Za-z0-9_]+$`） |
 
-## Addon informations
+## 使用 / 访问入口
+- 通过浏览器访问宿主端口 4533 打开 Web 界面。
+- 首次启动后先在 WebUI 中初始化应用，再重启加载项以应用部分选项。
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fnavidrome%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fnavidrome%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fnavidrome%2Fconfig.yaml)
+## 常见问题
+- **音乐文件放在哪里？** 默认读取 `/data/music`，可通过 `music_folder` 修改；也可用 `localdisks`/`networkdisks` 挂载外部存储。
+- **如何开启 HTTPS？** 将 `ssl` 设为 `true`，并确保 `certfile`/`keyfile` 指向有效的证书文件。
+- **如何定时扫描媒体库？** 通过 `scan_schedule` 设置 cron 表达式；还可配置 Last.fm 或 Spotify 集成以增强元数据与 Scrobble。
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
-
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee%20Paypal-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
-
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
-
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/navidrome/stats.png)
-
-## About
-
-Various tweaks and configuration options addition.
-This addon is based on the [docker image](https://hub.docker.com/r/deluan/navidrome).
-
-## Configuration
-
-Webui can be found at <http://homeassistant:PORT> or through the sidebar using Ingress.
-Configurations can be done through the app webUI, except for the following options.
-
-See https://www.navidrome.org/docs/usage/configuration-options/ for additional configuration details.
-
-### Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `base_url` | str | `/` | Base URL to configure Navidrome behind a proxy |
-| `music_folder` | str | `/data/music` | Folder where your music library is stored |
-| `data_folder` | str | `/data` | Folder to store application data (DB) |
-| `log_level` | str | `info` | Log level (error, warn, info, debug, trace) |
-| `ssl` | bool | `false` | Enable HTTPS for the web interface |
-| `certfile` | str | | Path for the TLS certificate |
-| `keyfile` | str | | Path for the TLS key file |
-| `default_language` | str | | Default language for the interface |
-| `image_cache_size` | str | | Size of the image cache |
-| `transcoding_cache_size` | str | | Size of the transcoding cache |
-| `scan_schedule` | str | | Cron expression for automatic library scanning |
-| `password_encryption_key` | str | | Key for password encryption |
-| `welcome_message` | str | | Custom welcome message |
-| `lastfm_api_key` | str | | Last.fm API key for scrobbling |
-| `lastfm_secret` | str | | Last.fm secret for scrobbling |
-| `spotify_id` | str | | Spotify client ID for metadata |
-| `spotify_secret` | str | | Spotify client secret for metadata |
-| `localdisks` | str | | Local drives to mount (e.g., `sda1,sdb1,MYNAS`) |
-| `networkdisks` | str | | SMB shares to mount (e.g., `//SERVER/SHARE`) |
-| `cifsusername` | str | | SMB username for network shares |
-| `cifspassword` | str | | SMB password for network shares |
-| `cifsdomain` | str | | SMB domain for network shares |
-
-### Example Configuration
-
-```yaml
-base_url: "/"
-music_folder: "/data/music"
-data_folder: "/data"
-log_level: "info"
-ssl: false
-certfile: "fullchain.pem"
-keyfile: "privkey.pem"
-scan_schedule: "0 2 * * *"
-lastfm_api_key: "your-lastfm-key"
-localdisks: "sda1,sdb1"
-networkdisks: "//192.168.1.100/music"
-cifsusername: "musicuser"
-cifspassword: "password123"
-cifsdomain: "workgroup"
-```
-
-### Mounting Drives
-
-This addon supports mounting both local drives and remote SMB shares:
-
-- **Local drives**: See [Mounting Local Drives in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Mounting-Local-Drives-in-Addons)
-- **Remote shares**: See [Mounting Remote Shares in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Mounting-remote-shares-in-Addons)
-
-### Custom Scripts and Environment Variables
-
-This addon supports custom scripts and environment variables:
-
-- **Custom scripts**: See [Running Custom Scripts in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Running-custom-scripts-in-Addons)
-- **env_vars option**: Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-## Installation
-
-The installation of this add-on is pretty straightforward and not different in
-comparison to installing any other Hass.io add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Go to the webui, where you will initialize the app
-1. Restart the addon, to apply any option that should be applied
-
-[repository]: https://github.com/alexbelgium/hassio-addons
-
-
+---
+- 英文原版：[Home assistant add-on: Navidrome](https://github.com/alexbelgium/hassio-addons/blob/master/navidrome/README.md)
+- 来源仓库：alexbelgium

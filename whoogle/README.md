@@ -1,117 +1,70 @@
-# Home assistant add-on: whoogle-search
+<!-- zh-guide -->
+# Whoogle Search
 
+## 简介
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+Whoogle Search 是一款自托管、无广告、注重隐私的元搜索引擎，让你可以在不受跟踪与广告干扰的情况下使用搜索引擎。本加载项基于 benbusby/whoogle-search 镜像构建。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 安装
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 whoogle 并安装。
 
-## Addon informations
+## 配置
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fwhoogle%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fwhoogle%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fwhoogle%2Fconfig.yaml)
+除下列选项外，其余设置可通过应用自身的 Web 界面完成。修改配置后需要重启加载项才能生效。
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+| 配置键 | 类型/默认值 | 说明 |
+| ------ | ----------- | ---- |
+| `env_vars` | 列表，默认空 | 传入容器的自定义环境变量列表，每项包含 `name`（变量名，须匹配 `^[A-Za-z0-9_]+$`）与 `value`（变量值，可选）。 |
+| `TZ` | 字符串，默认 `Europe/Amsterdam` | 时区。 |
+| `WHOOGLE_CONFIG_LANGUAGE` | 字符串，默认 `lang_en` | 界面语言（如 `lang_en`、`lang_zh` 等）。 |
+| `WHOOGLE_CONFIG_URL` | 字符串，默认 `https://website.com` | 服务的对外访问地址（Base URL）。 |
+| `WHOOGLE_CONFIG_THEME` | 枚举（system/light/dark），默认空 | 界面主题：跟随系统/浅色/深色。 |
+| `WHOOGLE_CONFIG_COUNTRY` | 可选字符串，默认空 | 搜索结果的国家代码。 |
+| `WHOOGLE_CONFIG_SEARCH_LANGUAGE` | 可选字符串，默认空 | 搜索语言。 |
+| `WHOOGLE_CONFIG_NEAR` | 可选字符串，默认空 | 搜索结果的定位地区/邻近参数，可留空。 |
+| `WHOOGLE_CONFIG_BLOCK` | 可选字符串，默认空 | 需要屏蔽的站点列表（逗号分隔）。 |
+| `WHOOGLE_CONFIG_SAFE` | 枚举（0/1），默认空 | 是否启用安全搜索。 |
+| `WHOOGLE_CONFIG_ALTS` | 枚举（0/1），默认空 | 是否使用替代前端（alternative frontends）。 |
+| `WHOOGLE_CONFIG_NEW_TAB` | 枚举（0/1），默认空 | 是否在新标签页中打开搜索结果。 |
+| `WHOOGLE_CONFIG_VIEW_IMAGE` | 枚举（0/1），默认空 | 是否启用「查看图片」选项。 |
+| `WHOOGLE_CONFIG_GET_ONLY` | 枚举（0/1），默认空 | 是否仅使用 GET 请求。 |
+| `WHOOGLE_CONFIG_DISABLE` | 枚举（0/1），默认空 | 是否禁止用户在界面上修改设置。 |
+| `WHOOGLE_AUTOCOMPLETE` | 枚举（0/1），默认空 | 是否启用搜索自动补全。 |
+| `WHOOGLE_MINIMAL` | 枚举（0/1），默认空 | 是否启用极简模式。 |
+| `WHOOGLE_CSP` | 枚举（0/1），默认空 | 是否启用内容安全策略（CSP）。 |
+| `HTTPS_ONLY` | 枚举（0/1），默认空 | 是否仅通过 HTTPS 访问。 |
+| `WHOOGLE_RESULTS_PER_PAGE` | 整数（5–100），默认空 | 每页显示的结果条数。 |
+| `WHOOGLE_USER` | 可选字符串，默认空 | 认证用户名。 |
+| `WHOOGLE_PASS` | 可选密码，默认空 | 认证密码。 |
+| `WHOOGLE_PROXY_TYPE` | 可选字符串，默认空 | 代理类型。 |
+| `WHOOGLE_PROXY_LOC` | 可选字符串，默认空 | 代理位置。 |
+| `WHOOGLE_PROXY_USER` | 可选字符串，默认空 | 代理用户名。 |
+| `WHOOGLE_PROXY_PASS` | 可选字符串，默认空 | 代理密码。 |
+| `WHOOGLE_ALT_TW` | 可选字符串，默认空 | Twitter 的替代前端地址。 |
+| `WHOOGLE_ALT_YT` | 可选字符串，默认空 | YouTube 的替代前端地址。 |
+| `WHOOGLE_ALT_IG` | 可选字符串，默认空 | Instagram 的替代前端地址。 |
+| `WHOOGLE_ALT_RD` | 可选字符串，默认空 | Reddit 的替代前端地址。 |
+| `WHOOGLE_ALT_MD` | 可选字符串，默认空 | Medium 的替代前端地址。 |
+| `WHOOGLE_ALT_TL` | 可选字符串，默认空 | TikTok 的替代前端地址。 |
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+## 使用 / 访问入口
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
+- 加载项支持 Ingress，启动后可在 Home Assistant 侧边栏看到 Whoogle Search 图标，点击进入。
+- Web 界面容器端口 `5000/tcp`，宿主端口 5000（如需直接访问，可在加载项端口设置中开启）。
 
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
+## 常见问题
 
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/whoogle/stats.png)
+- **如何设置访问密码？** 通过 `WHOOGLE_USER` 与 `WHOOGLE_PASS` 配置认证用户名与密码即可。
+- **如何屏蔽某些网站？** 在 `WHOOGLE_CONFIG_BLOCK` 中填写要屏蔽的站点域名，多个用逗号分隔。
+- **如何自定义界面？** 可通过 `WHOOGLE_CONFIG_THEME`（主题）、`WHOOGLE_CONFIG_LANGUAGE`（界面语言）等选项调整，也可在 Web 界面中直接修改。
+- **完整的可选环境变量说明？** 参见上游 benbusby/whoogle-search 的「Environment variables」文档。
+- **需要自定义环境变量？** 通过 `env_vars` 选项传入（变量名支持大小写），参见上游 wiki「Add environment variables to your add-on」。
+- 自 0.9.4-2 起，数据与配置迁移到 `/addon_configs/db21ed7f_whoogle_search`，可随加载项一起备份；自 0.7.1 起配置处理方式有重大变更，旧配置需要重新设置。
 
-## About
-
-[whoogle-search](https://github.com/benbusby/whoogle-search) is a Self-hosted, ad-free, privacy-respecting metasearch engine.
-This addon is based on the docker image https://hub.docker.com/r/benbusby/whoogle-search/tags
-
-## Configuration
-
-Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-Webui can be found at <http://homeassistant:PORT> or through the sidebar using Ingress.
-Configurations can be done through the app webUI, except for the following options.
-
-### Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `TZ` | str | `Europe/Amsterdam` | Timezone |
-| `WHOOGLE_CONFIG_LANGUAGE` | str | `lang_en` | Interface language |
-| `WHOOGLE_CONFIG_URL` | str | | Base URL for the service |
-| `WHOOGLE_CONFIG_THEME` | list | | Theme (system/light/dark) |
-| `WHOOGLE_CONFIG_COUNTRY` | str | | Country code for search results |
-| `WHOOGLE_CONFIG_SEARCH_LANGUAGE` | str | | Search language |
-| `WHOOGLE_CONFIG_BLOCK` | str | | Comma-separated list of sites to block |
-| `WHOOGLE_CONFIG_SAFE` | list | | Safe search (0/1) |
-| `WHOOGLE_CONFIG_ALTS` | list | | Use alternative frontends (0/1) |
-| `WHOOGLE_CONFIG_NEW_TAB` | list | | Open results in new tab (0/1) |
-| `WHOOGLE_CONFIG_VIEW_IMAGE` | list | | Enable view image option (0/1) |
-| `WHOOGLE_CONFIG_GET_ONLY` | list | | GET requests only (0/1) |
-| `WHOOGLE_CONFIG_DISABLE` | list | | Disable changing settings (0/1) |
-| `WHOOGLE_AUTOCOMPLETE` | list | | Enable autocomplete (0/1) |
-| `WHOOGLE_MINIMAL` | list | | Minimal mode (0/1) |
-| `WHOOGLE_CSP` | list | | Content Security Policy (0/1) |
-| `WHOOGLE_RESULTS_PER_PAGE` | int | | Results per page (5-100) |
-| `WHOOGLE_USER` | str | | Username for authentication |
-| `WHOOGLE_PASS` | password | | Password for authentication |
-| `WHOOGLE_PROXY_TYPE` | str | | Proxy type |
-| `WHOOGLE_PROXY_LOC` | str | | Proxy location |
-| `WHOOGLE_PROXY_USER` | str | | Proxy username |
-| `WHOOGLE_PROXY_PASS` | str | | Proxy password |
-| `WHOOGLE_ALT_TW` | str | | Twitter alternative frontend |
-| `WHOOGLE_ALT_YT` | str | | YouTube alternative frontend |
-| `WHOOGLE_ALT_IG` | str | | Instagram alternative frontend |
-| `WHOOGLE_ALT_RD` | str | | Reddit alternative frontend |
-| `WHOOGLE_ALT_MD` | str | | Medium alternative frontend |
-| `WHOOGLE_ALT_TL` | str | | TikTok alternative frontend |
-| `HTTPS_ONLY` | list | | HTTPS only mode (0/1) |
-
-### Example Configuration
-
-```yaml
-TZ: "Europe/London"
-WHOOGLE_CONFIG_LANGUAGE: "lang_en"
-WHOOGLE_CONFIG_URL: "https://search.mydomain.com"
-WHOOGLE_CONFIG_THEME: "dark"
-WHOOGLE_CONFIG_COUNTRY: "US"
-WHOOGLE_CONFIG_SAFE: "0"
-WHOOGLE_AUTOCOMPLETE: "1"
-WHOOGLE_USER: "admin"
-WHOOGLE_PASS: "secure-password"
-WHOOGLE_RESULTS_PER_PAGE: 20
-```
-
-For complete environment variable documentation, see: https://github.com/benbusby/whoogle-search#environment-variables
-
-## Installation
-
-The installation of this add-on is pretty straightforward and not different in comparison to installing any other add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Set the add-on options to your preferences
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Open the webUI and adapt the software options
-
-## Support
-
-Create an issue on github
-
-## Illustration
-
-![illustration](https://github.com/benbusby/whoogle-search/raw/main/docs/screenshot_desktop.jpg)
-
-[repository]: https://github.com/alexbelgium/hassio-addons
-
-
+---
+- 英文原版：Home assistant add-on: whoogle-search；链接 https://github.com/alexbelgium/hassio-addons/blob/master/whoogle/README.md
+- 来源仓库：alexbelgium

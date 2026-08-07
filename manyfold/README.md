@@ -1,180 +1,44 @@
-# Manyfold Home Assistant Add-on
+<!-- zh-guide -->
+# Manyfold
 
-This add-on wraps `ghcr.io/manyfold3d/manyfold-solo` for Home Assistant OS with persistent storage and configurable host-backed media paths.
+## 简介
+Manyfold 是一个开源的 3D 模型管理器。本加载项将 Manyfold 打包为 Home Assistant 加载项，数据（应用数据、数据库、缓存、设置）持久化在 `/config`（addon_config）下，并通过可配置的库路径使用宿主机存储；无需外部 PostgreSQL 或 Redis，支持 `amd64` 与 `aarch64` 架构。
 
-Documentation: [manyfold.app/get-started](https://manyfold.app/get-started/)
+## 安装
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 manyfold 并安装。
+3. 首次启动前，请确保宿主机上的库目录已存在（默认 `/share/manyfold/models`）。
 
-## Features
+## 配置
 
-- Runs Manyfold on port `3214`.
-- Persists app data, database, cache, and settings under `/config` (`addon_config`).
-- Uses a configurable library path on Home Assistant host storage.
-- Refuses startup if configured paths resolve outside `/share`, `/media`, or `/config`.
-- No external PostgreSQL or Redis required.
-- Supports `amd64` and `aarch64`.
-- Includes a baseline AppArmor profile.
+| 配置键 | 类型 / 默认值 | 说明 |
+|--------|--------------|------|
+| `secret_key_base` | 字符串 / 空 | Rails 应用密钥，用于签名/加密会话与令牌；留空则首次启动自动生成并持久化，建议保持留空不要修改 |
+| `public_hostname` | 字符串（可选） | 生成链接所用的主机名或服务器 IP；留空时自动检测 Home Assistant 外部 URL，回退到 `homeassistant.local` |
+| `puid` | 整数 / 默认 `1000` | 应用到可写映射目录（/config 路径）的所有权 UID |
+| `pgid` | 整数 / 默认 `1000` | 应用到可写映射目录的所有权 GID |
+| `multiuser` | 布尔 / 默认 `true` | 是否启用 Manyfold 多用户模式 |
+| `library_path` | 字符串 / 默认 `/share/manyfold/models` | 扫描/索引的库路径 |
+| `thumbnails_path` | 字符串 / 默认 `/config/thumbnails` | 缩略图与索引产物持久化路径（必须位于 /config 下） |
+| `log_level` | 枚举 / 默认 `info` | 日志级别：`info`、`debug`、`warn`、`error` |
+| `web_concurrency` | 整数 / 默认 `4` | Puma worker 进程数 |
+| `rails_max_threads` | 整数 / 默认 `16` | 每个 Puma worker 的最大线程数 |
+| `default_worker_concurrency` | 整数 / 默认 `4` | Sidekiq 默认队列并发数 |
+| `performance_worker_concurrency` | 整数 / 默认 `1` | Sidekiq 性能队列并发数 |
+| `max_file_upload_size` | 整数 / 默认 `1073741824` | 最大上传归档大小（字节） |
+| `max_file_extract_size` | 整数 / 默认 `1073741824` | 最大解压归档大小（字节） |
 
-## Default paths
+## 使用 / 访问入口
+- 通过浏览器访问宿主端口 3214 打开 Manyfold Web 界面。
+- 将 STL/3MF 等模型文件放入宿主机的 `/share/manyfold/models`，在 Manyfold 界面中配置指向同一容器路径的库，即可开始索引。
 
-- Library path: `/share/manyfold/models`
-- Thumbnails path: `/config/thumbnails`
+## 常见问题
+- **提示以 root 运行（安全风险）？** 在加载项配置中把 `puid`/`pgid` 设为非 root 的 UID/GID（如 1000），保存并重启加载项。
+- **`secret_key_base` 能改吗？** 首次安装留空会自动生成并保存到 `/config/secret_key_base`；一旦手动设置过再清空，会重新生成密钥并导致所有会话登出。
+- **启动失败？** 若 `library_path` 或 `thumbnails_path` 解析到映射存储根目录之外会拒绝启动；`thumbnails_path` 必须位于 `/config` 下以确保持久化。
 
-## Installation
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-2. Refresh Add-on Store and install **Manyfold**.
-3. Configure options (defaults are safe for first run):
-   - `library_path`: `/share/manyfold/models`
-   - `secret_key_base`: leave blank to auto-generate
-   - `puid` / `pgid`: set to a non-root UID/GID (see "Fix root warning (PUID/PGID)" below)
-   - optionally tune worker/thread and upload limits in "Small server tuning" below
-4. Start the add-on.
-5. Open `http://<HA_IP>:3214`.
-
-Before first start, ensure your library folder exists on the host:
-
-```bash
-mkdir -p /share/manyfold/models
-```
-
-Local development alternative on the HA host:
-
-1. Copy `manyfold/` to `/addons/manyfold`.
-2. In Add-on Store menu (`...`), click `Check for updates`.
-3. Install and run **Manyfold** from local add-ons.
-
-## Library/index workflow
-
-1. Drop STL/3MF/etc into `/share/manyfold/models` on the host.
-2. In Manyfold UI, configure a library that points to the same container path.
-3. Thumbnails and indexing artifacts persist in `/config/thumbnails`.
-
-## Options
-
-- `secret_key_base`: App secret used by Rails to sign/encrypt sessions and tokens. See [Secret Key Base](#secret-key-base) below.
-- `public_hostname`: Hostname or server IP used to generate links (mailer and "Open in slicer" download URLs). Leave blank to auto-detect from Home Assistant's configured external URL, falling back to `homeassistant.local`.
-- `puid` / `pgid`: Ownership applied to writable mapped directories (`/config` paths).
-- `multiuser`: Toggle Manyfold multiuser mode.
-- `library_path`: Scanned/indexed path.
-- `thumbnails_path`: Persistent thumbnails/index artifacts (must be under `/config`).
-- `log_level`: `info`, `debug`, `warn`, `error`.
-- `web_concurrency`: Puma worker process count.
-- `rails_max_threads`: Max threads per Puma worker.
-- `default_worker_concurrency`: Sidekiq default queue concurrency.
-- `performance_worker_concurrency`: Sidekiq performance queue concurrency.
-- `max_file_upload_size`: Max uploaded archive size in bytes.
-- `max_file_extract_size`: Max extracted archive size in bytes.
-
-### Raspberry Pi (single-user) example
-
-For a Raspberry Pi 4 or Pi 5 running a single-user Manyfold instance with modest library sizes:
-
-```yaml
-puid: 1000
-pgid: 1000
-multiuser: false
-library_path: /share/manyfold/models
-thumbnails_path: /config/thumbnails
-log_level: info
-web_concurrency: 1
-rails_max_threads: 4
-default_worker_concurrency: 1
-performance_worker_concurrency: 1
-max_file_upload_size: 134217728
-max_file_extract_size: 268435456
-```
-
-**Rationale:**
-- `web_concurrency: 1` — Single Puma worker (one process) saves RAM on Pi.
-- `rails_max_threads: 4` — Four threads per worker is sufficient for single-user browsing.
-- `default_worker_concurrency: 1` — Serial background job processing (indexing, thumbnail generation).
-- `performance_worker_concurrency: 1` — Single performance worker to avoid CPU thrashing during STL processing.
-- `multiuser: false` — Disable authentication/multiuser features for personal use.
-- `max_file_upload_size: 128 MB` — Reasonable limit for Pi storage and network.
-- `max_file_extract_size: 256 MB` — Extracted archives stay manageable.
-
-## Fix root warning (PUID/PGID)
-
-If Manyfold shows:
-
-`Manyfold is running as root, which is a security risk.`
-
-set `puid` and `pgid` in the add-on Configuration tab to a non-root UID/GID.
-
-Example:
-
-```yaml
-puid: 1000
-pgid: 1000
-```
-
-How to find the correct values in Home Assistant:
-
-1. Open the **Terminal & SSH** add-on (or SSH into the HA host).
-2. If you know the target Linux user name, run:
-
-```bash
-id <username>
-```
-
-Use the `uid=` value for `puid` and `gid=` value for `pgid`.
-
-If you do not have a specific username, use the owner of the Manyfold folders:
-
-```bash
-stat -c '%u %g' /share/manyfold/models
-```
-
-Set `puid`/`pgid` to those numbers.
-
-After changing values:
-
-1. Save add-on Configuration.
-2. Restart the Manyfold add-on.
-3. Check logs for `puid:pgid=<uid>:<gid>` and confirm the warning is gone.
-
-## Validation behavior
-
-- Startup fails if `library_path` or `thumbnails_path` resolve outside mapped storage roots.
-- `thumbnails_path` must resolve under `/config` to guarantee persistence.
-- Startup fails if `library_path` is not readable.
-
-## Secret Key Base
-
-`secret_key_base` is a required Rails secret used to sign and encrypt user sessions and tokens. Changing it will invalidate all active sessions and log everyone out.
-
-**How it works:**
-
-| Scenario | Behaviour |
-|----------|-----------|
-| **New install**, option left blank | A random secret is auto-generated and saved to `/config/secret_key_base` |
-| **Addon update**, option still blank | The previously saved `/config/secret_key_base` is reused — no data loss |
-| **Option manually set** | The value from the addon options is used and saved to `/config/secret_key_base` |
-| **Option was set, then cleared on update** | A new secret is generated — **sessions will be invalidated** |
-
-**Recommendation:** Leave `secret_key_base` blank on first install and never change it afterwards. The auto-generated value persists across updates in `/config/secret_key_base`, which is included in Home Assistant backups.
-
-## Migrating from a previous installation
-
-If you are reinstalling this addon or moving from another Manyfold addon (e.g. a different slug/repository), your data is stored in the previous addon's config directory on the HA host. To migrate without losing data:
-
-1. SSH into your Home Assistant host.
-2. Copy the database and secret to the new addon config directory:
-
-```bash
-cp /addon_configs/<old_slug>/manyfold.sqlite3 /addon_configs/<new_slug>/manyfold.sqlite3
-cp /addon_configs/<old_slug>/secret_key_base /addon_configs/<new_slug>/secret_key_base
-chown 1000:1000 /addon_configs/<new_slug>/manyfold.sqlite3 /addon_configs/<new_slug>/secret_key_base
-chown 1000:1000 /addon_configs/<new_slug>/
-chmod 600 /addon_configs/<new_slug>/secret_key_base
-```
-
-Replace `<old_slug>` and `<new_slug>` with the actual directory names (e.g. `db21ed7f_manyfold` and `088d77ac_manyfold_solo`). List them with `ls /addon_configs/`.
-
-3. Start the new addon — it will pick up the existing database and secret automatically.
-
-## Notes
-
-- This baseline avoids Home Assistant ingress and keeps direct port access.
-- If `puid`/`pgid` change, restart the add-on to re-apply ownership to mapped directories.
+---
+- 英文原版：[Manyfold Home Assistant Add-on](https://github.com/alexbelgium/hassio-addons/blob/master/manyfold/README.md)
+- 来源仓库：alexbelgium

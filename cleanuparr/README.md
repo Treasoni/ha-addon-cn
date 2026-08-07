@@ -1,39 +1,36 @@
-# Home Assistant Add-on: Cleanuparr
+<!-- zh-guide -->
+# Cleanuparr
 
-Automatically removes stuck, stalled, and unwanted downloads from your \*arr applications (Sonarr, Radarr, Lidarr, Readarr, Whisparr) and download clients (qBittorrent, Deluge, Transmission, NZBGet, SABnzbd).
+## 简介
 
-## About
+Cleanuparr 自动从你的 \*arr 应用（Sonarr、Radarr、Lidarr、Readarr、Whisparr）与下载客户端（qBittorrent、Deluge、Transmission、NZBGet、SABnzbd）中移除卡住、停滞或不想要的下载，并可通过 Apprise（Discord、Telegram、Slack、邮件等 60+ 渠道）发送通知。
 
-Cleanuparr monitors your download queues and applies configurable rules to:
-- Remove stalled or stuck downloads
-- Clean up unwanted files
-- Notify via Apprise (Discord, Telegram, Slack, email, and 60+ more)
+## 安装
 
-Integrations supported:
-- **\*arr**: Sonarr, Radarr, Lidarr, Readarr, Whisparr
-- **Download clients**: qBittorrent, Deluge, Transmission, NZBGet, SABnzbd
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 `cleanuparr` 并安装。
+3. 安装完成后启动 add-on，并查看日志确认运行正常。
 
-## Installation
+## 配置
 
-1. Add the repository to Home Assistant.
-2. Install the **Cleanuparr** add-on.
-3. Start the add-on.
-4. Open the Web UI on port `11011`.
+| 配置键 | 类型 / 默认值 | 说明 |
+| --- | --- | --- |
+| `env_vars` | 列表 / 空 | 传入容器的额外环境变量（`name`/`value` 形式） |
+| `PUID` | 整数 / 默认 `0` | 运行进程的用户 ID |
+| `PGID` | 整数 / 默认 `0` | 运行进程的组 ID |
+| `TZ` | 字符串 / 默认 `Europe/London` | 时区，如 `Europe/Paris` |
 
-## Configuration
+## 使用 / 访问入口
 
-| Option | Description |
-|--------|-------------|
-| `TZ` | Timezone (e.g. `Europe/Paris`). Defaults to `Europe/London`. |
-| `PUID` | User ID to run the process as. Defaults to `0` (root). |
-| `PGID` | Group ID to run the process as. Defaults to `0` (root). |
-| `env_vars` | Extra environment variables passed to the container. |
+启动后可在 Home Assistant 侧边栏看到 Cleanuparr 图标，点击进入；也可通过 Web 界面端口 11011 直接访问。
 
-## Data
+## 常见问题
 
-Persistent configuration is stored in the HA addon config directory and survives add-on updates and reinstalls.
+- 持久化配置保存在 HA add-on 配置目录中，可跨 add-on 更新与重装保留。
+- 支持监测下载队列并按规则移除停滞或卡住的下载、清理不需要的文件。
 
-## Support
-
-- [Cleanuparr upstream project](https://github.com/Cleanuparr/Cleanuparr)
-- [Addon repository issues](https://github.com/alexbelgium/hassio-addons/issues)
+---
+- 英文原版：[Home Assistant Add-on: Cleanuparr](https://github.com/alexbelgium/hassio-addons/blob/master/cleanuparr/README.md)
+- 来源仓库：alexbelgium

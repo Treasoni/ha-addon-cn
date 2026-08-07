@@ -1,86 +1,58 @@
-# Home assistant add-on: Webtop KDE Alpine
+<!-- zh-guide -->
+# Webtop KDE
 
+## 简介
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+Webtop 是一款可通过任何现代 Web 浏览器访问的完整 Linux 桌面环境。本加载项基于 linuxserver.io 的 docker-webtop 镜像构建，内置 Ubuntu KDE 桌面，让浏览器即可获得完整的桌面体验。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 安装
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 webtop_kde 并安装。
 
-## Addon informations
+## 配置
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fwebtop%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fwebtop%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fwebtop%2Fconfig.yaml)
+修改配置后需要重启加载项才能生效。可选配置键如下：
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+| 配置键 | 类型/默认值 | 说明 |
+| ------ | ----------- | ---- |
+| `env_vars` | 列表，默认空 | 传入容器的自定义环境变量列表，每项包含 `name`（变量名，须匹配 `^[A-Za-z0-9_]+$`）与 `value`（变量值，可选）。 |
+| `DNS_server` | 可选字符串，默认 `8.8.8.8` | 自定义 DNS 服务器。 |
+| `PGID` | 整数，默认 `0` | 文件权限使用的组 ID。 |
+| `PUID` | 整数，默认 `0` | 文件权限使用的用户 ID。 |
+| `TZ` | 可选字符串，默认空 | 时区，例如 `Europe/London`。 |
+| `additional_apps` | 可选字符串，默认 `engrampa,libreoffice` | 需要安装的软件包列表（逗号分隔）。安装的软件不会持久保留，需通过该选项在启动时安装。 |
+| `certfile` | 字符串，默认 `fullchain.pem` | 自用 TLS 证书文件（`use_own_certs` 启用时使用），需存放在 `/ssl/` 目录。 |
+| `keyfile` | 字符串，默认 `privkey.pem` | 自用 TLS 私钥文件（`use_own_certs` 启用时使用），需存放在 `/ssl/` 目录。 |
+| `data_location` | 可选字符串，默认 `/config/data` | 自定义数据存储路径。 |
+| `use_own_certs` | 可选布尔，默认 `true` | 是否使用自定义 SSL 证书（通过 `certfile`/`keyfile` 指定）。 |
+| `DRINODE` | 枚举（`/dev/dri/card0`/`/dev/dri/card1`/`/dev/dri/card2`/`/dev/dri/renderD128`/`/dev/dri/renderD129`），默认空 | 图形设备节点。若图形显示异常，可通过此选项选择正确的 GPU 设备。 |
+| `KEYBOARD` | 枚举（da-dk-qwerty/de-de-qwertz/en-gb-qwerty/en-us-qwerty/es-es-qwerty/fr-ch-qwertz/fr-fr-azerty/it-it-qwerty/ja-jp-qwerty/pt-br-qwerty/sv-se-qwerty/tr-tr-qwerty），默认空 | 桌面键盘布局。 |
+| `PASSWORD` | 可选字符串，默认空 | 自定义 Web 界面访问密码。 |
+| `install_ms_edge` | 可选布尔，默认空 | 是否在启动时安装 Microsoft Edge 浏览器。 |
+| `cifsdomain` | 可选字符串，默认空 | 网络共享（SMB）的域/工作组。 |
+| `cifspassword` | 可选字符串，默认空 | 网络共享（SMB）的密码。 |
+| `cifsusername` | 可选字符串，默认空 | 网络共享（SMB）的用户名。 |
+| `localdisks` | 可选字符串，默认空 | 需要挂载的本地磁盘，例如 `sda1,sdb1`。 |
+| `networkdisks` | 可选字符串，默认空 | 需要挂载的 SMB 网络共享，例如 `//SERVER/SHARE`。 |
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+## 使用 / 访问入口
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
+- 加载项支持 Ingress，启动后可在 Home Assistant 侧边栏看到 Webtop KDE 图标，点击进入。
+- Web 界面端口为 `3000/tcp`（HTTPS 为 `3001/tcp`），默认关闭（宿主映射未启用），如需直接访问可在加载项端口设置中开启。**无密码直接开放端口风险极高，请务必先设置密码。**
+- 默认使用 `abc` 用户，默认密码也是 `abc`。如需修改密码，可在桌面内打开终端执行 `passwd` 命令；设置密码并开启认证后，通过 `localhost:3000/?login=true` 登录访问。
 
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
+## 常见问题
 
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/webtop/stats.png)
+- **安装的软件重启后不见了？** 桌面内安装的软件不会持久保留，请通过配置中的 `additional_apps` 选项在启动时安装；软件配置（如配置文件）会保留。
+- **图形显示异常或一直「等待视频流」？** 可通过 `DRINODE` 选项选择正确的 GPU 渲染节点。若日志出现 `libEGL warning: failed to open /dev/dri/card0: Permission denied`，说明当前选择的节点没有权限，请改用其他节点。
+- **如何设置访问密码？** 在桌面终端执行 `passwd` 修改 `abc` 用户的密码即可；开启认证后使用带 `?login=true` 的路径访问。
+- **需要使用自定义 SSL 证书？** 启用 `use_own_certs`，并通过 `certfile`/`keyfile` 指定放在 `/ssl/` 下的证书与私钥文件。
+- **需要自定义环境变量？** 通过 `env_vars` 选项传入，完整的可选环境变量列表参见 linuxserver.io 的 docker-webtop 文档。
+- 从 4.16-r0-ls94 起外部端口默认关闭，改为依赖 Ingress 访问；从 4.16-r0-ls94-2 起可选用 `install_ms_edge` 安装 Microsoft Edge。
 
-## About
-
-[webtop](https://github.com/webtop/webtop) is a full desktop environments accessible via any modern web browser.
-This addon is based on the docker image https://github.com/linuxserver/docker-webtop
-
-## Configuration
-
-Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-Webui can be found with ingress or at <http://homeassistant:PORT>. The port is by default disabled but can be enabled through the addon options.
-
-By default the image is based around the abc user and we recommend using this user as all of the init/config is based around it. The default password is also abc . If you want to change this password and require authentication when accessing the interface simply issue passwd inside a gui terminal in the webtop. Then when accessing the web interface use the path:
-
-http://localhost:3000/?login=true
-
-Apps installations are not remanent, you need to do it via addon options. Their config, however, is.
-
-If graphics don't work, use the DRINODE feature to select your graphic device.
-
-See all potential ENV variables here : https://docs.linuxserver.io/images/docker-webtop#optional-environment-variables
-
-```yaml
-TZ: timezone ; Country/City according to https://manpages.ubuntu.com/manpages/trusty/man3/DateTime::TimeZone::Catalog.3pm.html
-additional_apps: engrampa,thunderbird # Allows installation of apps, as they are not persistent
-DRINODE: specify a custom graphic device, default is /dev/dri/renderD128
-DNS_servers: 8.8.8.8,1.1.1.1 # Keep blank to use router’s DNS, or set custom DNS to avoid spamming in case of local DNS ad-remover
-localdisks: sda1 #put the hardware name of your drive to mount separated by commas, or its label. ex. sda1, sdb1, MYNAS...
-networkdisks: "//SERVER/SHARE" # optional, list of smb servers to mount, separated by commas
-cifsusername: "username" # optional, smb username, same for all smb shares
-cifspassword: "password" # optional, smb password
-cifsdomain: "domain" # optional, allow setting the domain for the smb share
-```
-
-## Installation
-
-The installation of this add-on is pretty straightforward and not different in comparison to installing any other add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Set the add-on options to your preferences
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Open the webUI and adapt the software options
-
-## Support
-
-Create an issue on github
-
-## Illustration
-
-![illustration](https://www.linuxserver.io/user/pages/content/images/2021/05/menu.png)
-
-[repository]: https://github.com/alexbelgium/hassio-addons
-
-
+---
+- 英文原版：Home assistant add-on: Webtop KDE Alpine；链接 https://github.com/alexbelgium/hassio-addons/blob/master/webtop_kde/README.md
+- 来源仓库：alexbelgium

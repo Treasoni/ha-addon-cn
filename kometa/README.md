@@ -1,93 +1,39 @@
-<!-- markdownlint-disable MD043 -->
+<!-- zh-guide -->
+# Kometa
 
-# Home assistant add-on: Kometa
+## 简介
+Kometa（原 Plex Meta Manager）是一个 Python 3 脚本，通过 YAML 配置文件按计划持续更新电影、剧集与收藏夹的元数据，并可根据各种规则自动构建收藏，详细说明见其官方 wiki。本加载项基于 linuxserver/docker-kometa 镜像构建。
 
+## 安装
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 kometa 并安装。
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+## 配置
+配置可通过加载项选项与 `config.yml` 两种方式完成；进阶用法可把额外的环境变量放入 `config.yml` 所在位置，详见 Kometa wiki 的环境变量清单。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+| 配置键 | 类型 / 默认值 | 说明 |
+|--------|--------------|------|
+| `PUID` | 整数 / 默认 `0` | 文件权限的用户 ID |
+| `PGID` | 整数 / 默认 `0` | 文件权限的用户组 ID |
+| `TZ` | 字符串（可选） | 时区，如 `Europe/London` |
+| `KOMETA_CONFIG` | 字符串 / 默认 `/config/addons_config/kometa/config.yml` | Kometa 配置文件路径，可指定自定义配置文件 |
+| `KOMETA_TIME` | 字符串（可选） | 每日更新时刻，格式 `HH:MM`，多个用逗号分隔 |
+| `KOMETA_RUN` | 布尔（可选） | 设为 true 时跳过调度、直接运行一次 |
+| `KOMETA_TEST` | 布尔（可选） | 设为 true 时进入调试模式，仅处理标记了 `test: true` 的收藏 |
+| `KOMETA_NO_MISSING` | 布尔（可选） | 设为 true 时跳过缺失影片/剧集相关功能 |
+| `env_vars` | 列表 / 默认 `[]` | 额外传给容器的环境变量（键名需匹配 `^[A-Za-z0-9_]+$`） |
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+## 使用 / 访问入口
+- 本加载项没有 Web 界面；Kometa 会按 `KOMETA_TIME` 的计划定时运行，也可通过 `KOMETA_RUN: true` 立即运行一次。
+- 运行情况可在加载项日志中查看。
 
-## Addon informations
-
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fplex_meta_manager%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fplex_meta_manager%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fplex_meta_manager%2Fconfig.yaml)
-
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
-
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
-
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
-
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
-
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/kometa/stats.png)
-
-## About
-
----
-
-[Kometa](https://kometa.wiki/en/latest/) is a Python 3 script that can be continuously run using YAML configuration files to update on a schedule the metadata of the movies, shows, and collections in your libraries as well as automatically build collections based on various methods all detailed in the wiki.
-
-This addon is based on the docker image <https://github.com/linuxserver/docker-kometa>
-
-## Installation
+## 常见问题
+- **如何快速上手？** 可参考 Kometa 官方的初始配置文件 walkthrough 教程，先准备好 `config.yml` 并设置 `KOMETA_CONFIG` 指向它。
+- **只想手动运行一次？** 将 `KOMETA_RUN` 设为 `true` 启动即可跳过调度；`KOMETA_TEST` 用于仅调试标记了 `test: true` 的收藏。
+- **有哪些可用的环境变量？** 完整的 Kometa 环境变量清单见官方 wiki 的 environmental 页面，也可通过 `env_vars` 传入额外的变量。
 
 ---
-
-The installation of this add-on is pretty straightforward and not different in comparison to installing any other add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Set the add-on options to your preferences
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Open the webUI and adapt the software options
-
-## Configuration
-
-Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-There is a [walkthrough](https://github.com/Kometa-Team/Kometa#setting-up-the-initial-config-file) available to help get you up and running.
-For more information see the [official wiki](https://github.com/Kometa-Team/Kometa).
-
-Options can be configured through two ways :
-
-- Addon options
-
-```yaml
-PUID: 1000 #for UserID - see below for explanation
-PGID: 1000 #for GroupID - see below for explanation
-TZ: Europe/London #Specify a timezone to use EG Europe/London.
-KOMETA_CONFIG: /config/addons_config/kometa/config/config.yml #Specify a custom config file to use.
-KOMETA_TIME: 03:00 #Comma-separated list of times to update each day. Format: HH:MM.
-KOMETA_RUN: False #Set to True to run without the scheduler.
-KOMETA_TEST: False #Set to True to run in debug mode with only collections that have test: true.
-KOMETA_NO_MISSING: False #Set to True to run without any of the missing movie/show functions.
-```
-
-- Config.yaml (advanced usage)
-
-Additional variables can be set as ENV variables by adding them in the config.yaml in the location defined in your addon options according to this guide : <https://github.com/alexbelgium/hassio-addons/wiki/Addons-feature:-add-env-variables>
-
-The complete list of ENV variables can be seen here : <https://kometa.wiki/en/latest/kometa/environmental/>
-
-## Support
-
-Create an issue on github
-
-## Illustration
-
----
-
-![illustration](https://dausruddin.com/wp-content/uploads/2020/05/plex-meta-manager-v3-1024x515.png)
-
-
+- 英文原版：[Home assistant add-on: Kometa](https://github.com/alexbelgium/hassio-addons/blob/master/kometa/README.md)
+- 来源仓库：alexbelgium

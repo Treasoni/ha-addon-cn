@@ -1,127 +1,56 @@
-# Home assistant add-on: Ubooquity
+<!-- zh-guide -->
+# Ubooquity
 
+## 简介
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+Ubooquity 是一款免费、轻量、易于使用的漫画与电子书家庭服务器（由 vaemendis 开发），支持包括 ePUB、CBZ、CBR、PDF 在内的多种文件格式，并支持 Calibre 与 ComicRack 的元数据。它允许你为每个共享文件夹创建用户账号并设置访问权限。本加载项基于 linuxserver.io 的 docker-ubooquity 镜像构建。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 安装
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 ubooquity 并安装。
 
-## Addon informations
+## 配置
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fubooquity%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fubooquity%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fubooquity%2Fconfig.yaml)
+除下列选项外，其余设置可在 Web 界面中完成。修改配置后需要重启加载项才能生效。
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+| 配置键 | 类型/默认值 | 说明 |
+| ------ | ----------- | ---- |
+| `env_vars` | 列表，默认空 | 传入容器的自定义环境变量列表，每项包含 `name`（变量名，须匹配 `^[A-Za-z0-9_]+$`）与 `value`（变量值，可选）。 |
+| `PGID` | 整数，默认 `0` | 文件权限使用的组 ID。 |
+| `PUID` | 整数，默认 `0` | 文件权限使用的用户 ID。 |
+| `TZ` | 可选字符串，默认空 | 时区，例如 `Europe/London`。 |
+| `maxmem` | 整数，默认 `200` | Java 最大内存占用（单位 MB），**关键设置**。设得太低会出现 `java.lang.OutOfMemoryError: Java heap space` 错误；设得太高可能拖垮系统导致 Home Assistant 崩溃。 |
+| `ssl` | 布尔，默认 `false` | 是否启用 HTTPS。 |
+| `certfile` | 字符串，默认 `fullchain.pem` | TLS 证书文件，需存放在 `/ssl/` 目录。 |
+| `keyfile` | 字符串，默认 `privkey.pem` | TLS 私钥文件，需存放在 `/ssl/` 目录。 |
+| `theme` | 枚举（default/comixology2/plextheme-master），默认 `default` | Web 界面主题。 |
+| `cifsdomain` | 可选字符串，默认空 | 网络共享（SMB）的域/工作组。 |
+| `cifspassword` | 可选字符串，默认空 | 网络共享（SMB）的密码。 |
+| `cifsusername` | 可选字符串，默认空 | 网络共享（SMB）的用户名。 |
+| `localdisks` | 可选字符串，默认空 | 需要挂载的本地磁盘，例如 `sda1,sdb1,MYNAS`。 |
+| `networkdisks` | 可选字符串，默认空 | 需要挂载的 SMB 网络共享，例如 `//SERVER/SHARE`（多个用逗号分隔，挂载到 `/mnt/$sharename`）。 |
+| `smbv1` | 可选布尔，默认空 | 是否启用 SMB v1 协议。 |
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+## 使用 / 访问入口
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
+本加载项不提供 Ingress，通过端口访问：
 
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
+- 图书库页面：`2205/tcp`（映射到宿主端口 `2202`），对外提供服务时暴露此端口。
+- 管理页面：`2206/tcp`（映射到宿主端口 `2203`），仅在本地使用，路径为 `/ubooquity/admin`。
 
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/ubooquity/stats.png)
+首次打开 Web 界面后，请设置管理员密码并根据提示完成管理选项配置。默认用户名/密码会显示在加载项启动日志中。
 
-## About
+## 常见问题
 
----
-
-[Ubooquity by vaemendis](https://vaemendis.net/ubooquity/) is a free, lightweight and easy-to-use home server for your comics and ebooks developed . This addon is based on the [docker image](https://github.com/linuxserver/docker-ubooquity) from [linuxserver.io](https://www.linuxserver.io/).
-
-Ubooquity supports many types of files, with a preference for ePUB, CBZ, CBR and PDF files. Metadata from library management software Calibre and ComicRack are also supported. Ubooquity lets you create user accounts and set access rights for each shared folder.
-
-This addons has several configurable options :
-
-- allowing to mount local external drive, or smb share from the addon (decreases performance)
-- **VERY IMPORTANT, CAN CRASH SYSTEM** : Setting of the maximum RAM usage for java. The quantity of memory allocated to Ubooquity depends on the hardware your are running it on. If this quantity is too small, you might sometime saturate it with when performing memory intensive operations and you'll get "java.lang.OutOfMemoryError: Java heap space errors". If the quantity allocated is too high for your system, it will crash home assistant and you'll need to manually reboot. Value is a number of megabytes ( put just a number, without MB).
-
-It is recommended to enable OPDS server from option, then you can connect to your comics/eBook server from a mobile app (I use [Chunky](https://apps.apple.com/fr/app/chunky-comic-reader/id663567628) on iOS (paid), [Kuboo](https://play.google.com/store/apps/details?id=com.sethchhim.kuboo&hl=fr&gl=US) on android (free))
-
-## Installation
-
-The installation of this add-on is pretty straightforward and not different in
-comparison to installing any other Hass.io add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Open the webUI, set an admin password and adapt the administration options
-
-## Configuration
-
-Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-Webui can be found at <http://homeassistant:PORT> or through the sidebar using Ingress.
-The default username/password is described in the startup log.
-Configurations can be done through the app webUI, except for the following options.
-
-### Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `PGID` | int | `0` | Group ID for file permissions |
-| `PUID` | int | `0` | User ID for file permissions |
-| `TZ` | str | | Timezone (e.g., `Europe/London`) |
-| `maxmem` | int | `200` | Maximum RAM usage for Java (MB) - **CRITICAL SETTING** |
-| `ssl` | bool | `false` | Enable HTTPS for the web interface |
-| `certfile` | str | `fullchain.pem` | Path for the TLS certificate |
-| `keyfile` | str | `privkey.pem` | Path for the TLS key file |
-| `theme` | list | `default` | Theme selection (default/comixology2/plextheme-master) |
-| `localdisks` | str | | Local drives to mount (e.g., `sda1,sdb1,MYNAS`) |
-| `networkdisks` | str | | SMB shares to mount (e.g., `//SERVER/SHARE`) |
-| `cifsusername` | str | | SMB username for network shares |
-| `cifspassword` | str | | SMB password for network shares |
-| `cifsdomain` | str | | SMB domain for network shares |
-| `smbv1` | bool | `false` | Enable SMB v1 protocol |
-
-**Important**: The `maxmem` setting controls Java heap space. Too low causes OutOfMemoryError; too high can crash Home Assistant. Default 200MB for RPi3B+, 512MB recommended for systems with 2GB+ RAM.
-
-### Example Configuration
-
-```yaml
-PGID: 0
-PUID: 0
-TZ: "Europe/London"
-maxmem: 512
-ssl: false
-certfile: "fullchain.pem"
-keyfile: "privkey.pem"
-theme: "comixology2"
-localdisks: "sda1,sdb1"
-networkdisks: "//192.168.1.100/comics,//nas.local/books"
-cifsusername: "comicuser"
-cifspassword: "password123"
-cifsdomain: "workgroup"
-smbv1: false
-```
-
-### Mounting Drives
-
-This addon supports mounting both local drives and remote SMB shares:
-
-- **Local drives**: See [Mounting Local Drives in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Mounting-Local-Drives-in-Addons)
-- **Remote shares**: See [Mounting Remote Shares in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Mounting-remote-shares-in-Addons)
-
-Network disks are mounted to `/mnt/share_name`.
-
-## Support
-
-Create an issue on the [repository github][repository], or ask on the [home assistant thread](https://community.home-assistant.io/t/home-assistant-addon-ubooquity/283811)
-
-## Illustration
+- **`maxmem` 设置不当会有什么后果？** 设得太低，执行高内存操作时会遇到 `java.lang.OutOfMemoryError: Java heap space` 错误；设得太高可能使系统崩溃，需要手动重启 Home Assistant。建议树莓派 3B+ 用默认 `200`MB，内存 2GB 以上的设备推荐 `512`MB。
+- **如何在手机上看漫画/电子书？** 建议在 Ubooquity 中启用 OPDS 服务器，然后用支持 OPDS 的阅读 App 连接，例如 iOS 上的 Chunky、Android 上的 Kuboo。
+- **默认账号密码是什么？** 首次启动后，默认用户名/密码显示在加载项「日志」中。
+- **如何挂载本地磁盘或远程共享？** 分别通过 `localdisks` 与 `networkdisks` 配置，详细步骤参见上游 wiki「Mounting Local Drives in Addons」与「Mounting Remote Shares in Addons」。注意挂载磁盘会略微降低性能。
+- Home Assistant 项目已弃用 armv7、armhf 与 i386 架构支持，将在 Home Assistant 2025.12 版本中完全移除。
 
 ---
-
-![alt text](https://vaemendis.net/ubooquity/data/images/screenshots/books_library.jpg)
-
-[repository]: https://github.com/alexbelgium/hassio-addons
-
-
+- 英文原版：Home assistant add-on: Ubooquity；链接 https://github.com/alexbelgium/hassio-addons/blob/master/ubooquity/README.md
+- 来源仓库：alexbelgium

@@ -1,88 +1,44 @@
-# Home assistant add-on: Organizr
+<!-- zh-guide -->
+# Organizr
 
+## 简介
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+Organizr 是一款用 PHP 编写的 HTPC/家庭实验室服务组织器，它把 Plex、Radarr、Sonarr 等各类服务统一收纳到一个漂亮的 Web 门户中，方便你集中管理所有自托管服务的标签页与访问入口。本加载项基于 linuxserver.io 的 Organizr Docker 镜像构建。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 安装
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 organizr 并安装。
 
-## Addon informations
+## 配置
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Forganizr%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Forganizr%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Forganizr%2Fconfig.yaml)
+Organizr 在加载项选项中只需要很少的配置，大多数设置（服务集成、认证、主题等）都在 Web 界面中完成。可配置选项如下：
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+| 配置键 | 类型 / 默认值 | 说明 |
+| ------ | ------------- | ---- |
+| `PUID` | 整数，默认 `1000` | 文件权限的用户 ID |
+| `PGID` | 整数，默认 `1000` | 文件权限的用户组 ID |
+| `branch` | 枚举 `list(v2-master\|v2-develop)`，默认 `v2-master` | 使用的 Organizr 分支，`v2-master` 为稳定版，`v2-develop` 为开发版 |
+| `env_vars` | 列表（可选） | 附加环境变量列表，每项包含 `name`（变量名）与 `value`（变量值），用于向容器传入额外环境变量 |
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+## 使用 / 访问入口
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
+启动后打开 Web 界面（端口 `80/tcp` 映射到宿主端口 `88`，访问 `http://homeassistant.local:88`）。首次使用按以下步骤设置：
 
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
+1. 打开 Web 界面，按照设置向导创建管理员账号。
+2. 在 Web 界面中添加和配置你的服务与标签页。
+3. 数据库文件保存在 `/data/` 目录中。
 
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/organizr/stats.png)
+## 常见问题
 
-## About
+- **如何开始使用？** 启动加载项并访问 Web 界面，按向导创建管理员账号，然后添加你的各类服务入口即可。
+- **需要配置很多选项吗？** 不需要。Organizr 大多数功能（服务集成、认证、主题）都在 Web 界面中配置，加载项选项只需设置文件权限与分支即可。
+- **数据库存在哪里？** 数据库文件保存在 `/data/` 目录中，升级后会保留。
+- **想用开发版功能？** 将 `branch` 选项改为 `v2-develop` 即可使用开发分支，但可能有稳定性风险。
+- **如何传递自定义环境变量？** 使用 `env_vars` 选项，每项填写 `name` 与 `value`。
 
-An HTPC/Homelab services organizer that is written in PHP.
-This addon is based on the [docker image](https://hub.docker.com/r/organizr/organizr) from linuxserver.io.
-
-## Installation
-
-The installation of this add-on is pretty straightforward and not different in
-comparison to installing any other Hass.io add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Carefully configure the add-on to your preferences, see the official documentation for for that.
-
-## Configuration
-
-Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-Webui can be found at <http://homeassistant:80> or through the sidebar using Ingress.
-Configurations can be done through the app webUI, except for the following options.
-
-### Setup Steps
-
-1. Start the addon and access the web interface
-2. Follow the setup wizard to create admin account
-3. Configure your services and tabs through the web interface
-4. Database files are stored in `/data/` directory
-
-### Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `PGID` | int | `0` | Group ID for file permissions |
-| `PUID` | int | `0` | User ID for file permissions |
-
-### Example Configuration
-
-```yaml
-PGID: 1000
-PUID: 1000
-```
-
-**Note**: Organizr requires minimal configuration through the addon options. Most settings are configured through the web interface including service integration, authentication, and theming.
-
-## Support
-
-Create an issue on github
-
-## Illustration
-
-![bjaSt3fTfdXhw5vyl-7Lqz1EOjJIyh8lrdqxA53qO6E](https://user-images.githubusercontent.com/44178713/123061812-43601b00-d40c-11eb-993c-2aed31072775.jpg)
-
-[repository]: https://github.com/alexbelgium/hassio-addons
-
-
+---
+- 英文原版：Home assistant add-on: Organizr；链接 https://github.com/alexbelgium/hassio-addons/blob/master/organizr/README.md
+- 来源仓库：alexbelgium

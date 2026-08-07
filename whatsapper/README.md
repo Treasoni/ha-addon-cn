@@ -1,67 +1,41 @@
-# Home assistant add-on: Whatsapper
+<!-- zh-guide -->
+# Whatsapper
 
+## 简介
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+Whatsapper 是用于 Home Assistant 的 WhatsApp 工具，提供多种调整与配置选项，可让你在 Home Assistant 中收发 WhatsApp 消息。本加载项基于 whatsapper/whatsapper 镜像构建，使用前需配合 HACS 集成 whatsapper-ha-integration（https://github.com/baldarn/whatsapper-ha-integration）一起使用。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 安装
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 whatsapper 并安装。
+3. 在 HACS 中安装 whatsapper-ha-integration 集成，并按其中的说明完成系统配置。
 
-## Addon informations
+## 配置
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fwhatsapper%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fwhatsapper%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fwhatsapper%2Fconfig.yaml)
+修改配置后需要重启加载项才能生效。可选配置键如下：
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+| 配置键 | 类型/默认值 | 说明 |
+| ------ | ----------- | ---- |
+| `env_vars` | 列表，默认空 | 传入容器的自定义环境变量列表，每项包含 `name`（变量名，须匹配 `^[A-Za-z0-9_]+$`）与 `value`（变量值，可选）。 |
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+## 使用 / 访问入口
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
+本加载项不提供 Ingress，通过端口访问：
 
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
+- Web 界面/API 容器端口 `3000/tcp`，宿主端口 4000，访问地址为 `你的HomeAssistant地址:4000`。
 
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/whatsapper/stats.png)
+首次使用：启动加载项并打开 Web 界面完成应用初始化，然后**重启加载项**以应用相关选项。
 
-## About
+## 常见问题
 
-Various tweaks and configuration options addition.
-This addon is based on the [docker image](https://hub.docker.com/r/whatsapper/whatsapper).
+- **如何在 Home Assistant 中使用？** 需要先在 HACS 中安装 whatsapper-ha-integration 集成，并按照该集成仓库的说明配置后才能使用。
+- **初始化后如何生效？** 在 Web 界面完成初始化后，重启加载项即可应用选项。
+- **需要自定义环境变量？** 通过 `env_vars` 选项传入（变量名支持大小写），参见上游 wiki「Add environment variables to your add-on」。
+- 从 1.0.5 版本起新增 `env_vars` 选项；从 2024.4.29 起修复了 whatsapp-web.js 客户端问题，请保持加载项为最新版本以获得稳定的连接。
 
-Add the HACS integration found here
-
-https://github.com/baldarn/whatsapper-ha-integration
-
-and follow the instructions there to configure the system
-
-## Configuration
-
-```yaml
-TODO
-```
-
-Webui can be found at `<your-ip>:port`.
-
-## Installation
-
-The installation of this add-on is pretty straightforward and not different in
-comparison to installing any other Hass.io add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Go to the webui, where you will initialize the app
-1. Restart the addon, to apply any option that should be applied
-
-### Environment variables
-
-Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-[repository]: https://github.com/alexbelgium/hassio-addons
+---
+- 英文原版：Home assistant add-on: Whatsapper；链接 https://github.com/alexbelgium/hassio-addons/blob/master/whatsapper/README.md
+- 来源仓库：alexbelgium

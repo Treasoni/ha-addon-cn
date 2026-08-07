@@ -1,80 +1,55 @@
-# Home assistant add-on: Portainer_agent
+<!-- zh-guide -->
+# Portainer Agent
 
+## 简介
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+Portainer Agent 是用于管理 Swarm 集群中所有 Docker 资源的代理端，它弥补了 Docker API 的一个限制：通过 Docker API 管理 Docker 环境时，用户只能操作请求所指向节点上的资源（容器、网络、卷、镜像等）。安装本代理后，你可以从另一个 Portainer 实例连接并管理 Home Assistant 上的 Docker 资源。本加载项基于官方 Portainer Agent 镜像，并针对 Home Assistant 基础镜像做了适配。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+> 警告：Portainer Agent 功能非常强大，几乎可以访问你的整个系统。虽然本加载项在安全方面经过了仔细设计与维护，但若被不当使用或交给缺乏经验的人操作，可能会损坏系统，请谨慎使用。
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+## 安装
 
-## Addon informations
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 portainer_agent 并安装。
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fportainer_agent%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fportainer_agent%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fportainer_agent%2Fconfig.yaml)
+## 配置
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+可配置选项如下，均可在加载项配置页中填写：
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+| 配置键 | 类型 / 默认值 | 说明 |
+| ------ | ------------- | ---- |
+| `PORTAINER_AGENT_ARGS` | 字符串（可选） | 传给 portainer-agent 可执行文件的命令行参数 |
+| `AGENT_CLUSTER_ADDR` | 字符串（可选） | 集群中其他 Agent 的地址，用于 Swarm 集群互联 |
+| `AGENT_CLUSTER_PROBE_INTERVAL` | 字符串（可选） | 集群节点探测的间隔 |
+| `AGENT_CLUSTER_PROBE_TIMEOUT` | 字符串（可选） | 集群节点探测的超时时间 |
+| `AGENT_SECRET` | 字符串（可选） | Agent 加入集群使用的共享密钥 |
+| `AGENT_SECRET_TIMEOUT` | 字符串（可选） | Agent 密钥的有效超时时间 |
+| `EDGE` | 枚举 `list(0\|1)`（可选） | 是否启用 Edge 模式，`0` 关闭、`1` 启用 |
+| `EDGE_ID` | 字符串（可选） | Edge 模式下 Agent 的唯一标识 |
+| `EDGE_INACTIVITY_TIMEOUT` | 字符串（可选） | Edge 模式下的非活动超时时间 |
+| `EDGE_INSECURE_POLL` | 枚举 `list(0\|1)`（可选） | 是否允许非安全的 Edge 轮询，`0` 关闭、`1` 启用 |
+| `EDGE_KEY` | 字符串（可选） | Edge 模式下的注册密钥 |
+| `LOG_LEVEL` | 字符串（可选） | 日志详细级别 |
+| `env_vars` | 列表（可选） | 附加环境变量列表，每项包含 `name`（变量名）与 `value`（变量值） |
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
+## 使用 / 访问入口
 
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
+Portainer Agent 没有独立的 Web 界面，它是供外部 Portainer 实例连接管理的代理：
 
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/portainer_agent/stats.png)
+1. 在加载项配置中关闭保护模式（Protection mode）。
+2. 从你的其他 Portainer 集群中，添加一个类型为 Agent 的新环境。
+3. 地址填写 Home Assistant 的 IP，端口填写 `9001`（端口 `9001/tcp` 映射到宿主端口 `9001`，即 Portainer agent 端口）。
+4. 端口 `80/tcp` 为 Portainer Edge agent 端口（未发布到宿主机）。
 
-## About
+## 常见问题
 
----
-
-The Portainer Agent is a workaround for a Docker API limitation when using the Docker API to manage a Docker environment. The user interactions with specific resources (containers, networks, volumes and images) are limited to those available on the node targeted by the Docker API request.
-
-This container is based on the official docker image (https://github.com/portainer/agent) and modified using @homecentr logic (https://github.com/homecentr/docker-portainer-agent) to use in the homeassistant base images.
-
-## WARNING
-
-The portainer_agent add-on is really powerful and gives you virtually access to your whole system. While this add-on is created and maintained with care and with security in mind, in the wrong or inexperienced hands,
-it could damage your system.
-
-## Installation
-
----
-
-The installation of this add-on is pretty straightforward and not different in comparison to installing any other add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Set the add-on options to your preferences
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Open the webUI and adapt the software options
-
-Instructions (thanks @Mincka) :
-Disable protection mode, then from the other Portainer cluster, add a new environment of type "Agent" with the IP address of HA and port 9001
-
-![image](https://github.com/alexbelgium/hassio-addons/assets/6184289/f5c5f264-69d0-4d3c-b900-476e21aef05a)
-
-## Configuration
-
-Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
+- **如何让 Portainer 管理 Home Assistant 的 Docker？** 关闭本加载项的保护模式，然后在外部 Portainer 中添加类型为 Agent 的环境，地址填 Home Assistant 的 IP，端口填 `9001`。
+- **这个加载项安全吗？** 它几乎拥有系统的全部访问权限，功能强大，请务必只在自己的受信任环境中使用，并避免交给没有经验的人操作。
+- **如何传递自定义环境变量？** 使用 `env_vars` 选项，每项填写 `name` 与 `value`。
+- **Edge 模式是什么？** 通过 Portainer 边缘计算（Edge）功能远程管理 Agent，需要在 Portainer 中配置 Edge 相关参数并使用 `EDGE_*` 选项。
 
 ---
-
-Main options :
-```yaml
-    "PORTAINER_AGENT_ARGS": Command line arguments to the portainer-agent executable
-```
-
-Other options : see https://github.com/portainer/agent#deployment-options
-
-## Support
-
-Create an issue on github
-
-
+- 英文原版：Home assistant add-on: Portainer_agent；链接 https://github.com/alexbelgium/hassio-addons/blob/master/portainer_agent/README.md
+- 来源仓库：alexbelgium

@@ -1,101 +1,33 @@
-# Home assistant add-on: Guacamole
+<!-- zh-guide -->
+# Guacamole Client
 
+## 简介
+Apache Guacamole 是一个无客户端的远程桌面网关，支持 VNC、RDP、SSH 等标准协议。它提供基于 Web 的界面，无需在用户设备上安装任何客户端软件即可访问远程系统，相当于在 Web 前端与实际远程桌面协议之间充当代理。本加载项整合了 Guacamole 服务器（guacd）与 Web 应用，并内置 PostgreSQL 数据库用于存储连接配置与用户管理，可随时通过浏览器安全访问你的电脑与服务器。
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+## 安装
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 guacamole 并安装。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 配置
+| 配置键 | 类型 / 默认值 | 说明 |
+|--------|---------------|------|
+| `EXTENSIONS` | 字符串（可选） / `auth-totp` | 启用的 Guacamole 扩展，例如 `auth-totp`、`history-recording-storage` |
+| `recording_search_path` | 字符串（可选） / `/config/recordings` | 历史录制存储扩展使用的录制搜索路径，对应 `guacamole.properties` 中的 `recording-search-path` |
+| `TZ` | 字符串（可选） / 空 | 时区，例如 `Europe/London` |
+| `env_vars` | 列表 / 空 | 额外环境变量（大写或小写命名） |
+| `env_vars.name` | 字符串 | 环境变量名，须匹配 `^[A-Za-z0-9_]+$` |
+| `env_vars.value` | 字符串（可选） | 环境变量值 |
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+## 使用 / 访问入口
+启动后可在 Home Assistant 侧边栏看到 Guacamole Client 图标，点击进入。默认账号为 `guacadmin`、密码为 `guacadmin`，首次登录后请立即修改默认密码，然后通过 Web 界面添加 RDP、VNC 或 SSH 连接。
 
-## Addon informations
+## 常见问题
+1. 内置 PostgreSQL 数据库用于存储 Guacamole 的配置、用户与连接，数据库文件位于 `/config/postgres`，首次启动时自动创建。
+2. `EXTENSIONS` 默认启用 `auth-totp`（TOTP 两步验证）；如需历史会话录制，可加入 `history-recording-storage` 并配合 `recording_search_path` 指定录制目录。
+3. 需要手动认证时，在设置中为用户配置 TOTP；可通过 Web 界面创建更多用户并分配连接权限。
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fguacamole%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fguacamole%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fguacamole%2Fconfig.yaml)
-
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
-
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
-
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
-
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
-
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/guacamole/stats.png)
-
-## About
-
-[Apache Guacamole](https://guacamole.apache.org/) is a clientless remote desktop gateway that supports standard protocols like VNC, RDP, and SSH. It provides a web-based interface for accessing remote systems without requiring any client software on the user's device. Guacamole acts as a proxy, translating between the web-based frontend and the actual remote desktop protocols.
-
-This addon combines both the Guacamole server (guacd) and web application components with an integrated PostgreSQL database for storing connection configurations and user management. The solution provides a complete remote desktop gateway that can be used to securely access computers and servers from anywhere via a web browser.
-
-This addon is based on the docker image from: https://github.com/abesnier/docker-guacamole
-
-## Configuration
-
-Webui can be found at `<your-ip>:8080` or through the sidebar using Ingress.
-
-The default username is `guacadmin` with password `guacadmin`. It is strongly recommended to change this password immediately after first login.
-
-### Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `EXTENSIONS` | str | `auth-totp` | Guacamole extensions to enable (e.g., `auth-totp`, `history-recording-storage`) |
-| `recording_search_path` | str | `/config/recordings` | Directory added to `guacamole.properties` as the `recording-search-path` used by the history recording storage extension |
-| `TZ` | str | | Timezone (e.g., `Europe/London`) |
-
-### Example Configuration
-
-```yaml
-EXTENSIONS: "auth-totp,history-recording-storage"
-recording_search_path: "/config/recordings"
-TZ: "Europe/London"
-```
-
-### Database Setup
-
-The addon automatically configures a PostgreSQL database for storing Guacamole configurations, users, and connections. The database files are stored in `/config/postgres` and are automatically created on first startup.
-
-### Custom Scripts and Environment Variables
-
-This addon supports custom scripts and environment variables through the `addon_config` mapping:
-
-- **Custom scripts**: See [Running Custom Scripts in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Running-custom-scripts-in-Addons)
-- **env_vars option**: Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-## Installation
-
-The installation of this add-on is pretty straightforward and not different in
-comparison to installing any other Hass.io add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Go to the web interface and log in with the default credentials (`guacadmin`/`guacadmin`).
-1. Change the default password immediately for security.
-1. Configure your remote connections through the Guacamole web interface.
-
-## Setup
-
-After installation and first login:
-
-1. **Change Default Password**: Go to Settings → Users → guacadmin and change the password
-2. **Create Connections**: Use the web interface to add RDP, VNC, or SSH connections to your remote systems
-3. **Configure Extensions**: If using TOTP authentication, configure it in the user settings
-4. **User Management**: Create additional users and assign connection permissions as needed
-
-## Support
-
-Create an issue on [GitHub][repository]
-
-[repository]: https://github.com/alexbelgium/hassio-addons
-
-
+---
+- 英文原版：Home assistant add-on: Guacamole；链接 https://github.com/alexbelgium/hassio-addons/blob/master/guacamole/README.md
+- 来源仓库：alexbelgium

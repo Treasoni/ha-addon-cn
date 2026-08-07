@@ -1,111 +1,37 @@
-# Hass.io Add-ons: Flexget
+<!-- zh-guide -->
+# Flexget
 
+## 简介
+FlexGet 是一款多用途媒体自动化工具，可处理 torrent、NZB、播客、漫画、电视、电影、RSS、HTML、CSV 等多种来源。它拥有强大的插件系统（300+ 插件），支持 RSS 抓取与过滤、与下载客户端集成、基于 Web 的管理界面以及定时执行与守护进程模式。
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+## 安装
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 flexget 并安装。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 配置
+FlexGet 的 YAML 配置文件位于 `/config/flexget/config.yml`，用于定义任务、RSS 源与下载客户端等。加载项提供以下选项：
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+| 配置键 | 类型 / 默认值 | 说明 |
+|--------|---------------|------|
+| `PGID` | 整数 / `0` | 文件权限的组 ID |
+| `PUID` | 整数 / `0` | 文件权限的用户 ID |
+| `WebuiPass` | 字符串（可选） / `homeassistant123` | Web 界面密码 |
+| `FG_PLUGINS` | 字符串（可选） / 空 | 额外安装的插件包 |
+| `FG_LOG_LEVEL` | 枚举（critical / error / warning / info / verbose / debug / trace）（可选） / 空 | 日志级别 |
+| `env_vars` | 列表 / 空 | 额外环境变量（大写或小写命名） |
+| `env_vars.name` | 字符串 | 环境变量名，须匹配 `^[A-Za-z0-9_]+$` |
+| `env_vars.value` | 字符串（可选） | 环境变量值 |
 
-## Addon informations
+## 使用 / 访问入口
+本加载项未启用 Ingress，通过端口访问：容器端口 `5050/tcp` 映射到宿主端口 `5050`，浏览器访问 http://homeassistant:5050 打开 Web 界面。
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fflexget%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fflexget%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fflexget%2Fconfig.yaml)
+## 常见问题
+1. Web 界面默认密码为 `homeassistant123`，建议在加载项选项（`WebuiPass`）中修改。
+2. 主要配置在 `/config/flexget/config.yml` 中完成，可在其中定义任务、RSS 源与输出插件。
+3. `FG_PLUGINS` 可安装额外的插件包（如 `flexget-plugins-extra`），用于扩展功能。
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
-
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
-
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
-
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
-
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/flexget/stats.png)
-
-## About
-
-[FlexGet](https://flexget.com/) is a multipurpose automation tool for all of your media. It can support torrents, NZBs, podcasts, comics, TV, movies, RSS, HTML, CSV, and more.
-
-Key features:
-- Powerful plugin system with 300+ plugins
-- RSS feed processing and filtering
-- Integration with download clients
-- Web-based management interface
-- Scheduled execution and daemon mode
-
-## Installation
-
-The installation of this add-on is pretty straightforward and not different in comparison to installing any other add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Set the add-on options to your preferences
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Open the webUI and adapt the software options
-
-## Configuration
-
-Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-Webui can be found at <http://homeassistant:5050>.
-Default password: `homeassistant123` (change via addon options).
-
-### Setup Steps
-
-1. Access the web interface after starting the addon
-2. Create or edit your FlexGet configuration file
-3. Set up RSS feeds and download sources
-4. Configure output plugins for your download clients
-5. Test configuration and enable scheduling
-
-### Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `PGID` | int | `0` | Group ID for file permissions |
-| `PUID` | int | `0` | User ID for file permissions |
-| `WebuiPass` | str | `homeassistant123` | Web interface password |
-| `FG_PLUGINS` | str | | Additional plugins to install |
-| `FG_LOG_LEVEL` | list | | Log level (critical/error/warning/info/verbose/debug/trace) |
-
-### Example Configuration
-
-```yaml
-PGID: 1000
-PUID: 1000
-WebuiPass: "SecurePassword123"
-FG_PLUGINS: "flexget-plugins-extra"
-FG_LOG_LEVEL: "info"
-```
-
-### Configuration File
-
-FlexGet uses a YAML configuration file located at `/config/flexget/config.yml`. Example:
-
-```yaml
-tasks:
-  tv-shows:
-    rss: https://example.com/tv-shows.rss
-    series:
-      - Breaking Bad
-      - Game of Thrones
-    transmission:
-      host: localhost
-      port: 9091
-```
-
-For complete configuration documentation, see: https://flexget.com/Configuration
-
-## Support
-
-If you have an issue with your installation, please be sure to checkout github.
-
-
+---
+- 英文原版：Hass.io Add-ons: Flexget；链接 https://github.com/alexbelgium/hassio-addons/blob/master/flexget/README.md
+- 来源仓库：alexbelgium

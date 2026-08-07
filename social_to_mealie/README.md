@@ -1,83 +1,43 @@
-# Home assistant add-on: Social to Mealie
+<!-- zh-guide -->
+# Social to Mealie
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+## 简介
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+Social to Mealie 可以将社交媒体视频中的菜谱直接导入到你的 Mealie 实例中。它通过 AI 转录视频内容并整理成结构化菜谱，保存到 Mealie。本加载项基于 social-to-mealie 项目镜像构建。
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+## 安装
 
-## Addon informations
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 `social_to_mealie` 并安装。
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fsocial_to_mealie%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fsocial_to_mealie%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fsocial_to_mealie%2Fconfig.yaml)
+## 配置
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+| 配置键 | 类型 / 默认值 | 说明 |
+|--------|--------------|------|
+| `OPENAI_URL` | 字符串 / 默认 `https://api.openai.com/v1` | OpenAI 兼容接口的地址 |
+| `OPENAI_API_KEY` | 字符串 / 空 | OpenAI 兼容接口的 API 密钥 |
+| `TRANSCRIPTION_MODEL` | 字符串 / 默认 `whisper-1` | 用于音频转录的 Whisper 模型 |
+| `TEXT_MODEL` | 字符串 / 默认 `gpt-4o-mini` | 用于生成菜谱的文本模型 |
+| `MEALIE_URL` | 字符串 / 空 | 你的 Mealie 实例地址 |
+| `MEALIE_API_KEY` | 字符串 / 空 | Mealie 的 API 密钥 |
+| `MEALIE_GROUP_NAME` | 字符串 / 默认 `home` | Mealie 分组名（可选） |
+| `YTDLP_VERSION` | 字符串 / 默认 `latest` | 启动时下载的 yt-dlp 版本 |
+| `EXTRA_PROMPT` | 字符串 / 空 | 附加给 AI 的额外指令（可选） |
+| `COOKIES` | 字符串 / 空 | 供 yt-dlp 访问受保护社交媒体内容的 cookies 字符串（可选） |
+| `env_vars` | 列表 / 空 | 额外环境变量列表（每项含 `name` 和 `value`） |
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+## 使用 / 访问入口
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
+Web 界面位于宿主端口 3000。
 
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
+## 常见问题
 
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/social_to_mealie/stats.png)
+- **依赖要求**：需要 Mealie 1.9.0 及以上版本，并在 Mealie 中配置了 AI 提供方。
+- **预下载 yt-dlp**：可通过设置 `YTDLP_VERSION`（例如 `latest` 或具体版本号）在启动时预先下载 yt-dlp。
+- **受保护内容**：如果社交媒体的视频内容需要登录才能访问，可通过 `COOKIES` 选项提供 cookies 字符串供 yt-dlp 使用。
 
-## About
-
-[Social to Mealie](https://github.com/GerardPolloRebozado/social-to-mealie) lets you import recipes from social media videos directly into your Mealie instance.
-
-This addon is based on the docker image https://github.com/GerardPolloRebozado/social-to-mealie
-
-## Installation
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-
-## Configuration
-
-Webui can be found at <http://homeassistant:3000>.
-
-### Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `OPENAI_URL` | str | `https://api.openai.com/v1` | URL for the OpenAI-compatible endpoint |
-| `OPENAI_API_KEY` | str | `` | API key for the OpenAI-compatible provider |
-| `TRANSCRIPTION_MODEL` | str | `whisper-1` | Whisper model to use for transcription |
-| `TEXT_MODEL` | str | `gpt-4o-mini` | Text model used to build the recipe |
-| `MEALIE_URL` | str | `https://mealie.example.com` | URL of your Mealie instance |
-| `MEALIE_API_KEY` | str | `` | API key for Mealie |
-| `MEALIE_GROUP_NAME` | str | `home` | Optional Mealie group name |
-| `EXTRA_PROMPT` | str | `` | Additional instructions for the AI |
-| `YTDLP_VERSION` | str | `latest` | yt-dlp version to download at startup |
-| `COOKIES` | str | `` | Optional cookies string for yt-dlp |
-| `env_vars` | list | `[]` | Additional environment variables to export |
-
-### Example Configuration
-
-```yaml
-OPENAI_URL: https://api.openai.com/v1
-OPENAI_API_KEY: sk-...
-TRANSCRIPTION_MODEL: whisper-1
-TEXT_MODEL: gpt-4o-mini
-MEALIE_URL: https://mealie.example.com
-MEALIE_API_KEY: ey...
-MEALIE_GROUP_NAME: home
-EXTRA_PROMPT: ""
-YTDLP_VERSION: latest
-COOKIES: ""
-env_vars: []
-```
-
-### Notes
-
-- Mealie 1.9.0+ with an AI provider configured is required.
-- yt-dlp can be pre-downloaded by setting `YTDLP_VERSION` (for example `latest` or `2025.11.01`).
-- Provide the cookies string if you need to access protected social media content with yt-dlp.
+---
+- 英文原版：[Social to Mealie](https://github.com/alexbelgium/hassio-addons/blob/master/social_to_mealie/README.md)
+- 来源仓库：alexbelgium

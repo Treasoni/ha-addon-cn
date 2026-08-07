@@ -1,94 +1,42 @@
-# Home assistant add-on: Cloudcommander
+<!-- zh-guide -->
+# Cloudcommander
 
+## 简介
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+Cloud Commander 是一个带控制台与编辑器的网页文件管理器。本 add-on 基于 coderaiser 的 cloudcmd 镜像，提供在 Home Assistant 中管理文件的 Web 界面，并可通过 Ingress 在侧边栏访问。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 安装
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 `cloudcommander` 并安装。
+3. 安装完成后启动 add-on，点击「保存」并查看日志确认运行正常。
 
-## Addon informations
+## 配置
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fcloudcommander%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fcloudcommander%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fcloudcommander%2Fconfig.yaml)
+| 配置键 | 类型 / 默认值 | 说明 |
+| --- | --- | --- |
+| `env_vars` | 列表 / 空 | 传入容器的额外环境变量（`name`/`value` 形式） |
+| `CUSTOM_OPTIONS` | 字符串（可选） / 空 | 自定义 CLI 选项，如 `--name Homeassistant` |
+| `DROPBOX_TOKEN` | 字符串（可选） / 空 | Dropbox 集成令牌（见 cloudcmd.io） |
+| `smbv1` | 布尔（可选） / 空 | 是否启用 SMB v1 协议 |
+| `localdisks` | 字符串（可选） / 空 | 需要挂载的本地磁盘，如 `sda1,sdb1,MYNAS` |
+| `networkdisks` | 字符串（可选） / 空 | 需要挂载的 SMB 共享，如 `//SERVER/SHARE` |
+| `cifsusername` | 字符串（可选） / 空 | SMB 用户名 |
+| `cifspassword` | 字符串（可选） / 空 | SMB 密码 |
+| `cifsdomain` | 字符串（可选） / 空 | SMB 域 |
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+## 使用 / 访问入口
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+启动后可在 Home Assistant 侧边栏看到 Cloudcommander 图标，点击进入；也可通过 Web 界面端口 8000 直接访问。
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
+## 常见问题
 
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
+- 除上述选项外，其余配置可在应用的 Web 界面中完成。
+- 支持挂载本地磁盘与远程 SMB 共享。
+- 可通过 `env_vars` 传入额外环境变量，或通过 addon_config 映射运行自定义脚本。
 
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/cloudcommander/stats.png)
-
-## About
-
-[Cloud Commander](https://github.com/coderaiser/cloudcmd) is a file manager for the web with console and editor.
-This addon is based on the [docker image](https://hub.docker.com/r/coderaiser/cloudcmd).
-
-## Configuration
-
-Webui can be found at <http://homeassistant:8000> or through the sidebar using Ingress.
-Configurations can be done through the app webUI, except for the following options.
-
-### Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `CUSTOM_OPTIONS` | str | | Custom CLI options (e.g., `--name Homeassistant`) |
-| `DROPBOX_TOKEN` | str | | Dropbox integration token (see https://cloudcmd.io/) |
-| `localdisks` | str | | Local drives to mount (e.g., `sda1,sdb1,MYNAS`) |
-| `networkdisks` | str | | SMB shares to mount (e.g., `//SERVER/SHARE`) |
-| `cifsusername` | str | | SMB username for network shares |
-| `cifspassword` | str | | SMB password for network shares |
-| `cifsdomain` | str | | SMB domain for network shares |
-| `smbv1` | bool | `false` | Enable SMB v1 protocol |
-
-### Example Configuration
-
-```yaml
-CUSTOM_OPTIONS: "--name Homeassistant"
-DROPBOX_TOKEN: "your-dropbox-token"
-localdisks: "sda1,sdb1"
-networkdisks: "//192.168.1.100/files"
-cifsusername: "fileuser"
-cifspassword: "password123"
-cifsdomain: "workgroup"
-smbv1: false
-```
-
-### Mounting Drives
-
-This addon supports mounting both local drives and remote SMB shares:
-
-- **Local drives**: See [Mounting Local Drives in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Mounting-Local-Drives-in-Addons)
-- **Remote shares**: See [Mounting Remote Shares in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Mounting-remote-shares-in-Addons)
-
-### Custom Scripts and Environment Variables
-
-This addon supports custom scripts and environment variables:
-
-- **Custom scripts**: See [Running Custom Scripts in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Running-custom-scripts-in-Addons)
-- **env_vars option**: Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-## Installation
-
-The installation of this add-on is pretty straightforward and not different in
-comparison to installing any other Hass.io add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-
-[repository]: https://github.com/alexbelgium/hassio-addons
-
-
+---
+- 英文原版：[Home assistant add-on: Cloudcommander](https://github.com/alexbelgium/hassio-addons/blob/master/cloudcommander/README.md)
+- 来源仓库：alexbelgium

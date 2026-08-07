@@ -1,84 +1,36 @@
-# Home assistant add-on: librespeed
+<!-- zh-guide -->
+# LibreSpeed
 
+## 简介
+LibreSpeed 是一个超轻量级的网速测试工具，使用 JavaScript 实现（XMLHttpRequest 与 Web Workers），可自托管带宽测速页面。本加载项基于 linuxserver/docker-librespeed 镜像构建，支持通过侧边栏 Ingress 访问。
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+## 安装
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 librespeed 并安装。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 配置
+除下表列出的选项外，其余设置可在应用的 WebUI 中完成；默认用户名/密码见启动日志。
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+| 配置键 | 类型 / 默认值 | 说明 |
+|--------|--------------|------|
+| `PGID` | 整数 / 默认 `1000` | 文件权限的用户组 ID |
+| `PUID` | 整数 / 默认 `1000` | 文件权限的用户 ID |
+| `TZ` | 字符串（可选） | 时区，如 `Europe/London` |
+| `PASSWORD` | 字符串（可选） | 可选的结果页访问密码 |
+| `CUSTOM_RESULTS` | 布尔 / 默认 `false` | 是否启用自定义结果展示 |
+| `IPINFO_APIKEY` | 字符串 / 空 | 可选的 IP 信息 API 密钥 |
+| `env_vars` | 列表 / 默认 `[]` | 额外传给容器的环境变量（键名需匹配 `^[A-Za-z0-9_]+$`） |
 
-## Addon informations
+## 使用 / 访问入口
+- 启动后可在 Home Assistant 侧边栏看到 LibreSpeed 图标，点击进入；也可通过浏览器访问宿主端口 8096（对应容器端口 80）。
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Flibrespeed%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Flibrespeed%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Flibrespeed%2Fconfig.yaml)
+## 常见问题
+- **默认登录信息是什么？** 默认用户名/密码会在启动日志中输出。
+- **如何设置访问密码？** 通过 `PASSWORD` 选项设置可选密码；`CUSTOM_RESULTS` 控制是否使用自定义结果页。
+- **测速结果与地理位置？** 配置 `IPINFO_APIKEY` 可启用基于 IP 的详情展示。
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
-
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
-
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
-
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
-
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/librespeed/stats.png)
-
-## About
-
-[LibreSpeed](https://github.com/librespeed/speedtest) is a very lightweight speed test implemented in Javascript, using XMLHttpRequest and Web Workers.
-This addon is based on the docker image https://github.com/linuxserver/docker-librespeed
-
-## Installation
-
-The installation of this add-on is pretty straightforward and not different in comparison to installing any other add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Set the add-on options to your preferences
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Open the webUI and adapt the software options
-
-## Configuration
-
-Webui can be found at <http://homeassistant:PORT>.
-The default username/password : described in the startup log.
-Configurations can be done through the app webUI, except for the following options
-
-```yaml
-PGID: user
-PUID: user
-TZ: timezone
-PASSWORD: "" # optional
-CUSTOM_RESULTS: false # optional
-IPINFO_APIKEY: "" # optional
-localdisks: sda1 #put the hardware name of your drive to mount separated by commas, or its label. ex. sda1, sdb1, MYNAS...
-networkdisks: "//SERVER/SHARE" # optional, list of smb servers to mount, separated by commas
-cifsusername: "username" # optional, smb username, same for all smb shares
-cifspassword: "password" # optional, smb password
-```
-
-### Custom Scripts and Environment Variables
-
-This addon supports custom scripts and environment variables through the `addon_config` mapping:
-
-- **Custom scripts**: See [Running Custom Scripts in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Running-custom-scripts-in-Addons)
-- **env_vars option**: Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-## Support
-
-Create an issue on github
-
-## Illustration
-
-![illustration](https://speedtest.fdossena.com/mpot_v6.gif)
-
-[repository]: https://github.com/alexbelgium/hassio-addons
-
-
+---
+- 英文原版：[Home assistant add-on: librespeed](https://github.com/alexbelgium/hassio-addons/blob/master/librespeed/README.md)
+- 来源仓库：alexbelgium

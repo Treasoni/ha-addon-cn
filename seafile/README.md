@@ -1,131 +1,51 @@
-# Home assistant add-on: seafile
+<!-- zh-guide -->
+# Seafile
 
+## 简介
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+Seafile 是一个高性能的文件同步与共享平台，同时内置 Markdown 所见即所得编辑、Wiki、文件标签等知识管理功能，适合个人或团队搭建自托管的网盘与知识库。本加载项基于 franchetti/seafile-arm 镜像构建。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 安装
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 `seafile` 并安装。
 
-## Addon informations
+## 配置
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fseafile%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fseafile%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fseafile%2Fconfig.yaml)
+| 配置键 | 类型 / 默认值 | 说明 |
+|--------|--------------|------|
+| `env_vars` | 列表 / 空 | 额外环境变量列表（每项含 `name` 和 `value`），用于向容器传递自定义环境变量 |
+| `CONFIG_LOCATION` | 字符串 / 默认 `/config/addons_config/seafile/config.yaml` | 自定义配置文件位置（可选） |
+| `FILE_SERVER_ROOT` | 字符串 / 默认 `http://homeassistant.local:8082` | 文件服务器根 URL，用于生成正确的下载链接 |
+| `PGID` | 整数 / 默认 `1000` | 文件权限组 ID |
+| `PORT` | 字符串 / 默认 `8082` | 文件服务器端口 |
+| `PUID` | 整数 / 默认 `1000` | 文件权限用户 ID |
+| `SEAFILE_ADMIN_EMAIL` | 字符串（邮箱）/ 默认 `me@example.com` | 管理员邮箱 |
+| `SEAFILE_ADMIN_PASSWORD` | 字符串（密码）/ 默认 `a_very_secret_password` | 管理员密码，首次登录后请立即修改 |
+| `SERVER_IP` | 字符串 / 默认 `homeassistant.local` | 服务器 IP 或主机名 |
+| `TZ` | 字符串 / 默认 `Europe/Paris` | 时区 |
+| `data_location` | 字符串 / 默认 `/share/seafile` | 数据存放位置 |
+| `database` | 枚举（sqlite / mariadb_addon）/ 默认 `sqlite` | 数据库类型：`sqlite` 或使用 MariaDB 加载项 |
+| `url` | 字符串 / 默认 `seafile.example.com` | 外部访问 Seafile 的地址 |
+| `localdisks` | 字符串 / 空 | 要挂载的本地磁盘（如 `sda1,sdb1`） |
+| `networkdisks` | 字符串 / 空 | 要挂载的 SMB 共享（如 `//SERVER/SHARE`） |
+| `cifsusername` | 字符串 / 空 | SMB 共享用户名 |
+| `cifspassword` | 字符串 / 空 | SMB 共享密码 |
+| `cifsdomain` | 字符串 / 空 | SMB 共享域名 |
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+## 使用 / 访问入口
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+启动后，Seahub 网页界面位于宿主端口 8000，文件服务器位于宿主端口 8082。
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
+## 常见问题
 
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
-
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/seafile/stats.png)
-
-## About
-
----
-
-High performance file syncing and sharing, with also Markdown WYSIWYG editing, Wiki, file label and other knowledge management features.
-
-This addon is based on the docker image [https://hub.docker.com/r/franchetti/seafile-arm](https://hub.docker.com/r/franchetti/seafile-arm)
-
-## Installation
-
----
-
-The installation of this add-on is pretty straightforward and not different in comparison to installing any other add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Set the add-on options to your preferences
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Open the webUI and adapt the software options
-
-## Configuration
-
-Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-Webui can be found at <http://homeassistant:8000> (Seahub) and <http://homeassistant:8082> (File server).
-
-### Setup Steps
-
-1. Default login: `me@example.com` / `a_very_secret_password`
-2. Change admin credentials after first login
-3. Configure database (SQLite default, MariaDB recommended for production)
-4. Set proper file server root URL for external access
-
-> **File server URL**: The add-on now writes `SERVICE_URL` and `FILE_SERVER_ROOT` directly to `conf/seahub_settings.py`. `SERVICE_URL` uses the `url` option when set (otherwise `SERVER_IP` with port `8000`), while `FILE_SERVER_ROOT` follows the `FILE_SERVER_ROOT` option (defaulting to `http://<your host>:8082`). Keep `FILE_SERVER_ROOT` aligned with your accessible file server endpoint so download links resolve correctly.
-
-### Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `PGID` | int | `1000` | Group ID for file permissions |
-| `PUID` | int | `1000` | User ID for file permissions |
-| `TZ` | str | `Europe/Paris` | Timezone (e.g., `Europe/London`) |
-| `SEAFILE_ADMIN_EMAIL` | email | `me@example.com` | Admin email address |
-| `SEAFILE_ADMIN_PASSWORD` | password | `a_very_secret_password` | Admin password |
-| `SERVER_IP` | str | `homeassistant.local` | Server IP or hostname |
-| `FILE_SERVER_ROOT` | str | `http://homeassistant.local:8082` | File server root URL |
-| `PORT` | str | `8082` | File server port |
-| `url` | str | | External URL for Seafile |
-| `database` | list | `sqlite` | Database type (sqlite/mariadb_addon) |
-| `data_location` | str | `/share/seafile` | Data storage location |
-| `CONFIG_LOCATION` | str | | Custom config file location |
-| `localdisks` | str | | Local drives to mount (e.g., `sda1,sdb1`) |
-| `networkdisks` | str | | SMB shares to mount (e.g., `//SERVER/SHARE`) |
-| `cifsusername` | str | | SMB username for network shares |
-| `cifspassword` | str | | SMB password for network shares |
-| `cifsdomain` | str | | SMB domain for network shares |
-
-### Example Configuration
-
-```yaml
-PGID: 1000
-PUID: 1000
-TZ: "Europe/London"
-SEAFILE_ADMIN_EMAIL: "admin@mydomain.com"
-SEAFILE_ADMIN_PASSWORD: "SecurePassword123"
-SERVER_IP: "192.168.1.100"
-FILE_SERVER_ROOT: "https://seafile.mydomain.com:8082"
-url: "seafile.mydomain.com"
-database: "mariadb_addon"
-data_location: "/share/seafile"
-localdisks: "sda1,sdb1"
-networkdisks: "//nas.local/seafile"
-cifsusername: "seafileuser"
-cifspassword: "password123"
-cifsdomain: "workgroup"
-```
-
-### Mounting Drives
-
-This addon supports mounting both local drives and remote SMB shares:
-
-- **Local drives**: See [Mounting Local Drives in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Mounting-Local-Drives-in-Addons)
-- **Remote shares**: See [Mounting Remote Shares in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Mounting-remote-shares-in-Addons)
-
-**Important**: If storing database on mounted drive, ensure SQLite database is also hosted there to prevent data loss during mount issues.
-
-## Support
-
-Create an issue on github
-
-## Illustration
+- **默认账号**：默认管理员为 `me@example.com` / `a_very_secret_password`，首次登录后请修改管理员凭据。
+- **数据库选择**：默认使用 SQLite，生产环境建议选择 MariaDB（`database` 设为 `mariadb_addon`，并先安装 MariaDB 加载项）。
+- **文件服务器 URL**：加载项会把 `SERVICE_URL` 与 `FILE_SERVER_ROOT` 写入 `conf/seahub_settings.py`。请保持 `FILE_SERVER_ROOT` 与你实际可访问的文件服务器地址一致，否则下载链接无法正确解析。
+- **挂载磁盘时注意**：如果数据库存放在挂载盘上，请确保 SQLite 数据库也位于同一挂载盘，以免挂载异常导致数据丢失。
 
 ---
-
-![illustration](https://seafile.com/img/slider/artistdetails.png)
-
-[repository]: https://github.com/alexbelgium/hassio-addons
-
-
+- 英文原版：[Seafile](https://github.com/alexbelgium/hassio-addons/blob/master/seafile/README.md)
+- 来源仓库：alexbelgium

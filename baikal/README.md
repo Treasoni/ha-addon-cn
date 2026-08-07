@@ -1,77 +1,39 @@
-## &#9888; Open Request : [✨ [REQUEST] Baikal - Allow using the Tailscale certificate and key to use HTTPS (opened 2025-07-03)](https://github.com/alexbelgium/hassio-addons/issues/1935) by [@frederickjh](https://github.com/frederickjh)
-# Home assistant add-on: Baikal
+<!-- zh-guide -->
+# Baikal
 
+## 简介
 
-I maintain this and other Home Assistant add-ons in my free time: keeping up with upstream changes, HA changes, and testing on real hardware takes a lot of time (and some money). I use around 5-10 of my >110 addons so regularly I install test machines (and purchase some test services such as vpn) that I don't use myself to troubleshoot and improve the addons
+Baikal 是一款轻量级的 CalDAV + CardDAV 服务器，提供丰富的 Web 界面，可方便地管理用户、通讯录（address books）和日历（calendars）。它安装简单、速度快，只需基础 PHP 环境即可运行，数据可存储在 MySQL 或 SQLite 数据库中。本加载项基于 [ckulka/baikal-docker](https://github.com/ckulka/baikal-docker) 镜像构建。
 
-If this add-on saves you time or makes your setup easier, I would be very grateful for your support!
+## 安装
 
-[![Buy me a coffee][donation-badge]](https://www.buymeacoffee.com/alexbelgium)
-[![Donate via PayPal][paypal-badge]](https://www.paypal.com/donate/?hosted_button_id=DZFULJZTP3UQA)
+1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
+   - Gitee：https://gitee.com/zhqznc_10603234_123/ha-addon
+   - GitHub：https://github.com/Treasoni/ha-addon-cn
+2. 搜索 baikal 并安装。
+3. 按偏好设置加载项选项，保存并启动，然后打开 Web 界面完成软件配置。
 
-## Addon informations
+## 配置
 
-![Version](https://img.shields.io/badge/dynamic/yaml?label=Version&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fbazarr%2Fconfig.yaml)
-![Ingress](https://img.shields.io/badge/dynamic/yaml?label=Ingress&query=%24.ingress&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fbazarr%2Fconfig.yaml)
-![Arch](https://img.shields.io/badge/dynamic/yaml?color=success&label=Arch&query=%24.arch&url=https%3A%2F%2Fraw.githubusercontent.com%2Falexbelgium%2Fhassio-addons%2Fmaster%2Fbazarr%2Fconfig.yaml)
+大部分配置通过加载项的 Web 界面完成，加载项侧仅保留以下选项：
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9c6cf10bdbba45ecb202d7f579b5be0e)](https://www.codacy.com/gh/alexbelgium/hassio-addons/dashboard?utm_source=github.com&utm_medium=referral&utm_content=alexbelgium/hassio-addons&utm_campaign=Badge_Grade)
-[![GitHub Super-Linter](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/weekly-supelinter.yaml?label=Lint%20code%20base)](https://github.com/alexbelgium/hassio-addons/actions/workflows/weekly-supelinter.yaml)
-[![Builder](https://img.shields.io/github/actions/workflow/status/alexbelgium/hassio-addons/onpush_builder.yaml?label=Builder)](https://github.com/alexbelgium/hassio-addons/actions/workflows/onpush_builder.yaml)
+| 配置键 | 类型 / 默认值 | 说明 |
+| ------ | ----------- | ---- |
+| `env_vars` | 列表，默认空 | 附加环境变量，通过此选项传入额外环境变量（变量名大小写均可） |
 
-[donation-badge]: https://img.shields.io/badge/Buy%20me%20a%20coffee-%23d32f2f?logo=buy-me-a-coffee&style=flat&logoColor=white
-[paypal-badge]: https://img.shields.io/badge/Donate%20via%20PayPal-0070BA?logo=paypal&style=flat&logoColor=white
+> 说明：Baikal 的用户、通讯录、日历等均在 Web 界面中管理；加载项配置及自定义数据存放在 `addon_config` 目录下。
 
-_Thanks to everyone having starred my repo! To star it click on the image below, then it will be on top right. Thanks!_
+## 使用 / 访问入口
 
-[![Stargazers repo roster for @alexbelgium/hassio-addons](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/.github/stars2.svg)](https://github.com/alexbelgium/hassio-addons/stargazers)
+- **Web 界面**：启动后打开 http://homeassistant:8013 即可访问（容器端口 `80/tcp`，宿主映射端口 8013），在此完成用户、日历与通讯录的配置。
+- **数据存储**：支持 MySQL 或 SQLite 数据库；可配合其他 Home Assistant 加载项使用 CalDAV/CardDAV 协议同步日历与通讯录。
 
-![downloads evolution](https://raw.githubusercontent.com/alexbelgium/hassio-addons/master/baikal/stats.png)
+## 常见问题
 
-## About
-
----
-
-[Baikal](https://sabre.io/baikal/) is a lightweight CalDAV+CardDAV server. It offers an extensive web interface with easy management of users, address books and calendars. It is fast and simple to install and only needs a basic php capable server. The data can be stored in a MySQL or a SQLite database.
-It is based on the docker image : https://github.com/ckulka/baikal-docker
-
-## Configuration
+- **在哪里配置用户和日历？** 全部通过 Web 界面完成，无需修改加载项选项。
+- **配置数据存放在哪里？** 存放在 `addon_config` 对应的目录（如 `/addon_configs/` 下），可在支持的文件浏览类加载项中访问，也便于备份。
+- **如何接入 iOS/Android 日历与通讯录？** 在设备中按 CalDAV/CardDAV 协议添加账户，填入本加载项的地址与已创建的用户凭据即可同步。
 
 ---
-
-Webui can be found at <http://homeassistant:PORT>.
-Configurations can be done through the app webUI, except for the following options
-
-```yaml
-
-```
-
-### Custom Scripts and Environment Variables
-
-This addon supports custom scripts and environment variables through the `addon_config` mapping:
-
-- **Custom scripts**: See [Running Custom Scripts in Addons](https://github.com/alexbelgium/hassio-addons/wiki/Running-custom-scripts-in-Addons)
-- **Environment variables**: See [Add Environment Variables to your Addon](https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon)
-
-## Installation
-
----
-
-The installation of this add-on is pretty straightforward and not different in comparison to installing any other add-on.
-
-1. Add my add-ons repository to your home assistant instance (in supervisor addons store at top right, or click button below if you have configured my HA)
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Falexbelgium%2Fhassio-addons)
-1. Install this add-on.
-1. Click the `Save` button to store your configuration.
-1. Set the add-on options to your preferences
-1. Start the add-on.
-1. Check the logs of the add-on to see if everything went well.
-1. Open the webUI and adapt the software options
-
-### Environment variables
-
-Use the add-on `env_vars` option to pass extra environment variables (uppercase or lowercase names). See https://github.com/alexbelgium/hassio-addons/wiki/Add-Environment-variables-to-your-Addon-2 for details.
-
-## Support
-
-Create an issue on github
+- 英文原版：Home assistant add-on: Baikal；链接 https://github.com/alexbelgium/hassio-addons/blob/master/baikal/README.md
+- 来源仓库：alexbelgium
