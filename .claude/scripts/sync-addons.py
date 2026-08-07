@@ -33,6 +33,9 @@ from pathlib import Path
 
 import registry_mirror as rm  # 镜像地址重写共享模块（同目录）
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")  # Windows 控制台/管道避免中文乱码
+
 ROOT = Path(__file__).resolve().parent.parent.parent
 MANIFEST = ROOT / "addons-manifest.json"
 REPOSITORY = ROOT / "repository.json"
