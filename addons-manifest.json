@@ -1,0 +1,1454 @@
+{
+  "schema_version": 1,
+  "store": {
+    "name": "我的 Add-on 商店",
+    "url": "https://gitee.com/zhqznc_10603234_123/homeassistant",
+    "maintainer": "zhq"
+  },
+  "sources": [
+    {
+      "id": "alexbelgium",
+      "repo": "alexbelgium/hassio-addons",
+      "branch": "master",
+      "priority": 1,
+      "license": "MIT"
+    },
+    {
+      "id": "official",
+      "repo": "home-assistant/addons",
+      "branch": "master",
+      "priority": 2,
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "frenck",
+      "repo": "hassio-addons/repository",
+      "branch": "master",
+      "priority": 3,
+      "license": "MIT"
+    }
+  ],
+  "synced_at": "2026-08-07T07:01:47+00:00",
+  "addons": {
+    "addons_updater": {
+      "source": "alexbelgium",
+      "upstream_version": "2026.08",
+      "local_version": "2026.08",
+      "synced_at": "2026-08-07T06:52:42+00:00",
+      "zh_guide": false
+    },
+    "adguard": {
+      "source": "frenck",
+      "upstream_version": "6.2.0",
+      "local_version": "6.2.0",
+      "synced_at": "2026-08-07T06:52:42+00:00",
+      "zh_guide": true
+    },
+    "aircast": {
+      "source": "frenck",
+      "upstream_version": "5.1.1",
+      "local_version": "5.1.1",
+      "synced_at": "2026-08-07T06:52:42+00:00",
+      "zh_guide": false
+    },
+    "airsonos": {
+      "source": "frenck",
+      "upstream_version": "5.1.1",
+      "local_version": "5.1.1",
+      "synced_at": "2026-08-07T06:52:42+00:00",
+      "zh_guide": false
+    },
+    "appdaemon": {
+      "source": "frenck",
+      "upstream_version": "0.18.5",
+      "local_version": "0.18.5",
+      "synced_at": "2026-08-07T06:52:42+00:00",
+      "zh_guide": false
+    },
+    "arpspoof": {
+      "source": "alexbelgium",
+      "upstream_version": "1.0.0-2",
+      "local_version": "1.0.0-2",
+      "synced_at": "2026-08-07T06:52:42+00:00",
+      "zh_guide": false
+    },
+    "assist_microphone": {
+      "source": "official",
+      "upstream_version": "1.3.0",
+      "local_version": "1.3.0",
+      "synced_at": "2026-08-07T06:52:42+00:00",
+      "zh_guide": false
+    },
+    "aurral": {
+      "source": "alexbelgium",
+      "upstream_version": "2.0.3",
+      "local_version": "2.0.3",
+      "synced_at": "2026-08-07T06:52:42+00:00",
+      "zh_guide": false
+    },
+    "autobrr": {
+      "source": "alexbelgium",
+      "upstream_version": "1.83.0",
+      "local_version": "1.83.0",
+      "synced_at": "2026-08-07T06:52:42+00:00",
+      "zh_guide": false
+    },
+    "baikal": {
+      "source": "alexbelgium",
+      "upstream_version": "0.10.1-hafix4",
+      "local_version": "0.10.1-hafix4",
+      "synced_at": "2026-08-07T06:52:42+00:00",
+      "zh_guide": false
+    },
+    "battybirdnet-pi": {
+      "source": "alexbelgium",
+      "upstream_version": "2026.02.28",
+      "local_version": "2026.02.28",
+      "synced_at": "2026-08-07T06:52:42+00:00",
+      "zh_guide": false
+    },
+    "bazarr": {
+      "source": "alexbelgium",
+      "upstream_version": "1.6.0.2",
+      "local_version": "1.6.0.2",
+      "synced_at": "2026-08-07T06:52:42+00:00",
+      "zh_guide": true
+    },
+    "bentopdf": {
+      "source": "alexbelgium",
+      "upstream_version": "2.8.4",
+      "local_version": "2.8.4",
+      "synced_at": "2026-08-07T06:52:42+00:00",
+      "zh_guide": false
+    },
+    "binance-trading-bot": {
+      "source": "alexbelgium",
+      "upstream_version": "0.0.101",
+      "local_version": "0.0.101",
+      "synced_at": "2026-08-07T06:52:42+00:00",
+      "zh_guide": false
+    },
+    "birdnet-go": {
+      "source": "alexbelgium",
+      "upstream_version": "20260716",
+      "local_version": "20260716",
+      "synced_at": "2026-08-07T06:52:42+00:00",
+      "zh_guide": false
+    },
+    "birdnet-go-dev": {
+      "source": "alexbelgium",
+      "upstream_version": "20260729.1",
+      "local_version": "20260729.1",
+      "synced_at": "2026-08-07T06:52:42+00:00",
+      "zh_guide": false
+    },
+    "birdnet-pi": {
+      "source": "alexbelgium",
+      "upstream_version": "2026.08.02",
+      "local_version": "2026.08.02",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "birdnet-pi-zach": {
+      "source": "alexbelgium",
+      "upstream_version": "2026.07.10.2",
+      "local_version": "2026.07.10.2",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "birdnet-pipy": {
+      "source": "alexbelgium",
+      "upstream_version": "0.8.5",
+      "local_version": "0.8.5",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "bitwarden": {
+      "source": "alexbelgium",
+      "upstream_version": "1.37.1",
+      "local_version": "1.37.1",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": true
+    },
+    "booksonic_air": {
+      "source": "alexbelgium",
+      "upstream_version": "2201.1.0",
+      "local_version": "2201.1.0",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "bookstack": {
+      "source": "frenck",
+      "upstream_version": "4.0.2",
+      "local_version": "4.0.2",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "browser_brave": {
+      "source": "alexbelgium",
+      "upstream_version": "1.93.129-ls119",
+      "local_version": "1.93.129-ls119",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "browser_chromium": {
+      "source": "alexbelgium",
+      "upstream_version": "2026.08.01.1",
+      "local_version": "2026.08.01.1",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "browserless_chrome": {
+      "source": "alexbelgium",
+      "upstream_version": "2.55.2",
+      "local_version": "2.55.2",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "calibre": {
+      "source": "alexbelgium",
+      "upstream_version": "9.12.0",
+      "local_version": "9.12.0",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": true
+    },
+    "calibre_web": {
+      "source": "alexbelgium",
+      "upstream_version": "0.6.26-2",
+      "local_version": "0.6.26-2",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": true
+    },
+    "cec_scan": {
+      "source": "official",
+      "upstream_version": "4.0",
+      "local_version": "4.0",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "changedetection.io": {
+      "source": "alexbelgium",
+      "upstream_version": "0.55.8",
+      "local_version": "0.55.8",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": true
+    },
+    "chrony": {
+      "source": "frenck",
+      "upstream_version": "6.0.1",
+      "local_version": "6.0.1",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "claude_desktop": {
+      "source": "alexbelgium",
+      "upstream_version": "2026.08.04",
+      "local_version": "2026.08.04",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "cleanuparr": {
+      "source": "alexbelgium",
+      "upstream_version": "2.10.2",
+      "local_version": "2.10.2",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "cloudcommander": {
+      "source": "alexbelgium",
+      "upstream_version": "19.19.1",
+      "local_version": "19.19.1",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "codex": {
+      "source": "alexbelgium",
+      "upstream_version": "2.2.5",
+      "local_version": "2.2.5",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "collabora": {
+      "source": "alexbelgium",
+      "upstream_version": "26.04.2.4.1",
+      "local_version": "26.04.2.4.1",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "comixed": {
+      "source": "alexbelgium",
+      "upstream_version": "1.4",
+      "local_version": "1.4",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "configurator": {
+      "source": "official",
+      "upstream_version": "6.1.0",
+      "local_version": "6.1.0",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": true
+    },
+    "deconz": {
+      "source": "official",
+      "upstream_version": "8.7.2",
+      "local_version": "8.7.2",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "dnsmasq": {
+      "source": "official",
+      "upstream_version": "2.1.0",
+      "local_version": "2.1.0",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "duckdns": {
+      "source": "official",
+      "upstream_version": "2.0.0",
+      "local_version": "2.0.0",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": true
+    },
+    "elasticsearch": {
+      "source": "alexbelgium",
+      "upstream_version": "8.19.19.2",
+      "local_version": "8.19.19.2",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "emby": {
+      "source": "alexbelgium",
+      "upstream_version": "4.9.5.0",
+      "local_version": "4.9.5.0",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": true
+    },
+    "emby_beta": {
+      "source": "alexbelgium",
+      "upstream_version": "4.10.0.22",
+      "local_version": "4.10.0.22",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "emqx": {
+      "source": "frenck",
+      "upstream_version": "0.8.1",
+      "local_version": "0.8.1",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "enedisgateway2mqtt": {
+      "source": "alexbelgium",
+      "upstream_version": "0.13.4",
+      "local_version": "0.13.4",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "enedisgateway2mqtt_dev": {
+      "source": "alexbelgium",
+      "upstream_version": "0.13.4",
+      "local_version": "0.13.4",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "ente": {
+      "source": "alexbelgium",
+      "upstream_version": "4.4.23",
+      "local_version": "4.4.23",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "epicgamesfree": {
+      "source": "alexbelgium",
+      "upstream_version": "2026.08.01",
+      "local_version": "2026.08.01",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "example": {
+      "source": "frenck",
+      "upstream_version": "14.0.0",
+      "local_version": "14.0.0",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "filebrowser": {
+      "source": "alexbelgium",
+      "upstream_version": "2.63.23",
+      "local_version": "2.63.23",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": true
+    },
+    "filebrowser_quantum": {
+      "source": "alexbelgium",
+      "upstream_version": "1.5.0",
+      "local_version": "1.5.0",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "fireflyiii": {
+      "source": "alexbelgium",
+      "upstream_version": "6.6.6",
+      "local_version": "6.6.6",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": true
+    },
+    "fireflyiii_data_importer": {
+      "source": "alexbelgium",
+      "upstream_version": "2.3.4",
+      "local_version": "2.3.4",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "fireflyiii_fints_importer": {
+      "source": "alexbelgium",
+      "upstream_version": "1.3.0-6",
+      "local_version": "1.3.0-6",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "flaresolverr": {
+      "source": "alexbelgium",
+      "upstream_version": "3.5.0",
+      "local_version": "3.5.0",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": true
+    },
+    "flexget": {
+      "source": "alexbelgium",
+      "upstream_version": "3.19.31",
+      "local_version": "3.19.31",
+      "synced_at": "2026-08-07T06:52:43+00:00",
+      "zh_guide": false
+    },
+    "foldingathome": {
+      "source": "frenck",
+      "upstream_version": "0.7.2",
+      "local_version": "0.7.2",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "free_games_claimer": {
+      "source": "alexbelgium",
+      "upstream_version": "2.0.1",
+      "local_version": "2.0.1",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "ftp": {
+      "source": "frenck",
+      "upstream_version": "6.0.1",
+      "local_version": "6.0.1",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "gazpar2mqtt": {
+      "source": "alexbelgium",
+      "upstream_version": "0.2.5",
+      "local_version": "0.2.5",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "git_pull": {
+      "source": "official",
+      "upstream_version": "9.0.1",
+      "local_version": "9.0.1",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": true
+    },
+    "gitea": {
+      "source": "alexbelgium",
+      "upstream_version": "1.27.1",
+      "local_version": "1.27.1",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": true
+    },
+    "glances": {
+      "source": "frenck",
+      "upstream_version": "0.22.0",
+      "local_version": "0.22.0",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "grafana": {
+      "source": "frenck",
+      "upstream_version": "12.1.0",
+      "local_version": "12.1.0",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "grampsweb": {
+      "source": "alexbelgium",
+      "upstream_version": "26.7.1",
+      "local_version": "26.7.1",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "grav": {
+      "source": "alexbelgium",
+      "upstream_version": "2.0.14",
+      "local_version": "2.0.14",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "grocy": {
+      "source": "frenck",
+      "upstream_version": "0.25.1",
+      "local_version": "0.25.1",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "guacamole": {
+      "source": "alexbelgium",
+      "upstream_version": "1.6.0-bullseye-3",
+      "local_version": "1.6.0-bullseye-3",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "immich": {
+      "source": "alexbelgium",
+      "upstream_version": "3.1.0",
+      "local_version": "3.1.0",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": true
+    },
+    "immich_cuda": {
+      "source": "alexbelgium",
+      "upstream_version": "3.1.0",
+      "local_version": "3.1.0",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "immich_frame": {
+      "source": "alexbelgium",
+      "upstream_version": "1.0.37.0",
+      "local_version": "1.0.37.0",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "immich_noml": {
+      "source": "alexbelgium",
+      "upstream_version": "3.1.0",
+      "local_version": "3.1.0",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "immich_openvino": {
+      "source": "alexbelgium",
+      "upstream_version": "3.1.0",
+      "local_version": "3.1.0",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "immich_power_tools": {
+      "source": "alexbelgium",
+      "upstream_version": "0.22.0",
+      "local_version": "0.22.0",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "inadyn": {
+      "source": "alexbelgium",
+      "upstream_version": "2.12.0-2",
+      "local_version": "2.12.0-2",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "influxdb": {
+      "source": "frenck",
+      "upstream_version": "5.0.2",
+      "local_version": "5.0.2",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "jackett": {
+      "source": "alexbelgium",
+      "upstream_version": "0.24.2315",
+      "local_version": "0.24.2315",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": true
+    },
+    "jellyfin": {
+      "source": "alexbelgium",
+      "upstream_version": "10.11.11",
+      "local_version": "10.11.11",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": true
+    },
+    "joal": {
+      "source": "alexbelgium",
+      "upstream_version": "2.1.37-4",
+      "local_version": "2.1.37-4",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "joplin": {
+      "source": "alexbelgium",
+      "upstream_version": "3.7.1",
+      "local_version": "3.7.1",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "jupyterlab": {
+      "source": "frenck",
+      "upstream_version": "0.17.0",
+      "local_version": "0.17.0",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "kometa": {
+      "source": "alexbelgium",
+      "upstream_version": "2.4.6",
+      "local_version": "2.4.6",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "letsencrypt": {
+      "source": "official",
+      "upstream_version": "6.4.0",
+      "local_version": "6.4.0",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": true
+    },
+    "librespeed": {
+      "source": "alexbelgium",
+      "upstream_version": "6.2.0",
+      "local_version": "6.2.0",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "lidarr": {
+      "source": "alexbelgium",
+      "upstream_version": "3.1.0.4875.1",
+      "local_version": "3.1.0.4875.1",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": true
+    },
+    "linkwarden": {
+      "source": "alexbelgium",
+      "upstream_version": "2.16.0",
+      "local_version": "2.16.0",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "log-viewer": {
+      "source": "frenck",
+      "upstream_version": "0.17.1",
+      "local_version": "0.17.1",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "maintainerr": {
+      "source": "alexbelgium",
+      "upstream_version": "3.21.1",
+      "local_version": "3.21.1",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "manyfold": {
+      "source": "alexbelgium",
+      "upstream_version": "0.147.1",
+      "local_version": "0.147.1",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "mariadb": {
+      "source": "official",
+      "upstream_version": "3.0.1",
+      "local_version": "3.0.1",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": true
+    },
+    "matter_server": {
+      "source": "official",
+      "upstream_version": "9.1.1",
+      "local_version": "9.1.1",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "mealie": {
+      "source": "alexbelgium",
+      "upstream_version": "v3.22.0",
+      "local_version": "v3.22.0",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": true
+    },
+    "monica": {
+      "source": "alexbelgium",
+      "upstream_version": "5.0.0.5.3",
+      "local_version": "5.0.0.5.3",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "mosquitto": {
+      "source": "official",
+      "upstream_version": "7.1.0",
+      "local_version": "7.1.0",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": true
+    },
+    "motioneye": {
+      "source": "frenck",
+      "upstream_version": "0.23.0",
+      "local_version": "0.23.0",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "mqtt-io": {
+      "source": "frenck",
+      "upstream_version": "0.4.0",
+      "local_version": "0.4.0",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "mylar3": {
+      "source": "alexbelgium",
+      "upstream_version": "0.10.0",
+      "local_version": "0.10.0",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "navidrome": {
+      "source": "alexbelgium",
+      "upstream_version": "0.63.2",
+      "local_version": "0.63.2",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "netalertx": {
+      "source": "alexbelgium",
+      "upstream_version": "26.7.1",
+      "local_version": "26.7.1",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "netalertx_fa": {
+      "source": "alexbelgium",
+      "upstream_version": "26.7.1",
+      "local_version": "26.7.1",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "netbird-server": {
+      "source": "alexbelgium",
+      "upstream_version": "0.64.5-8",
+      "local_version": "0.64.5-8",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "nextcloud": {
+      "source": "alexbelgium",
+      "upstream_version": "34.0.2",
+      "local_version": "34.0.2",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": true
+    },
+    "nginx_proxy": {
+      "source": "official",
+      "upstream_version": "4.5.1",
+      "local_version": "4.5.1",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": true
+    },
+    "nginx_webserver_proxy": {
+      "source": "alexbelgium",
+      "upstream_version": "2.14.1.1",
+      "local_version": "2.14.1.1",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "nginxproxymanager": {
+      "source": "frenck",
+      "upstream_version": "2.1.0",
+      "local_version": "2.1.0",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": true
+    },
+    "node-red": {
+      "source": "frenck",
+      "upstream_version": "22.0.1",
+      "local_version": "22.0.1",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": true
+    },
+    "nut": {
+      "source": "frenck",
+      "upstream_version": "0.18.0",
+      "local_version": "0.18.0",
+      "synced_at": "2026-08-07T06:52:44+00:00",
+      "zh_guide": false
+    },
+    "nzbget": {
+      "source": "alexbelgium",
+      "upstream_version": "v26.2.256",
+      "local_version": "v26.2.256",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": false
+    },
+    "omni-tools": {
+      "source": "alexbelgium",
+      "upstream_version": "0.6.1",
+      "local_version": "0.6.1",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": false
+    },
+    "openproject": {
+      "source": "alexbelgium",
+      "upstream_version": "17.6.0",
+      "local_version": "17.6.0",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": false
+    },
+    "openthread_border_router": {
+      "source": "official",
+      "upstream_version": "3.1.0",
+      "local_version": "3.1.0",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": false
+    },
+    "openwakeword": {
+      "source": "official",
+      "upstream_version": "2.1.1",
+      "local_version": "2.1.1",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": false
+    },
+    "organizr": {
+      "source": "alexbelgium",
+      "upstream_version": "v2.7",
+      "local_version": "v2.7",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": false
+    },
+    "overseerr": {
+      "source": "frenck",
+      "upstream_version": "0.1.0",
+      "local_version": "0.1.0",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": true
+    },
+    "photoprism": {
+      "source": "alexbelgium",
+      "upstream_version": "2026.07.28",
+      "local_version": "2026.07.28",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": true
+    },
+    "phpmyadmin": {
+      "source": "frenck",
+      "upstream_version": "0.13.0",
+      "local_version": "0.13.0",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": false
+    },
+    "piper": {
+      "source": "official",
+      "upstream_version": "2.3.2",
+      "local_version": "2.3.2",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": true
+    },
+    "piwigo": {
+      "source": "alexbelgium",
+      "upstream_version": "16.4.0",
+      "local_version": "16.4.0",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": false
+    },
+    "plex": {
+      "source": "alexbelgium",
+      "upstream_version": "1.43.3.10828.316",
+      "local_version": "1.43.3.10828.316",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": true
+    },
+    "portainer": {
+      "source": "alexbelgium",
+      "upstream_version": "2.44.0.1",
+      "local_version": "2.44.0.1",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": true
+    },
+    "portainer_agent": {
+      "source": "alexbelgium",
+      "upstream_version": "2025.12.6",
+      "local_version": "2025.12.6",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": false
+    },
+    "portainer_be": {
+      "source": "alexbelgium",
+      "upstream_version": "2026.08.01",
+      "local_version": "2026.08.01",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": false
+    },
+    "postgres_15": {
+      "source": "alexbelgium",
+      "upstream_version": "15.7.47",
+      "local_version": "15.7.47",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": false
+    },
+    "postgres_17": {
+      "source": "alexbelgium",
+      "upstream_version": "17.4.13",
+      "local_version": "17.4.13",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": false
+    },
+    "prowlarr": {
+      "source": "alexbelgium",
+      "upstream_version": "2.6.2.5517.9",
+      "local_version": "2.6.2.5517.9",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": true
+    },
+    "qbittorrent": {
+      "source": "alexbelgium",
+      "upstream_version": "5.2.3.1",
+      "local_version": "5.2.3.1",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": true
+    },
+    "radarr": {
+      "source": "alexbelgium",
+      "upstream_version": "6.3.0.10514",
+      "local_version": "6.3.0.10514",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": true
+    },
+    "readarr": {
+      "source": "alexbelgium",
+      "upstream_version": "0.4.18-2",
+      "local_version": "0.4.18-2",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": false
+    },
+    "requestrr": {
+      "source": "alexbelgium",
+      "upstream_version": "2.1.10",
+      "local_version": "2.1.10",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": false
+    },
+    "resiliosync": {
+      "source": "alexbelgium",
+      "upstream_version": "3.1.2.1076",
+      "local_version": "3.1.2.1076",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": false
+    },
+    "rpc_shutdown": {
+      "source": "official",
+      "upstream_version": "3.0",
+      "local_version": "3.0",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": false
+    },
+    "sabnzbd": {
+      "source": "alexbelgium",
+      "upstream_version": "5.0.4",
+      "local_version": "5.0.4",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": true
+    },
+    "samba": {
+      "source": "official",
+      "upstream_version": "12.10.0",
+      "local_version": "12.10.0",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": true
+    },
+    "scrutiny": {
+      "source": "alexbelgium",
+      "upstream_version": "v1.68.0",
+      "local_version": "v1.68.0",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": true
+    },
+    "scrutiny_fa": {
+      "source": "alexbelgium",
+      "upstream_version": "v1.68.0",
+      "local_version": "v1.68.0",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": false
+    },
+    "scrutiny_fa_original": {
+      "source": "alexbelgium",
+      "upstream_version": "v0.9.2",
+      "local_version": "v0.9.2",
+      "synced_at": "2026-08-07T06:52:45+00:00",
+      "zh_guide": false
+    },
+    "scrutiny_original": {
+      "source": "alexbelgium",
+      "upstream_version": "v0.9.2",
+      "local_version": "v0.9.2",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "seafile": {
+      "source": "alexbelgium",
+      "upstream_version": "12.0.18-4",
+      "local_version": "12.0.18-4",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "seerr": {
+      "source": "alexbelgium",
+      "upstream_version": "3.4.1",
+      "local_version": "3.4.1",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "signalk": {
+      "source": "alexbelgium",
+      "upstream_version": "2.30.0",
+      "local_version": "2.30.0",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "silabs-multiprotocol": {
+      "source": "official",
+      "upstream_version": "2.4.5",
+      "local_version": "2.4.5",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "silabs_flasher": {
+      "source": "official",
+      "upstream_version": "0.5.0",
+      "local_version": "0.5.0",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "social_to_mealie": {
+      "source": "alexbelgium",
+      "upstream_version": "1.7.2",
+      "local_version": "1.7.2",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "sonarr": {
+      "source": "alexbelgium",
+      "upstream_version": "4.0.19.2995",
+      "local_version": "4.0.19.2995",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": true
+    },
+    "speech_to_phrase": {
+      "source": "official",
+      "upstream_version": "1.4.3",
+      "local_version": "1.4.3",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "sponsorblockcast": {
+      "source": "alexbelgium",
+      "upstream_version": "0.8.3",
+      "local_version": "0.8.3",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "spotify": {
+      "source": "frenck",
+      "upstream_version": "0.18.0",
+      "local_version": "0.18.0",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "spotify_to_plex": {
+      "source": "alexbelgium",
+      "upstream_version": "1.0.104",
+      "local_version": "1.0.104",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "spotweb": {
+      "source": "alexbelgium",
+      "upstream_version": "1.5.8-5",
+      "local_version": "1.5.8-5",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "sqlite-web": {
+      "source": "frenck",
+      "upstream_version": "6.0.1",
+      "local_version": "6.0.1",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "ssh": {
+      "source": "official",
+      "upstream_version": "10.3.0",
+      "local_version": "10.3.0",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": true
+    },
+    "tailscale": {
+      "source": "frenck",
+      "upstream_version": "0.28.1",
+      "local_version": "0.28.1",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": true
+    },
+    "tandoor_recipes": {
+      "source": "alexbelgium",
+      "upstream_version": "2.6.13",
+      "local_version": "2.6.13",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "tasmoadmin": {
+      "source": "frenck",
+      "upstream_version": "0.33.0",
+      "local_version": "0.33.0",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "tautulli": {
+      "source": "frenck",
+      "upstream_version": "5.0.0",
+      "local_version": "5.0.0",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": true
+    },
+    "tdarr": {
+      "source": "alexbelgium",
+      "upstream_version": "2.85.01",
+      "local_version": "2.85.01",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "teamspeak": {
+      "source": "alexbelgium",
+      "upstream_version": "3.13.6-8",
+      "local_version": "3.13.6-8",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "thelounge": {
+      "source": "frenck",
+      "upstream_version": "0.22.0",
+      "local_version": "0.22.0",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "tor": {
+      "source": "frenck",
+      "upstream_version": "8.0.0",
+      "local_version": "8.0.0",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "traccar": {
+      "source": "frenck",
+      "upstream_version": "0.25.0",
+      "local_version": "0.25.0",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "transmission": {
+      "source": "alexbelgium",
+      "upstream_version": "4.1.3",
+      "local_version": "4.1.3",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "transmission_openvpn": {
+      "source": "alexbelgium",
+      "upstream_version": "v5.4.2",
+      "local_version": "v5.4.2",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "ubooquity": {
+      "source": "alexbelgium",
+      "upstream_version": "3.1.0",
+      "local_version": "3.1.0",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "unifi": {
+      "source": "frenck",
+      "upstream_version": "5.1.1",
+      "local_version": "5.1.1",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": true
+    },
+    "unpackerr": {
+      "source": "alexbelgium",
+      "upstream_version": "v0.15.2-2",
+      "local_version": "v0.15.2-2",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "uptime-kuma": {
+      "source": "frenck",
+      "upstream_version": "0.18.0",
+      "local_version": "0.18.0",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": true
+    },
+    "vlc": {
+      "source": "official",
+      "upstream_version": "1.1.0",
+      "local_version": "1.1.0",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "vscode": {
+      "source": "frenck",
+      "upstream_version": "6.0.1",
+      "local_version": "6.0.1",
+      "synced_at": "2026-08-07T06:52:46+00:00",
+      "zh_guide": false
+    },
+    "webtop": {
+      "source": "alexbelgium",
+      "upstream_version": "4.16.0.95.7",
+      "local_version": "4.16.0.95.7",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    },
+    "webtop_kde": {
+      "source": "alexbelgium",
+      "upstream_version": "4.16.0.94",
+      "local_version": "4.16.0.94",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    },
+    "webtrees": {
+      "source": "alexbelgium",
+      "upstream_version": "2.2.6.1",
+      "local_version": "2.2.6.1",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    },
+    "wger": {
+      "source": "alexbelgium",
+      "upstream_version": "2.6.3",
+      "local_version": "2.6.3",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    },
+    "whatsapper": {
+      "source": "alexbelgium",
+      "upstream_version": "1.2.0",
+      "local_version": "1.2.0",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    },
+    "whisparr": {
+      "source": "frenck",
+      "upstream_version": "0.5.0",
+      "local_version": "0.5.0",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    },
+    "whisper": {
+      "source": "official",
+      "upstream_version": "3.5.1",
+      "local_version": "3.5.1",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": true
+    },
+    "whoogle": {
+      "source": "alexbelgium",
+      "upstream_version": "1.2.4",
+      "local_version": "1.2.4",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    },
+    "wireguard": {
+      "source": "frenck",
+      "upstream_version": "0.13.0",
+      "local_version": "0.13.0",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    },
+    "xteve": {
+      "source": "alexbelgium",
+      "upstream_version": "2.5.3-4",
+      "local_version": "2.5.3-4",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    },
+    "zerotier": {
+      "source": "frenck",
+      "upstream_version": "0.26.0",
+      "local_version": "0.26.0",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    },
+    "zoneminder": {
+      "source": "alexbelgium",
+      "upstream_version": "1.38.3",
+      "local_version": "1.38.3",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    },
+    "zoraxy": {
+      "source": "alexbelgium",
+      "upstream_version": "3.3.3",
+      "local_version": "3.3.3",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    },
+    "zwave-js-ui": {
+      "source": "frenck",
+      "upstream_version": "7.4.0",
+      "local_version": "7.4.0",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    },
+    "zwave_js": {
+      "source": "official",
+      "upstream_version": "1.6.0",
+      "local_version": "1.6.0",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": true
+    },
+    "zzz_archived_code-server": {
+      "source": "alexbelgium",
+      "upstream_version": "4.131.0",
+      "local_version": "4.131.0",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    },
+    "zzz_archived_jellyseerr": {
+      "source": "alexbelgium",
+      "upstream_version": "v3.4.1",
+      "local_version": "v3.4.1",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    },
+    "zzz_archived_omada": {
+      "source": "alexbelgium",
+      "upstream_version": "5.14.26.1-2024-08-29-2",
+      "local_version": "5.14.26.1-2024-08-29-2",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    },
+    "zzz_archived_omada_v3": {
+      "source": "alexbelgium",
+      "upstream_version": "5.3-amd64-2025-11-09",
+      "local_version": "5.3-amd64-2025-11-09",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    },
+    "zzz_archived_ombi": {
+      "source": "alexbelgium",
+      "upstream_version": "4.55.2",
+      "local_version": "4.55.2",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    },
+    "zzz_archived_overseerr": {
+      "source": "alexbelgium",
+      "upstream_version": "1.34.0",
+      "local_version": "1.34.0",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    },
+    "zzz_archived_paperless_ngx": {
+      "source": "alexbelgium",
+      "upstream_version": "3.0.5",
+      "local_version": "3.0.5",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    },
+    "zzz_archived_papermerge": {
+      "source": "alexbelgium",
+      "upstream_version": "v2.0.1-ls60-bugfix",
+      "local_version": "v2.0.1-ls60-bugfix",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    },
+    "zzz_archived_plex_meta_manager": {
+      "source": "alexbelgium",
+      "upstream_version": "1.21.1",
+      "local_version": "1.21.1",
+      "synced_at": "2026-08-07T06:52:47+00:00",
+      "zh_guide": false
+    }
+  },
+  "conflicts": [
+    {
+      "slug": "bazarr",
+      "won": "alexbelgium",
+      "skipped": [
+        "frenck"
+      ]
+    },
+    {
+      "slug": "bitwarden",
+      "won": "alexbelgium",
+      "skipped": [
+        "frenck"
+      ]
+    },
+    {
+      "slug": "lidarr",
+      "won": "alexbelgium",
+      "skipped": [
+        "frenck"
+      ]
+    },
+    {
+      "slug": "plex",
+      "won": "alexbelgium",
+      "skipped": [
+        "frenck"
+      ]
+    },
+    {
+      "slug": "prowlarr",
+      "won": "alexbelgium",
+      "skipped": [
+        "frenck"
+      ]
+    },
+    {
+      "slug": "radarr",
+      "won": "alexbelgium",
+      "skipped": [
+        "frenck"
+      ]
+    },
+    {
+      "slug": "sabnzbd",
+      "won": "alexbelgium",
+      "skipped": [
+        "frenck"
+      ]
+    },
+    {
+      "slug": "sonarr",
+      "won": "alexbelgium",
+      "skipped": [
+        "frenck"
+      ]
+    },
+    {
+      "slug": "ssh",
+      "won": "official",
+      "skipped": [
+        "frenck"
+      ]
+    }
+  ],
+  "upstream": {
+    "alexbelgium": {
+      "last_commit": "ca0f78f10e415f1c1d038a22006086faccfc4a32"
+    },
+    "official": {
+      "last_commit": "95657e488570873dad94a3e62c2c84b43368fbe9"
+    },
+    "frenck": {
+      "last_commit": "28e2989d135584119ef3fa9660231fd737db1bf2"
+    }
+  }
+}

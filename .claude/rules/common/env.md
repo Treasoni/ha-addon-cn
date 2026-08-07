@@ -1,4 +1,13 @@
 # Environment Variables (.env) 规范
+---
+paths:
+  - ".env"
+  - ".env.local"
+  - ".env.development"
+  - ".env.production"
+  - ".env.example"
+  - ".env.*.local"
+---
 
 本规则用于让 agent 主动根据当前项目生成、更新和审计环境变量模板。默认目标是“最小必要、可解释、可复制、安全”，而不是把所有可能用到的服务都塞进 `.env.example`。
 

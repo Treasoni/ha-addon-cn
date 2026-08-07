@@ -1,0 +1,16 @@
+name: __NAME__
+version: "__VERSION__"
+slug: __SLUG__
+description: 在这里写一句话用途说明（中文）。
+arch:
+  - aarch64
+  - amd64
+  - armv7
+startup: application
+boot: auto
+map:
+  - addon_config:rw
+options:
+  message: hello world
+schema:
+  message: str

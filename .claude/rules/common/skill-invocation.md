@@ -1,7 +1,7 @@
 # Skill Invocation
 
 ## 技能列表
-<!-- skill-registry:managed ["ask-matt","claude-handoff","code-review","codebase-design","diagnosing-bugs","digest","domain-modeling","git-guardrails-claude-code","grill-me","grill-with-docs","grilling","handoff","implement","improve-codebase-architecture","loop-me","maintain-learnings","manifest-platform","migrate-to-shoehorn","prompt-cache-optimizer","prototype","research","resolving-merge-conflicts","scaffold-exercises","setup-matt-pocock-skills","setup-pre-commit","setup-ts-deep-modules","sync-skill-registry","tdd","teach","to-questionnaire","to-spec","to-tickets","triage","wait-what","wayfinder","wizard","workflow-todo-state","writing-beats","writing-for-agents","writing-fragments","writing-shape"] -->
+<!-- skill-registry:managed ["ask-matt","claude-handoff","code-review","codebase-design","diagnosing-bugs","digest","domain-modeling","git-guardrails-claude-code","grill-me","grill-with-docs","grilling","handoff","hassio-addon-sync","implement","improve-codebase-architecture","loop-me","maintain-learnings","manifest-platform","migrate-to-shoehorn","prompt-cache-optimizer","prototype","research","resolving-merge-conflicts","scaffold-exercises","setup-matt-pocock-skills","setup-pre-commit","setup-ts-deep-modules","sync-skill-registry","tdd","teach","to-questionnaire","to-spec","to-tickets","triage","wait-what","wayfinder","wizard","workflow-todo-state","writing-beats","writing-for-agents","writing-fragments","writing-shape"] -->
 
 #### 未分类
 
@@ -19,6 +19,7 @@
 | `grill-with-docs` | A relentless interview to sharpen a plan or design | A relentless interview to sharpen a plan… |
 | `grilling` | Grill the user relentlessly about a plan, decision | Grill the user relentlessly about a plan… |
 | `handoff` | Compact the current conversation into a handoff document for another agent to… | Compact the current conversation into a … |
+| `hassio-addon-sync` | 维护本仓库的 Home Assistant Add-on 商店：同步上游 add-on 变更、生成中文使用指南、从模板新建自有 add-on。 | 同步 add-on、更新上游、add-on 商店、生成中文指南、新建 add-on、sync addons |
 | `implement` | "Implement a piece of work based on a spec or set of tickets." | Implement a piece of work based on a spec or set of tickets. |
 | `improve-codebase-architecture` | Scan a codebase for deepening opportunities | Scan a codebase for deepening opportunit… |
 | `loop-me` | Grill me about specs for the workflows I want to build, within this workspace. | Grill me about specs for the workflows I… |

@@ -49,3 +49,7 @@ Agent-Template-Kits-main/
 # === 系统文件 ===
 .DS_Store
 Thumbs.db
+
+# === Agent 会话遗留 ===
+.claude/worktrees/
+.claude/sessions/
