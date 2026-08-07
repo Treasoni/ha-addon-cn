@@ -1,0 +1,6 @@
+workflow_id: addon-authoring-workflow
+required: yes
+when_to_use: "从零开发或维护 source: local 自有 add-on：脚手架、先收集资料（上游资料卡）、编写 config.yaml/Dockerfile/run.sh/README、过 check-addon 门禁"
+triggers: "新建 add-on; 开发 add-on; 编写 add-on; 写 add-on; 创建 add-on; 生成 add-on; add-on 脚手架; 开发自有 add-on; 自有 add-on"
+excludes: "同步 add-on; 审校中文指南; 批量中文指南; 单个 add-on 手动翻译; 只读问题"
+state_file_pattern: "workspace/workflow-runs/addon-authoring-{slug}.workflow.md"

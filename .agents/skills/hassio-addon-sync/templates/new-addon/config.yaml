@@ -1,0 +1,26 @@
+name: __NAME__
+version: "__VERSION__"
+slug: __SLUG__
+description: 在这里写一句话用途说明（中文）。
+url: https://example.com
+arch:
+  - aarch64
+  - amd64
+startup: application
+boot: auto
+init: false
+map:
+  - addon_config:rw
+# === 上游资料卡 ===
+# 动笔前先收集上游资料（见 .codex/rules/common/addon-authoring.md），替换下面每一项：
+# upstream: <软件项目主页>
+# ports: <默认端口，如 8123/tcp>
+# default_credentials: <默认账号/初始密码，若有>
+# data_dir: <需持久化的目录>
+# env_vars: <运行所需环境变量>
+# version: <参照的上游版本>
+# 收集完资料后按需添加 options/schema（键一一对应，类型见 addon-authoring.md 附录 A）：
+# options:
+#   log_level: info
+# schema:
+#   log_level: list(trace|debug|info|notice|warning|error|fatal)?
