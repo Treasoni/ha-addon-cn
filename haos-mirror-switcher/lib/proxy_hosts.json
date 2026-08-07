@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "description": "gh-proxy fallback 清单：包 GitHub Releases URL 下载官方 .raucb（顺序即优先级）。公益源无 SLA、会死/限流，UI 可增删；失效回到本清单换源。",
+  "hosts": [
+    "ghproxy.net",
+    "gh.zwy.one",
+    "raw.ihtw.moe",
+    "gh.llkk.cc",
+    "ghfast.top"
+  ]
+}

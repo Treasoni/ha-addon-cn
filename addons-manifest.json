@@ -1311,6 +1311,12 @@
       "local_version": "1.6.0",
       "synced_at": "2026-08-07T08:27:24+00:00",
       "zh_guide": true
+    },
+    "haos-mirror-switcher": {
+      "source": "local",
+      "local_version": "0.1.0",
+      "synced_at": "2026-08-07T15:55:30+00:00",
+      "zh_guide": true
     }
   },
   "conflicts": [
