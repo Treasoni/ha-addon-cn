@@ -1,0 +1,25 @@
+# === 上游资料卡 ===
+# upstream: https://gitee.com/hacs-china/integration   # HACS 极速版源码镜像（china 分支）
+# ports: 无对外端口（startup: once 一次性安装器，无 ingress）
+# default_credentials: 无
+# data_dir: 无持久化（写入 homeassistant_config:rw 映射的 /homeassistant/custom_components/hacs）
+# env_vars: 无（运行时联网端点：gitee.com + pypi.tuna.tsinghua.edu.cn）
+# version: 2.0.5.3   # 参照上游 china 分支最新 tag（gitee 无 release 资产；china 分支 manifest 为 0.0.0，由 options 注入）
+#                    # 前端轮子 hacs_frontend==20250128065759
+name: HACS极速版Gitee安装器
+version: "0.1.0"
+slug: hacs-cn-install
+description: 从 gitee 源码 + tuna 前端轮子安装 HACS 极速版，绕开 get.hacs.vip 与 GitHub。
+url: https://gitee.com/hacs-china/integration
+arch:
+  - aarch64
+  - amd64
+startup: once
+boot: manual
+init: false
+map:
+  - homeassistant_config:rw
+options:
+  integration_version: "2.0.5.3"
+schema:
+  integration_version: str

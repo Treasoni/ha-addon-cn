@@ -15,6 +15,13 @@ _最后更新：2026-08-08_
 - 错误 5：HAOS 宿主路径写 `/usr/share/hassio`、`/mnt/data/addons_config`（那是 Docker 安装/HASS 约定）。修复：HAOS 上 supervisor 数据在 `/mnt/data/supervisor`，addon_config 宿主路径为 `/mnt/data/supervisor/addons_config/{slug}`。预防：HAOS 宿主路径一律以 `/mnt/data/supervisor` 为根。
 - 错误 6：config.yaml 的 `enable_ghcr/enable_dockerio/enable_lscr` 被 run.sh 读进 `ENABLE_*` 但无人消费，`enabled` 状态被硬编码全 true。修复：`probe_all`/`build_target` 用 `ENABLE_*` 环境变量与 state 的 enabled 共同生效。预防：options 读到 env 后必须确认被动作函数消费，否则文档与行为脱节。
 
+### 审校：hacs-cn-install（source: local）
+
+- 错误：上游资料卡 version 注释写「参照上游最近 china release」，但 gitee 无 release 资产、只有 tag，且默认版本 `1.34.0.1` 并非最新 tag（存在更新的 `1.34.0.2`、`2.0.5.x`）。注释与事实不符。
+- 根因：写资料卡时沿用「release」的宽松说法，未核实上游发布形态（tag vs release 资产）与最新版本号。
+- 修复：注释改为「参照上游 tag（gitee 无 release 资产；china 分支 manifest 为 0.0.0，由 options 注入）」；默认版本是否升到更新 tag 留待维护者定夺（无法确认 china 分支对应哪个 tag，不猜）。
+- 预防：资料卡 version 一行注明来源形态（tag / release 资产 / manifest 默认值）；引用「最新版本」前先拉上游 tag 列表核对，勿凭印象写「最近 release」。
+
 ## 2026-08-07
 
 ### 脚本（sync-addons.py）：输出到管道时中文变 GBK，grep 匹配不上
