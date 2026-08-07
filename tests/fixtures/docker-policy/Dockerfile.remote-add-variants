@@ -1,0 +1,8 @@
+FROM alpine:3.20.3
+USER 10001
+HEALTHCHECK NONE
+ADD --checksum=sha256:0000000000000000000000000000000000000000000000000000000000000000 \
+    https://example.invalid/payload \
+    /payload
+ADD ["https://example.invalid/metadata", "/metadata"]
+CMD ["sh"]

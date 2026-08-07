@@ -111,13 +111,14 @@ finalize_violations() {
   done
 }
 
-# 输出每个逻辑 RUN 语句：先起始行号，再整条内容（含 \ 续行）。行内不作过滤。
-run_blocks() {
-  awk '
+# 输出每个逻辑 Dockerfile 指令：先起始行号，再整条内容（含 \ 续行）。行内不作过滤。
+instruction_blocks() {
+  local file="$1" instruction="$2"
+  awk -v instruction="$instruction" '
     function flush() {
       if (block != "") { print start; print block; block = "" }
     }
-    /^[[:space:]]*RUN[[:space:]]/ {
+    $0 ~ "^[[:space:]]*" instruction "[[:space:]]" {
       if (block != "") flush()
       start = NR; block = $0
       if ($0 !~ /\\$/) flush()
@@ -130,7 +131,11 @@ run_blocks() {
       }
     }
     END { if (block != "") flush() }
-  ' "$1"
+  ' "$file"
+}
+
+run_blocks() {
+  instruction_blocks "$1" RUN
 }
 
 check_addon_consistency() {
@@ -250,11 +255,12 @@ check_dockerfile() {
   done < <(run_blocks "$file" || true)
 
   # 7. 远程 ADD（供应链规则 D10）
-  while IFS=: read -r ln rest; do
-    if [[ "$rest" =~ ^[[:space:]]*ADD[[:space:]]+https?:// ]]; then
+  while IFS= read -r ln; do
+    IFS= read -r block
+    if [[ "$block" =~ https?:// ]]; then
       fail "$file" "$ln" D10 "ADD 直接下载远程 URL，应改为校验过的本地构建输入"
     fi
-  done < <(grep -nE '^[[:space:]]*ADD[[:space:]]' "$file" || true)
+  done < <(instruction_blocks "$file" ADD || true)
 
   # 8. CMD/ENTRYPOINT exec 形式（铁律 h）
   while IFS=: read -r ln rest; do
