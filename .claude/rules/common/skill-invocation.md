@@ -1,7 +1,7 @@
 # Skill Invocation
 
 ## 技能列表
-<!-- skill-registry:managed ["ask-matt","claude-handoff","code-review","codebase-design","diagnosing-bugs","digest","domain-modeling","git-guardrails-claude-code","grill-me","grill-with-docs","grilling","handoff","hassio-addon-sync","implement","improve-codebase-architecture","loop-me","maintain-learnings","manifest-platform","migrate-to-shoehorn","prompt-cache-optimizer","prototype","research","resolving-merge-conflicts","scaffold-exercises","setup-matt-pocock-skills","setup-pre-commit","setup-ts-deep-modules","sync-skill-registry","tdd","teach","to-questionnaire","to-spec","to-tickets","triage","wait-what","wayfinder","wizard","workflow-todo-state","writing-beats","writing-for-agents","writing-fragments","writing-shape"] -->
+<!-- skill-registry:managed ["ask-matt","claude-handoff","code-review","codebase-design","diagnosing-bugs","digest","domain-modeling","git-guardrails-claude-code","grill-me","grill-with-docs","grilling","handoff","hassio-addon-sync","implement","improve-codebase-architecture","loop-me","maintain-learnings","manifest-platform","migrate-to-shoehorn","prompt-cache-optimizer","prototype","research","resolving-merge-conflicts","scaffold-exercises","setup-matt-pocock-skills","setup-pre-commit","setup-ts-deep-modules","sync-skill-registry","tdd","teach","to-questionnaire","to-spec","to-tickets","triage","wait-what","wayfinder","wizard","workflow-todo-state","writing-beats","writing-for-agents","writing-fragments","writing-shape","zh-guide-workflow"] -->
 
 #### 未分类
 
@@ -48,6 +48,7 @@
 | `writing-for-agents` | Writing documents for agents. Use when creating or editing skills | Writing documents for agents |
 | `writing-fragments` | Writing, explore — mine raw fragments, no structure yet. | Writing, explore — mine raw fragments, n… |
 | `writing-shape` | Writing, exploit — shape raw material into an article, paragraph by paragraph. | Writing, exploit — shape raw material in… |
+| `zh-guide-workflow` | 批量生成、审校或补充缺失的中文 add-on 使用指南，通过确定性结构门禁 + 审校 subagent 保证质量。 | 生成中文指南、批量生成中文指南、补充中文指南、审校中文指南、中文说明、zh-guide、补全中文。排除：同步 add-on、新建 add-on、单个 add-on 手动翻译、只读问题 |
 
 #### 工具发现
 

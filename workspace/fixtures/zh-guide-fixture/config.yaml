@@ -1,0 +1,22 @@
+---
+version: 1.0.0
+slug: zh-guide-fixture
+name: Zh Guide Fixture
+description: Test fixture add-on for the Chinese guide harness.
+url: https://github.com/Treasoni/ha-addon-cn/tree/master/zh-guide-fixture
+ingress: true
+startup: services
+init: false
+options:
+  token: null
+  poll_seconds: 60
+  debug: false
+schema:
+  token: str
+  poll_seconds: int
+  debug: bool
+  log_level: list(trace|debug|info|notice|warning|error|fatal)?
+ports:
+  8080/tcp: 8080
+ports_description:
+  8080/tcp: Web interface

@@ -53,3 +53,6 @@ Thumbs.db
 # === Agent 会话遗留 ===
 .claude/worktrees/
 .claude/sessions/
+
+# === 工作流运行状态（瞬时文件，不入库） ===
+workspace/workflow-runs/
