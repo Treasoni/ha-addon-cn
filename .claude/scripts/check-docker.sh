@@ -291,7 +291,7 @@ check_config_yaml() {
   # 8. image {arch} 形态（铁律 addon-3）
   case "$image" in
     *'{arch}'*)
-      if printf '%s' "$image" | grep -qE '^homeassistant/\{arch\}-addon-[A-Za-z0-9_-]+$' || \
+      if printf '%s' "$image" | grep -qE '^[A-Za-z0-9./:_-]+/\{arch\}-addon-[A-Za-z0-9_-]+$' || \
          printf '%s' "$image" | grep -qE '^[A-Za-z0-9./:_-]+-\{arch\}$' || \
          printf '%s' "$image" | grep -qE '^[A-Za-z0-9./:_-]+/\{arch\}$'; then
         : # ok

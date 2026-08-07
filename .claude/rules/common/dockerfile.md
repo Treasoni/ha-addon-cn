@@ -83,7 +83,7 @@ paths:
    - 反例：`FROM ghcr.io/x/y:1.2.3`（绕过 build_from，构建不按 arch 走）。
    - 正例：见 `.claude/templates/docker/Dockerfile.addon`。
 3. **config.yaml `image:` {arch} 形态**
-   - `image:` 只允许四种形状，不发明第五种：`<registry>/<ns>/<slug>-{arch}`、`<registry>/<ns>/<slug>`（无占位符）、`<registry>/<ns>/<slug>/{arch}`、官方 `homeassistant/{arch}-addon-<slug>`。
+   - `image:` 只允许四种形状，不发明第五种：`<registry>/<ns>/<slug>-{arch}`、`<registry>/<ns>/<slug>`（无占位符）、`<registry>/<ns>/<slug>/{arch}`、官方形态 `<ns>/{arch}-addon-<slug>`（官方为 `homeassistant/{arch}-addon-x`，hacs-china 等源同族，`check-docker.sh` D08 已覆盖）。
    - `image:` 的 registry 主机改写只由 `rewrite-images.py`/同步管道完成，**agent 不手工改**（见 [[mirror-sources]]）。
    - `config.yaml` 的 `version` 必须是合法 tag（`^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$`）——Supervisor 拉的是 `<image>:<version>`。
 4. **version pinning 用 config.yaml version**

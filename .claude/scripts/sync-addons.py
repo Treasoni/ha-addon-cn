@@ -13,6 +13,8 @@ Home Assistant Add-on 商店同步脚本。
   - 只复制上游 add-on 文件夹，不复制上游根级工具文件；
   - 有未提交本地修改（git diff 相对 HEAD）的 add-on 会跳过并警告；
   - source=local 的 add-on 永不处理、永不删除；
+  - 源级容错：任一上游源拉取失败（如 GitHub 抖动）时跳过该源并保留其现有 add-on，
+    不中断整次同步；失败源在 manifest 中保留上次 last_commit；
   - 镜像地址重写（post-sync transform）：同步后把 config.yaml 的 image 主机改写为
     国内镜像源（registry_mirror.py），改写后再对比避免误报 updated，天然幂等。
 
@@ -50,6 +52,8 @@ DEFAULT_SOURCES = [
     {"id": "alexbelgium", "repo": "alexbelgium/hassio-addons", "branch": "master", "priority": 1, "license": "MIT"},
     {"id": "official", "repo": "home-assistant/addons", "branch": "master", "priority": 2, "license": "Apache-2.0"},
     {"id": "frenck", "repo": "hassio-addons/repository", "branch": "master", "priority": 3, "license": "MIT"},
+    # gitee 源：host 覆盖默认的 github.com（见 ensure_upstream）
+    {"id": "hacs-china", "repo": "hacs-china/addons", "branch": "china", "priority": 4, "license": "MIT", "host": "gitee.com"},
 ]
 
 def log(msg: str) -> None:
@@ -112,7 +116,8 @@ def ensure_upstream(src: dict) -> Path:
     repo = src["repo"]
     branch = src["branch"]
     target = CACHE / src["id"]
-    url = f"https://github.com/{repo}.git"
+    host = src.get("host", "github.com")
+    url = f"https://{host}/{repo}.git"
     if not (target / ".git").exists():
         log(f"[fetch] 浅克隆 {repo} ({branch}) -> {target}")
         proc = run_git(
@@ -298,9 +303,15 @@ def cmd_sync(dry_run: bool = False) -> int:
     # 1) 拉取全部上游并建立 slug -> (source, upstream_dir) 归属表（按优先级）
     owners: dict[str, tuple[str, Path, str]] = {}  # slug -> (source_id, upstream_addon_dir, upstream_version)
     upstream_roots = {}
+    failed_sources: set[str] = set()  # 拉取失败的源：本次跳过、保留其现有 add-on（GitHub 等可能抖动）
     for src in sorted(srcs, key=lambda s: s.get("priority", 99)):
         sid = src["id"]
-        target = ensure_upstream(src)
+        try:
+            target = ensure_upstream(src)
+        except RuntimeError as exc:
+            log(f"[warn] 源 {sid}（{src.get('repo')}）拉取失败，跳过该源并保留其现有 add-on：{exc}")
+            failed_sources.add(sid)
+            continue
         upstream_roots[sid] = (target, upstream_last_commit(target))
         for slug, addon_dir in find_addons(target).items():
             ver = yaml_field(addon_dir / "config.yaml", "version") or ""
@@ -369,6 +380,9 @@ def cmd_sync(dry_run: bool = False) -> int:
         entry = addons[slug]
         if entry.get("source") == "local":
             continue  # 自有 add-on，永不处理
+        if entry.get("source") in failed_sources:
+            log(f"  [keep] {slug}：其源 {entry.get('source')} 本次拉取失败，保留")
+            continue
         if slug in archived:
             local_dir = ROOT / slug
             if local_dir.exists():
@@ -398,7 +412,8 @@ def cmd_sync(dry_run: bool = False) -> int:
             if entry.get("source") == "local":
                 continue
             entry["zh_guide"] = has_zh_guide(ROOT / slug)
-        per_source = {}
+        # 失败源保留其上次的 last_commit，避免同步成功后丢失
+        per_source = {k: v for k, v in manifest.get("upstream", {}).items() if k in failed_sources}
         for sid, (target, commit) in upstream_roots.items():
             per_source[sid] = {"last_commit": commit}
         manifest["upstream"] = per_source
