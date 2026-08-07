@@ -1,0 +1,5 @@
+FROM alpine:3.20.3
+USER 10001
+HEALTHCHECK NONE
+ADD https://example.invalid/payload /payload
+CMD ["sh"]

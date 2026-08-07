@@ -4,7 +4,7 @@ set -euo pipefail
 usage() {
   cat <<'USAGE'
 Usage:
-  .claude/scripts/check-docker.sh [--path FILE|DIR]... [--all] [--addon-consistency]
+  .claude/scripts/check-docker.sh [--path FILE|DIR]... [--all] [--baseline FILE] [--addon-consistency]
 
 Checks Dockerfile / build.json / build.yaml / config.yaml / .dockerignore against
 .claude/rules/common/dockerfile.md (通用铁律 + add-on 镜像约定).
@@ -13,6 +13,7 @@ Modes:
   (default)            files changed since HEAD + add-on template consistency
   --path FILE|DIR      check specific file(s) or add-on dir(s); repeatable
   --all                scan every top-level add-on dir (reports baseline debt)
+  --baseline FILE      allow only violation identifiers listed in FILE
   --addon-consistency  only the scaffold <-> template diff
 
 Exit codes: 0 pass, 1 failure(s), 2 usage error.
@@ -25,8 +26,12 @@ TEMPLATE_DOCKERFILE="${PROJECT_ROOT}/.claude/templates/docker/Dockerfile.addon"
 
 CHECK_ALL=false
 CONSISTENCY_ONLY=false
+BASELINE=""
 PATHS=()
 status=0
+VIOLATION_IDS=()
+declare -A BASELINE_IDS=()
+declare -A EMITTED_IDS=()
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
@@ -38,6 +43,11 @@ while [ "$#" -gt 0 ]; do
     --all)
       CHECK_ALL=true
       shift
+      ;;
+    --baseline)
+      [ "$#" -ge 2 ] || { echo "check-docker: --baseline requires a value" >&2; exit 2; }
+      BASELINE="$2"
+      shift 2
       ;;
     --addon-consistency)
       CONSISTENCY_ONLY=true
@@ -56,16 +66,50 @@ while [ "$#" -gt 0 ]; do
 done
 
 fail() {
-  local file="$1" ln="$2" msg="$3"
-  if [ -n "$ln" ]; then
-    echo "check-docker: ${file#$PROJECT_ROOT/}#${ln}: ${msg}"
-  else
-    echo "check-docker: ${file#$PROJECT_ROOT/}: ${msg}"
-  fi
-  status=1
+  local file="$1" ln="$2" rule="$3" msg="$4" identifier
+  [ -n "$ln" ] || ln=0
+  identifier="$(rel "$file")#${ln}|${rule}"
+  echo "check-docker: ${identifier}: ${msg}"
+  VIOLATION_IDS+=("$identifier")
+  EMITTED_IDS["$identifier"]=1
 }
 
 rel() { printf '%s' "${1#$PROJECT_ROOT/}"; }
+
+load_baseline() {
+  local location rule reason identifier
+  [ -f "$BASELINE" ] || { echo "check-docker: baseline file does not exist: $BASELINE" >&2; exit 2; }
+  while IFS='|' read -r location rule reason; do
+    case "$location" in ''|'#'*) continue ;; esac
+    if [ -z "$rule" ] || [ -z "$reason" ]; then
+      echo "check-docker: invalid baseline entry: ${location}|${rule}|${reason}" >&2
+      exit 2
+    fi
+    identifier="${location}|${rule}"
+    BASELINE_IDS["$identifier"]=1
+  done < "$BASELINE"
+}
+
+finalize_violations() {
+  local identifier
+  if [ -z "$BASELINE" ]; then
+    [ "${#VIOLATION_IDS[@]}" -eq 0 ] || status=1
+    return
+  fi
+
+  load_baseline
+  for identifier in "${VIOLATION_IDS[@]}"; do
+    if [ -z "${BASELINE_IDS[$identifier]+x}" ]; then
+      echo "check-docker: unapproved violation: ${identifier}" >&2
+      status=1
+    fi
+  done
+  for identifier in "${!BASELINE_IDS[@]}"; do
+    if [ -z "${EMITTED_IDS[$identifier]+x}" ]; then
+      echo "check-docker: stale baseline: ${identifier}"
+    fi
+  done
+}
 
 # 输出每个逻辑 RUN 语句：先起始行号，再整条内容（含 \ 续行）。行内不作过滤。
 run_blocks() {
@@ -122,8 +166,8 @@ check_dockerfile() {
       ref="$(printf '%s' "$rest" | sed -E 's/^[[:space:]]*FROM([[:space:]]+--[^[:space:]]+)*[[:space:]]+//; s/[[:space:]].*$//')"
       case "$ref" in
         '$BUILD_FROM'|'${BUILD_FROM}') : ;;
-        *:latest*) fail "$file" "$ln" "FROM 使用 latest（add-on 禁浮动 tag）" ;;
-        *@sha256:*) fail "$file" "$ln" "FROM 使用 digest（add-on 禁止 digest，tag 必须可读）" ;;
+        *:latest*) fail "$file" "$ln" D01 "FROM 使用 latest（add-on 禁浮动 tag）" ;;
+        *@sha256:*) fail "$file" "$ln" D01 "FROM 使用 digest（add-on 禁止 digest，tag 必须可读）" ;;
       esac
     done < <(grep -nE '^[[:space:]]*FROM[[:space:]]' "$file" || true)
   else
@@ -132,10 +176,10 @@ check_dockerfile() {
       ref="$(printf '%s' "$rest" | sed -E 's/^[[:space:]]*FROM([[:space:]]+--[^[:space:]]+)*[[:space:]]+//; s/[[:space:]].*$//')"
       case "$ref" in
         scratch) : ;;
-        *:latest*) fail "$file" "$ln" "FROM 使用 latest（禁浮动 tag）" ;;
-        *:stable*) fail "$file" "$ln" "FROM 使用 stable（禁浮动 tag）" ;;
+        *:latest*) fail "$file" "$ln" D01 "FROM 使用 latest（禁浮动 tag）" ;;
+        *:stable*) fail "$file" "$ln" D01 "FROM 使用 stable（禁浮动 tag）" ;;
         *:*) : ;;
-        *) if is_stage "$ref"; then :; else fail "$file" "$ln" "FROM 裸仓库名（隐式 latest），请 pin 具体版本"; fi ;;
+        *) if is_stage "$ref"; then :; else fail "$file" "$ln" D01 "FROM 裸仓库名（隐式 latest），请 pin 具体版本"; fi ;;
       esac
     done < <(grep -nE '^[[:space:]]*FROM[[:space:]]' "$file" || true)
   fi
@@ -143,10 +187,10 @@ check_dockerfile() {
   # 2. 非 root USER（铁律 c，仅 generic）
   if [ "$is_addon" != true ]; then
     if grep -qE '^[[:space:]]*USER[[:space:]]+root([[:space:]]|$)' "$file"; then
-      fail "$file" "" "USER root（应降权，铁律 c）"
+      fail "$file" "" D02 "USER root（应降权，铁律 c）"
     elif ! grep -qE '^[[:space:]]*USER[[:space:]]' "$file" && \
          ! grep -qE '#[[:space:]]*(check-docker:[[:space:]]*(exempt|root-ok)|hadolint[[:space:]]+ignore=DL3002)' "$file"; then
-      fail "$file" "" "缺少非 root USER（铁律 c）"
+      fail "$file" "" D02 "缺少非 root USER（铁律 c）"
     fi
   fi
 
@@ -154,14 +198,14 @@ check_dockerfile() {
   if [ "$is_addon" != true ]; then
     if ! grep -qE '^[[:space:]]*HEALTHCHECK[[:space:]]' "$file" && \
        ! grep -qE '#[[:space:]]*(check-docker:[[:space:]]*(exempt|no-healthcheck))' "$file"; then
-      fail "$file" "" "缺少 HEALTHCHECK（长驻服务必备，铁律 d）"
+      fail "$file" "" D03 "缺少 HEALTHCHECK（长驻服务必备，铁律 d）"
     fi
   fi
 
   # 4. 密钥/敏感信息（铁律 e）
   while IFS= read -r hit; do
     ln="${hit%%:*}"
-    fail "$file" "$ln" "ENV/ARG 含疑似密钥且非占位符（铁律 e）: ${hit#*:}"
+    fail "$file" "$ln" D04 "ENV/ARG 含疑似密钥且非占位符（铁律 e）: ${hit#*:}"
   done < <(perl -ne '
     next unless /^\s*(?:ENV|ARG)\s+/;
     my $ln=$.;
@@ -174,7 +218,7 @@ check_dockerfile() {
   ' "$file" || true)
   while IFS=: read -r ln rest; do
     case "$rest" in
-      *.env*|*.pem*|*.key*) fail "$file" "$ln" "COPY 密钥/敏感文件（铁律 e）" ;;
+      *.env*|*.pem*|*.key*) fail "$file" "$ln" D05 "COPY 密钥/敏感文件（铁律 e）" ;;
     esac
   done < <(grep -nE '^[[:space:]]*COPY[[:space:]]' "$file" || true)
 
@@ -183,26 +227,41 @@ check_dockerfile() {
     while IFS= read -r ln; do
       IFS= read -r block
       if [[ "$block" =~ apk[[:space:]]+add ]] && ! [[ "$block" =~ --no-cache ]]; then
-        fail "$file" "$ln" "apk add 未用 --no-cache（铁律 f）"
+        fail "$file" "$ln" D06 "apk add 未用 --no-cache（铁律 f）"
       fi
       if [[ "$block" =~ apt-get[[:space:]]+install ]] && ! [[ "$block" =~ --no-install-recommends ]]; then
-        fail "$file" "$ln" "apt-get install 未用 --no-install-recommends（铁律 f）"
+        fail "$file" "$ln" D06 "apt-get install 未用 --no-install-recommends（铁律 f）"
       fi
       if [[ "$block" =~ apt-get[[:space:]]+update ]] && ! [[ "$block" =~ rm[[:space:]]+-rf[[:space:]]+/var/lib/apt/lists ]]; then
-        fail "$file" "$ln" "apt-get update 未同层清理 apt 缓存（铁律 f）"
+        fail "$file" "$ln" D06 "apt-get update 未同层清理 apt 缓存（铁律 f）"
       fi
     done < <(run_blocks "$file" || true)
     while IFS=: read -r a b; do
-      fail "$file" "$a" "相邻 RUN 可合并为单层（铁律 f）"
+      fail "$file" "$a" D06 "相邻 RUN 可合并为单层（铁律 f）"
     done < <(awk '/^[[:space:]]*RUN/{ if (prev && NR == prev+1) print prev ":" NR; prev=NR }' "$file" || true)
   fi
 
-  # 6. CMD/ENTRYPOINT exec 形式（铁律 h）
+  # 6. 远程安装脚本（供应链规则 D09）
+  while IFS= read -r ln; do
+    IFS= read -r block
+    if [[ "$block" =~ (curl|wget)[^|]*\|[[:space:]]*(/bin/)?(sh|bash)([[:space:]]|$) ]]; then
+      fail "$file" "$ln" D09 "RUN 将 curl/wget 的远程输出直接交给 shell 执行"
+    fi
+  done < <(run_blocks "$file" || true)
+
+  # 7. 远程 ADD（供应链规则 D10）
+  while IFS=: read -r ln rest; do
+    if [[ "$rest" =~ ^[[:space:]]*ADD[[:space:]]+https?:// ]]; then
+      fail "$file" "$ln" D10 "ADD 直接下载远程 URL，应改为校验过的本地构建输入"
+    fi
+  done < <(grep -nE '^[[:space:]]*ADD[[:space:]]' "$file" || true)
+
+  # 8. CMD/ENTRYPOINT exec 形式（铁律 h）
   while IFS=: read -r ln rest; do
     content="$(printf '%s' "$rest" | sed -E 's/^(CMD|ENTRYPOINT)[[:space:]]+//')"
     case "$content" in
       \[*) : ;;
-      *) fail "$file" "$ln" "CMD/ENTRYPOINT 用 shell 形式，应改 JSON 数组 exec 形式（铁律 h）" ;;
+      *) fail "$file" "$ln" D07 "CMD/ENTRYPOINT 用 shell 形式，应改 JSON 数组 exec 形式（铁律 h）" ;;
     esac
   done < <(grep -nE '^(CMD|ENTRYPOINT)[[:space:]]' "$file" || true)
 }
@@ -211,7 +270,7 @@ check_build_from() {
   local file="$1"
   local ln
   while IFS=: read -r ln rest; do
-    fail "$file" "$ln" "build_from 使用 latest/digest（add-on 必须 pin 具体版本 tag）"
+    fail "$file" "$ln" D08 "build_from 使用 latest/digest（add-on 必须 pin 具体版本 tag）"
   done < <(grep -nE '(:latest|@sha256:)' "$file" || true)
 }
 
@@ -231,14 +290,14 @@ check_config_yaml() {
          printf '%s' "$image" | grep -qE '^[A-Za-z0-9./:_-]+/\{arch\}$'; then
         : # ok
       else
-        fail "$file" "$ln" "image 含 {arch} 但形态不合法（只允许四种形态，铁律 addon-3）"
+        fail "$file" "$ln" D08 "image 含 {arch} 但形态不合法（只允许四种形态，铁律 addon-3）"
       fi
       ;;
     *)
       if printf '%s' "$image" | grep -qE '^[A-Za-z0-9./:_-]+$'; then
         : # ok
       else
-        fail "$file" "$ln" "image 值不合法"
+        fail "$file" "$ln" D08 "image 值不合法"
       fi
       ;;
   esac
@@ -246,7 +305,7 @@ check_config_yaml() {
   # 9. source: local 保护（铁律 addon-7）
   if grep -qE '^[[:space:]]*source:[[:space:]]*local([[:space:]]|$)' "$file" && \
      printf '%s' "$image" | grep -qE 'ghcr\.nju\.edu\.cn'; then
-    fail "$file" "$ln" "source: local 的 image 被改写为镜像源（铁律 addon-7，永不改写）"
+    fail "$file" "$ln" D08 "source: local 的 image 被改写为镜像源（铁律 addon-7，永不改写）"
   fi
 }
 
@@ -330,6 +389,8 @@ else
 
   check_addon_consistency
 fi
+
+finalize_violations
 
 if [ "$status" -eq 0 ]; then
   echo "Docker check passed."
