@@ -3,8 +3,8 @@
 一个**面向国内用户**的 Home Assistant Add-on 商店：把 GitHub 上主流 add-on 镜像到 Gitee，安装不再被网络卡住；主流 add-on 还附**中文使用指南**。
 
 <!-- catalog-stats:start -->
-- 📦 **185 个 add-on**：来自 alexbelgium（121）、frenck（38）、hacs-china（1）、local（1）、official（24）。
-- 📖 **中文指南**：174/185 个 add-on。
+- 📦 **186 个 add-on**：来自 alexbelgium（121）、frenck（38）、hacs-china（1）、local（2）、official（24）。
+- 📖 **中文指南**：175/186 个 add-on。
 <!-- catalog-stats:end -->
 - 🇨🇳 **国内可用**：主仓库托管在 Gitee，不用科学上网也能添加、安装、更新。
 
