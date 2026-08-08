@@ -6,7 +6,7 @@
   "probe": {
     "ghcr.io": {
       "repository": "treasoni/haos-mirror-switcher-amd64",
-      "tag": "0.2.3"
+      "tag": "0.2.4"
     },
     "docker.io": {
       "repository": "library/alpine",

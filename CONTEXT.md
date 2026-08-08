@@ -69,3 +69,10 @@ _Avoid_: 同步钩子、改写步骤
 _Avoid_: 需求文档、开发笔记
 
 > 「镜像」三义：**镜像仓库**（vendored add-on，代码全量拷贝）/ **镜像源**（registry proxy，代理 ghcr.io 的镜像站）/ **镜像地址重写**（image rewrite，改 `image:` 字段）。语境不同含义不同。
+
+**HAOS 镜像检查工具的安全边界**:
+`haos-mirror-switcher` 只检查候选 registry 的真实 manifest，并清理旧版本
+留下的 `registries_mirror` 字段；它不会把该字段当作 Supervisor 官方配置，
+也不会自动重启或切换全局镜像源。`应用推荐配置` 已停用，避免把“检查成功”误读
+为“Supervisor 已经改走国内源”。长期镜像配置必须采用目标 HAOS 版本实际支持
+的 Docker/系统级方案，或对最终 image reference 做已验证的主机重写。

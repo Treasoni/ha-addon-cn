@@ -241,9 +241,17 @@ docker_cmd() {
   docker "$@"
 }
 
-# 读 hassio_supervisor 容器的 /data/docker.json（HAOS 宿主路径 /mnt/data/supervisor/docker.json）
+# 读取 hassio_supervisor 容器的 /data/docker.json（HAOS 宿主路径 /mnt/data/supervisor/docker.json）。
+docker_read_strict() {
+  docker exec hassio_supervisor cat /data/docker.json 2>/dev/null
+}
+
 docker_read() {
-  docker exec hassio_supervisor cat /data/docker.json 2>/dev/null || echo "{}"
+  docker_read_strict || echo "{}"
+}
+
+docker_restore_internal_backup() {
+  docker exec hassio_supervisor sh -c 'test -f /data/docker.json.bak && mv -f /data/docker.json.bak /data/docker.json'
 }
 
 # 原子写：本地构造 -> jq 校验 -> 备份 -> docker cp -> mv -> 读回复验 -> 失败回滚
@@ -253,27 +261,37 @@ docker_write_atomic() {
     _log "拒绝写入：目标不是合法 JSON 对象（docker_write_atomic）"
     return 1
   fi
-  # 容器内备份
-  docker exec hassio_supervisor sh -c 'cp -f /data/docker.json /data/docker.json.bak 2>/dev/null || true' || true
+  # 容器内备份；没有可靠备份就不能执行任何替换。
+  if ! docker exec hassio_supervisor sh -c 'cp -f /data/docker.json /data/docker.json.bak'; then
+    _log "无法创建 Supervisor 配置备份，拒绝写入"
+    return 1
+  fi
   # 本地备份（写入前快照当前生效配置，供「恢复上次配置」）
-  docker_read > "$BACKUP_LOCAL" 2>/dev/null || true
+  if ! docker_read_strict > "$BACKUP_LOCAL"; then
+    _log "无法读取 docker.json，拒绝执行旧配置清理"
+    return 1
+  fi
   # 上传临时文件再 mv（原子替换）
   if ! docker cp "$newfile" hassio_supervisor:/data/docker.json.tmp; then
     _log "docker cp 失败，写回滚"
-    docker exec hassio_supervisor sh -c 'mv -f /data/docker.json.bak /data/docker.json 2>/dev/null || true' || true
+    docker_restore_internal_backup || _log "旧配置回滚失败"
     return 1
   fi
   if ! docker exec hassio_supervisor sh -c 'mv -f /data/docker.json.tmp /data/docker.json'; then
     _log "容器内 mv 失败，写回滚"
-    docker exec hassio_supervisor sh -c 'mv -f /data/docker.json.bak /data/docker.json 2>/dev/null || true' || true
+    docker_restore_internal_backup || _log "旧配置回滚失败"
     return 1
   fi
   # 读回复验
   local readback
-  readback="$(docker_read)"
+  if ! readback="$(docker_read_strict)"; then
+    _log "写后无法读回 docker.json，回滚备份"
+    docker_restore_internal_backup || _log "旧配置回滚失败"
+    return 1
+  fi
   if ! jq -e 'type=="object"' <<<"$readback" >/dev/null 2>&1; then
     _log "写后复验失败，回滚备份"
-    docker exec hassio_supervisor sh -c 'mv -f /data/docker.json.bak /data/docker.json 2>/dev/null || true' || true
+    docker_restore_internal_backup || _log "旧配置回滚失败"
     return 1
   fi
   _log "docker.json 写入成功"
@@ -534,77 +552,6 @@ print("；".join(parts))
 PY
 }
 
-_promote_recommendations() {
-  python3 - <<'PY'
-import fcntl, json, os, tempfile
-with open("/data/.state.lock", "a+", encoding="utf-8") as lock:
-    fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
-    with open("/data/state.json", encoding="utf-8") as f:
-        st = json.load(f)
-    active = st.setdefault("active", {})
-    for reg, host in st.get("recommended", {}).items():
-        if host:
-            active[reg] = host
-    fd, tmp = tempfile.mkstemp(prefix="state.", dir="/data")
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(st, f, ensure_ascii=False, indent=2)
-            f.flush()
-            os.fsync(f.fileno())
-        os.replace(tmp, "/data/state.json")
-    finally:
-        if os.path.exists(tmp):
-            os.unlink(tmp)
-PY
-}
-
-# ---------------- 目标配置（合并不覆盖） ----------------
-build_target() {
-  # 输出到 /data/docker.json.new：只改 managed registry 的 registries_mirror，保留其它键
-  ensure_state
-  python3 - <<'PY'
-import json
-import os
-try:
-    with open("/data/state.json", "r", encoding="utf-8") as f:
-        st = json.load(f)
-except Exception:
-    st = {}
-cur = st.get("active", {})
-enabled = st.get("enabled", {})
-reg_env = {"ghcr.io": "ENABLE_GHCR", "docker.io": "ENABLE_DOCKERIO", "lscr.io": "ENABLE_LSCR"}
-patch = {}
-for reg in ("ghcr.io", "docker.io", "lscr.io"):
-    # disabled 或显式 active=null 表示删除该 managed registry；无 active 键则保持当前配置。
-    if not enabled.get(reg, True) or os.environ.get(reg_env[reg], "true") != "true":
-        patch[reg] = None
-    elif reg in cur:
-        patch[reg] = cur.get(reg)
-with open("/data/docker.json.new", "w", encoding="utf-8") as f:
-    json.dump(patch, f, ensure_ascii=False)
-PY
-  # 读当前 docker.json 并合并
-  local current
-  current="$(docker_read)"
-  jq --argjson patch "$(cat /data/docker.json.new)" '
-    .registries_mirror = (((.registries_mirror // {}) + $patch) | with_entries(select(.value != null)))
-  ' <<<"$current" > /data/docker.json.new
-  # 若无 registries_mirror 则删除该键（恢复直连）
-  jq 'if (.registries_mirror | length) == 0 then del(.registries_mirror) else . end' /data/docker.json.new > /data/docker.json.new2
-  mv /data/docker.json.new2 /data/docker.json.new
-}
-
-_change_detected() {
-  # 当前 docker.json 的 registries_mirror 与目标 patch 是否一致
-  local current
-  current="$(docker_read)"
-  local target
-  target="$(jq -c '.registries_mirror // {}' /data/docker.json.new)"
-  local cur_m
-  cur_m="$(jq -c '.registries_mirror // {}' <<<"$current")"
-  [ "$cur_m" != "$target" ]
-}
-
 supervisor_restart() {
   # 重启 Supervisor（会杀掉本 add-on，故 disowned + 延迟；fallback docker restart）
   local now
@@ -623,48 +570,67 @@ supervisor_restart() {
 
 apply() {
   ensure_state
-  if ! _promote_recommendations; then
-    _record_application false "APPLY_STATE_FAILED" false
-    return 1
-  fi
-  if ! build_target; then
-    _record_application false "APPLY_TARGET_FAILED" false
-    return 1
-  fi
-  if ! _change_detected; then
-    _log "配置未变化，跳过重启"
-    _record_application true "APPLIED_NO_CHANGE" false
-    return 0
-  fi
-  if ! docker_write_atomic /data/docker.json.new; then
-    _log "写 docker.json 失败，未重启"
-    _record_application false "APPLY_WRITE_FAILED" false
-    return 1
-  fi
-  # 记录 last-known-good
-  _record_last_known_good "$(cat /data/docker.json.new)"
-  _record_application true "APPLIED" true
-  supervisor_restart
+  _log "已拒绝应用镜像映射：HAOS/Supervisor 没有受支持的全局镜像源写入接口"
+  _record_application false "MIRROR_APPLICATION_UNSUPPORTED" false
+  return 1
 }
 
 restore_backup() {
-  # 恢复上次 good 配置（或逃生门：移除所有映射 = 恢复直连）
   ensure_state
-  if [ -f "$BACKUP_LOCAL" ]; then
-    cp -f "$BACKUP_LOCAL" /data/docker.json.new
-    _log "恢复上次备份…"
-  else
-    build_target
-  fi
-  if ! docker_write_atomic /data/docker.json.new; then
-    return 1
-  fi
-  supervisor_restart
+  _log "已拒绝恢复旧镜像映射：该配置不是 HAOS/Supervisor 支持的接口"
+  _record_application false "MIRROR_APPLICATION_UNSUPPORTED" false
+  return 1
 }
 
 recover_direct() {
-  # 逃生门：把所有 managed registry 置 null，恢复直连
+  # 仅用于清除旧版本留下的非官方 registries_mirror 字段。
   ensure_state
+  local current verify
+  if ! current="$(docker_read_strict)"; then
+    _log "无法读取 Supervisor 配置，未执行旧配置清理"
+    _record_application false "LEGACY_RECOVERY_READ_FAILED" false
+    return 1
+  fi
+  if ! jq -e 'type == "object"' <<<"$current" >/dev/null 2>&1; then
+    _log "无法读取 Supervisor 配置，未执行旧配置清理"
+    _record_application false "LEGACY_RECOVERY_READ_FAILED" false
+    return 1
+  fi
+  if ! jq -e 'has("registries_mirror")' <<<"$current" >/dev/null 2>&1; then
+    _clear_legacy_state
+    rm -f "$BACKUP_LOCAL" /data/docker.json.new
+    _log "未发现旧版镜像映射，无需清理"
+    _record_application true "LEGACY_RECOVERY_NOT_NEEDED" false
+    return 0
+  fi
+  jq 'del(.registries_mirror)' <<<"$current" > /data/docker.json.new
+  if ! docker_write_atomic /data/docker.json.new; then
+    _log "旧配置清理失败，已尝试回滚"
+    _record_application false "LEGACY_RECOVERY_WRITE_FAILED" false
+    return 1
+  fi
+  if ! verify="$(docker_read_strict)"; then
+    _log "清理后无法读回 Supervisor 配置，拒绝重启"
+    docker_restore_internal_backup || _log "旧配置回滚失败，请不要继续重启 Supervisor"
+    _record_application false "LEGACY_RECOVERY_VERIFY_FAILED" false
+    return 1
+  fi
+  if jq -e 'has("registries_mirror")' <<<"$verify" >/dev/null 2>&1; then
+    _log "清理后仍检测到 registries_mirror，已回滚且不重启"
+    if ! docker_restore_internal_backup; then
+      _log "旧配置回滚失败，请不要继续重启 Supervisor"
+    fi
+    _record_application false "LEGACY_RECOVERY_VERIFY_FAILED" false
+    return 1
+  fi
+  _clear_legacy_state
+  rm -f "$BACKUP_LOCAL" /data/docker.json.new
+  _log "已清除旧版非官方镜像映射，准备重启 Supervisor"
+  _record_application true "LEGACY_MIRROR_REMOVED" true
+  supervisor_restart
+}
+
+_clear_legacy_state() {
   python3 - <<'PY'
 import fcntl, json, os, tempfile
 with open("/data/.state.lock", "a+", encoding="utf-8") as lock:
@@ -674,6 +640,7 @@ with open("/data/.state.lock", "a+", encoding="utf-8") as lock:
     for reg in ("ghcr.io", "docker.io", "lscr.io"):
         st.setdefault("active", {})[reg] = None
     st["recommended"] = {}
+    st["last_known_good"] = None
     st["onboarding_completed"] = False
     fd, tmp = tempfile.mkstemp(prefix="state.", dir="/data")
     try:
@@ -686,53 +653,18 @@ with open("/data/.state.lock", "a+", encoding="utf-8") as lock:
         if os.path.exists(tmp):
             os.unlink(tmp)
 PY
-  build_target
-  if ! docker_write_atomic /data/docker.json.new; then
-    return 1
-  fi
-  supervisor_restart
 }
 
-# ---------------- 启动自愈 ----------------
+# ---------------- 启动检查（只读） ----------------
 self_heal() {
   ensure_state
   local current has_mirror
   current="$(docker_read)"
   has_mirror="$(jq -r 'has("registries_mirror")' <<<"$current" 2>/dev/null || echo false)"
-  local lkg
-  lkg="$(_state_field last_known_good)"
-
-  if [ "$has_mirror" = "false" ] && [ "$lkg" != "null" ] && [ -n "$lkg" ]; then
-    # HAOS 升级重置了 docker.json -> 把 last-known-good 的 registries_mirror 合并回当前配置，
-    # 保留 Supervisor 升级后重建的其它键（registries/auth 等），避免整文件替换覆盖
-    _log "检测到 registries_mirror 被重置，从上次配置自愈重写…"
-    jq --argjson lkg "$lkg" '
-      .registries_mirror = ($lkg.registries_mirror // null)
-      | if (.registries_mirror | length) == 0 then del(.registries_mirror) else . end
-    ' <<<"$current" > /data/docker.json.new
-    local new_mirror
-    new_mirror="$(jq -c '.registries_mirror // {}' /data/docker.json.new)"
-    if [ "$new_mirror" != "{}" ]; then
-      if docker_write_atomic /data/docker.json.new; then
-        supervisor_restart
-      fi
-    else
-      _log "上次配置已无镜像映射，跳过自愈写入"
-    fi
-    return 0
-  fi
-
-  if [ "$has_mirror" = "false" ] && { [ "$lkg" = "null" ] || [ -z "$lkg" ]; }; then
-    # 首启：若当前已有非空 registries_mirror（手动引导），adopt 为 last-known-good
-    local cur_mirror
-    cur_mirror="$(jq -c '.registries_mirror // {}' <<<"$current")"
-    if [ "$cur_mirror" != "{}" ]; then
-      _log "首启：采纳当前已配置的镜像源（adopt），不写不重启"
-      _record_last_known_good "$cur_mirror"
-      docker_read > "$BACKUP_LOCAL" 2>/dev/null || true
-    else
-      _log "未检测到镜像源配置，请打开 Web 界面点击「一键应用」（或手动配置后重启本加载项）"
-    fi
+  if [ "$has_mirror" = "true" ]; then
+    _log "检测到旧版非官方镜像映射；不会自动改写，请在 Web 界面选择「清除旧配置并恢复直连」"
+  else
+    _log "未检测到旧版镜像映射；启动检查为只读，不会修改 Supervisor 配置"
   fi
   return 0
 }
@@ -755,34 +687,8 @@ auto_switch_cycle() {
     return 0
   }
   probe_all || { _log "镜像源探测失败，跳过本次自动换源"; return 1; }
-  AUTO_SWITCH_FAILURE_THRESHOLD="$AUTO_SWITCH_FAILURE_THRESHOLD" python3 - <<'PY'
-import fcntl, json, os, tempfile
-with open("/data/.state.lock", "a+", encoding="utf-8") as lock:
-    fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
-    with open("/data/state.json", "r", encoding="utf-8") as f:
-        st = json.load(f)
-    active = st.get("active", {})
-    recommended = st.setdefault("recommended", {})
-    streak = st.get("failure_streak", {})
-    threshold = int(os.environ.get("AUTO_SWITCH_FAILURE_THRESHOLD", "2"))
-    for reg in ("ghcr.io", "docker.io", "lscr.io"):
-        current = active.get(reg)
-        candidate = recommended.get(reg)
-        if current and candidate and candidate != current and streak.get(reg, 0) >= threshold:
-            continue
-        recommended[reg] = current or None
-    fd, tmp = tempfile.mkstemp(prefix="state.", dir="/data")
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(st, f, ensure_ascii=False, indent=2)
-            f.flush()
-            os.fsync(f.fileno())
-        os.replace(tmp, "/data/state.json")
-    finally:
-        if os.path.exists(tmp):
-            os.unlink(tmp)
-PY
-  apply
+  _log "自动维护已完成只读检查；不会自动切换或重启 Supervisor"
+  return 0
 }
 
 # ---------------- OTA 层 ----------------

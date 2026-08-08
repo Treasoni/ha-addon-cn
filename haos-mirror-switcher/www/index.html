@@ -12,7 +12,7 @@
 <body>
 <div class="wrap">
   <h1>🇨🇳 HAOS 国内网络助手</h1>
-  <p class="lead">先检查，再确认应用。默认不会自动修改配置；只有点击“应用修复”后才会重启 Supervisor。</p>
+  <p class="lead">本页面只检查网络连通性。HAOS/Supervisor 没有受支持的全局镜像源写入接口，因此不会自动修改拉取配置。</p>
 
   <div class="card" id="statusCard">
     <div class="row"><span class="muted">连接状态：</span><span id="connState" class="badge">检查中…</span><span class="muted">当前映射：</span><span id="currentMirror" class="big">-</span></div>
@@ -20,21 +20,21 @@
     <div id="message" class="muted">正在读取状态…</div>
   </div>
 
-  <h2>三步完成换源</h2>
+  <h2>检查与恢复</h2>
   <div class="card">
-    <div class="step"><div class="num">1</div><div><h3>检查国内镜像源</h3><div class="muted">只读探测，不会修改配置或重启服务。</div><div class="row"><button id="btnProbe">立即检查</button><span id="probeSummary" class="muted">-</span></div></div></div>
+    <div class="step"><div class="num">1</div><div><h3>检查镜像入口</h3><div class="muted">只读探测，不会修改配置或重启服务。</div><div class="row"><button id="btnProbe">立即检查</button><span id="probeSummary" class="muted">-</span></div></div></div>
     <hr>
-    <div class="step"><div class="num">2</div><div><h3>确认推荐结果</h3><div class="muted">只有探测成功的源才会显示为推荐。全部失败时会保留当前配置。</div><div id="recommendation" class="row">请先执行第 1 步</div></div></div>
+    <div class="step"><div class="num">2</div><div><h3>查看检查结果</h3><div class="muted">推荐结果仅供参考，不会被自动应用。失败时可以稍后重试或检查网络。</div><div id="recommendation" class="row">请先执行第 1 步</div></div></div>
     <hr>
-    <div class="step"><div class="num">3</div><div><h3>应用修复</h3><div class="muted">应用后 Supervisor 会短暂重启，加载项会自动恢复。</div><div class="row"><button id="btnApply" class="warnb" disabled>应用推荐配置</button><button id="btnRecover" class="danger">恢复直连</button></div></div></div>
+    <div class="step"><div class="num">3</div><div><h3>清理旧配置（仅在以前应用过时使用）</h3><div class="muted">如果安装加载项一直转圈，点击下方按钮清除旧版本留下的非官方映射并恢复直连。</div><div class="row"><button id="btnApply" class="warnb" disabled>应用推荐配置（已停用）</button><button id="btnRecover" class="danger">清除旧配置并恢复直连</button></div></div></div>
   </div>
 
   <details class="card">
     <summary>高级设置（普通用户无需修改）</summary>
-    <p class="muted">镜像源是 Supervisor 拉取容器镜像的通道；这里的候选源可能失效或限流。新增源前请确认它支持对应仓库的 manifest。</p>
+    <p class="muted">候选源只用于连通性检查，不会改写 Supervisor。HAOS 的全局镜像配置应使用官方支持的系统或网络方案。</p>
     <table id="mirrorTable"><thead><tr><th>仓库</th><th>管理</th><th>当前源</th><th>推荐源</th><th>候选</th></tr></thead><tbody></tbody></table>
     <div class="row"><select id="candReg"><option value="ghcr.io">ghcr.io</option><option value="docker.io">docker.io</option><option value="lscr.io">lscr.io</option></select><input type="text" id="candHost" placeholder="例如 mirror.example.com"><button id="btnCandAdd" class="ghost">添加候选</button></div>
-    <div class="row"><button id="btnRestore" class="ghost">恢复上次配置</button><button id="btnRestartSup" class="ghost">仅重启 Supervisor</button></div>
+    <div class="row"><button id="btnRestore" class="ghost" disabled>恢复上次配置（已停用）</button><button id="btnRestartSup" class="ghost">仅重启 Supervisor</button></div>
   </details>
 
   <details id="otaPanel" class="card hidden">
@@ -53,6 +53,7 @@
 <div id="toast"></div>
 <script>
 const REGISTRIES=['ghcr.io','docker.io','lscr.io'];
+const MIRROR_APPLICATION_SUPPORTED=false;
 const $=id=>document.getElementById(id);
 let STATE=null;
 let autoProbed=false;
@@ -70,15 +71,15 @@ async function refresh(){
   const options=r.options||{};
   $('connState').textContent=r.socket?'在线':'受限';
   $('connState').className='badge '+(r.socket?'ok':'warn');
-  const cm=Object.entries(r.current_mirror||{}).map(([k,v])=>k+' → '+(v||'直连')).join('，')||'直连官方源';
+  const cm=Object.entries(r.current_mirror||{}).map(([k,v])=>k+' → '+(v||'直连')).join('，')||'未检测到旧版映射';
   $('currentMirror').textContent=cm;
-  $('autoState').textContent=options.auto_switch==='true'?'已开启（连续失败后才自动维护）':'已关闭';
+  $('autoState').textContent=options.auto_switch==='true'?'已开启（只读检查，不自动切换）':'已关闭';
   $('lastProbe').textContent=fmtTs(r.last_probe_ts);
   const rec=r.recommended||{};
   const successful=Object.values(rec).filter(Boolean).length;
   $('probeSummary').textContent=r.last_probe_ts?(successful?'发现 '+successful+' 个可用推荐源':'未发现可用推荐源'):'尚未检查';
-  $('message').textContent=!r.socket?'未检测到 Docker socket：当前只能查看状态，无法应用镜像配置':(r.onboarding_pending?'首次使用请先检查，再应用推荐配置':'状态正常');
-  $('btnApply').disabled=!r.socket||!successful;
+  $('message').textContent=!r.socket?'未检测到 Docker socket：当前只能查看状态，无法清理旧配置':(r.legacy_mirror_detected?'检测到旧版非官方映射：请点击“清除旧配置并恢复直连”':'当前为只读检查模式，不会修改 Supervisor 配置');
+  $('btnApply').disabled=!MIRROR_APPLICATION_SUPPORTED;
   const rb=$('recommendation');
   rb.textContent='';
   for(const reg of REGISTRIES){const line=document.createElement('span');line.className='badge '+(rec[reg]?'ok':'warn');line.textContent=reg+'：'+(rec[reg]||'无可用源');rb.append(line)}
@@ -105,8 +106,8 @@ async function refresh(){
 }
 async function action(path,msg,confirmMsg){if(confirmMsg&&!confirm(confirmMsg))return;toast(msg);const r=await api(path,'POST');showResponse(r);setTimeout(refresh,r.requires_restart?12000:1200)}
 $('btnProbe').onclick=async()=>{toast('正在检查国内镜像源…');const r=await api('/api/probe','POST');showResponse(r);await refresh();autoProbed=true};
-$('btnApply').onclick=()=>action('/api/apply','正在应用推荐配置…','确认应用推荐镜像源并重启 Supervisor？');
-$('btnRecover').onclick=()=>action('/api/recover-direct','正在恢复直连…','确认移除全部镜像映射并重启 Supervisor？');
+$('btnApply').onclick=()=>toast('此功能已停用：HAOS 不支持通过本加载项写入全局镜像源');
+$('btnRecover').onclick=()=>action('/api/recover-direct','正在清理旧配置…','确认清除旧版镜像映射并重启 Supervisor？');
 $('btnRestore').onclick=()=>action('/api/restore','正在恢复上次配置…','确认恢复上次配置并重启 Supervisor？');
 $('btnRestartSup').onclick=()=>action('/api/restart-supervisor','正在重启 Supervisor…','确认重启 Supervisor？加载项会短暂离线。');
 $('btnCandAdd').onclick=async()=>{const registry=$('candReg').value;const host=$('candHost').value.trim();if(!host)return toast('请输入镜像源主机名');const r=await api('/api/candidates','POST',{registry,host,action:'add'});showResponse(r);if(r.ok)$('candHost').value='';refresh()};

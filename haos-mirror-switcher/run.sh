@@ -30,8 +30,8 @@ fi
 
 # ---------- 3) 共享动作模块 + 启动自愈 ----------
 source /lib/actions.sh
-bashio::log.info "启动自愈检查…"
-self_heal || bashio::log.warning "启动自愈未完成，请打开 Web 界面处理"
+bashio::log.info "启动只读安全检查…"
+self_heal || bashio::log.warning "启动安全检查未完成，请打开 Web 界面处理"
 
 # ---------- 4) 启动 Web 界面（后台） ----------
 bashio::log.info "启动 Web 界面（ingress 端口 ${INGRESS_PORT}）"
@@ -41,12 +41,12 @@ SERVER_PID=$!
 trap 'bashio::log.info "收到退出信号，退出"; kill "$SERVER_PID" 2>/dev/null || true; exit 0' TERM INT
 
 # ---------- 5) 前台周期探测主循环 ----------
-bashio::log.info "已启动：自动换源=${AUTO_SWITCH}，探测间隔=${PROBE_INTERVAL_HOURS}h，OTA=${ENABLE_OTA}"
+bashio::log.info "已启动：自动检查=${AUTO_SWITCH}（只读），探测间隔=${PROBE_INTERVAL_HOURS}h，OTA=${ENABLE_OTA}"
 INTERVAL_SECONDS=$(( PROBE_INTERVAL_HOURS * 3600 ))
 while true; do
   sleep "$INTERVAL_SECONDS"
   if [ "$AUTO_SWITCH" = "true" ]; then
-    bashio::log.info "周期探测镜像源…"
+    bashio::log.info "周期只读探测镜像源…"
     auto_switch_cycle || bashio::log.warning "本次探测周期出现异常（已记录，继续等待下一周期）"
   fi
 done

@@ -280,7 +280,7 @@ GET https://<api-endpoint>/v2/<repository>/manifests/latest
 4. UI 应显示“检查已完成，但没有可用镜像源”，并展示最短可行动建议（稍后重试、检查网络、在高级区添加已知源）；
 5. 只有聚合/持久化失败才返回 PROBE_RESULT_INVALID，并把诊断信息写入日志。
 
-## 七、建议的修复规划（本次不实施）
+## 七、修复规划与实施结果
 
 ### P0-A：先修当前按钮不可用
 
@@ -387,4 +387,7 @@ registry host + repository + version tag + Accept + expected architecture
 - Ingress API 对无推荐结果返回 `PROBE_COMPLETED_NO_RECOMMENDATION`，提示用户当前配置未改动且可稍后重试；页面不会再显示笼统的内部失败。
 - 已加入 `ghcr.io`、`docker.io`、`lscr.io` 带点键读取回归测试，以及无可用候选时的 API 状态测试。
 
-本补丁只修复探测和结果表达。`docker cp` 写入 Supervisor 配置与 Docker daemon 实际换源之间的边界，仍须按第七节 P0-B 单独验证，不应据此宣称已解决。
+0.2.4 已实施 P0-B 的安全决策：`apply` 与自动维护不再写入 Supervisor 的
+`registries_mirror`，Web 界面停用应用按钮；仅保留用户明确触发的旧配置清理，
+并增加读取、写入、读回校验和回滚检查。该版本不再宣称运行时可以一键切换
+HAOS 的全局镜像源。

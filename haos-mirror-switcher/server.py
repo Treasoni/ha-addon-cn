@@ -184,7 +184,11 @@ class Handler(BaseHTTPRequestHandler):
     def _action(self, fn, ok_code, ok_message, fail_code, fail_message, *, restart=False):
         success, output, error = sh(fn)
         state = load_state()
-        application = state.get("last_application", {}) if fn == "apply" else {}
+        application = (
+            state.get("last_application", {})
+            if fn in {"apply", "restore_backup", "recover_direct"}
+            else {}
+        )
         if success:
             if fn == "probe_all" and not any(state.get("recommended", {}).values()):
                 return result(
@@ -197,6 +201,15 @@ class Handler(BaseHTTPRequestHandler):
                 )
             actual_code = application.get("code", ok_code)
             actual_restart = bool(application.get("requires_restart", restart))
+            if actual_code == "LEGACY_RECOVERY_NOT_NEEDED":
+                return result(
+                    True,
+                    actual_code,
+                    "未发现旧版镜像映射，无需清理或重启 Supervisor",
+                    retryable=False,
+                    requires_restart=False,
+                    details=output,
+                )
             return result(
                 True,
                 actual_code,
@@ -206,6 +219,15 @@ class Handler(BaseHTTPRequestHandler):
                 details=output,
             )
         actual_fail_code = application.get("code", fail_code)
+        if actual_fail_code == "MIRROR_APPLICATION_UNSUPPORTED":
+            return result(
+                False,
+                actual_fail_code,
+                "此版本不会修改 Supervisor 镜像配置；请使用真实的 Docker/HAOS 网络配置",
+                retryable=False,
+                requires_restart=False,
+                details=error or output,
+            )
         return result(
             False,
             actual_fail_code,
@@ -232,11 +254,13 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == "/api/status":
             state = load_state()
             ota = state.get("ota", {})
+            current_mirror = read_docker_mirror()
             self._send_json({
                     **result(True, "STATUS_OK", "状态读取成功"),
                     "slug": SLUG,
                     "socket": socket_available(),
-                    "current_mirror": read_docker_mirror(),
+                    "current_mirror": current_mirror,
+                    "legacy_mirror_detected": bool(current_mirror),
                     "active": state.get("active", {}),
                     "recommended": state.get("recommended", {}),
                     "enabled": state.get("enabled", {}),

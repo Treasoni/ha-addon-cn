@@ -2,6 +2,8 @@
 
 Status: accepted
 
+> 后续约束：关于 `haos-mirror-switcher` 运行时维护 `registries_mirror` 的旧描述，已由 ADR 0006 取代；国内预构建入口与运行时镜像源必须分开理解。
+
 ## 背景
 
 国内用户首次安装自有 add-on 时，Supervisor 既可能需要拉取 Docker Hub 的构建器镜像，也可能需要直连 GHCR。要求用户先手工配置两条通道，会把“换源工具”本身卡在换源之前。HACS 安装器还不应把 `get.hacs.vip`、GitHub 或境外 PyPI 作为安装前提。

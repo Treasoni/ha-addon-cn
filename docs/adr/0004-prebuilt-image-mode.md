@@ -4,6 +4,8 @@
 
 Status: accepted
 
+> 后续约束：关于 `haos-mirror-switcher` 运行时写入 `registries_mirror` 的旧描述，已由 ADR 0006 取代；本 ADR 仍仅说明预构建镜像发布方式。
+
 **问题**：`source: local` 自有 add-on 默认由 Supervisor 本地构建，装前需同时拉两条通道：Docker Hub 构建器 CLI 镜像（`docker:*`，仓库 `library/docker`，走 docker.io 通道）与 ghcr.io `{arch}-base` 基础镜像（走 ghcr 通道）。国内网络下两条必须都先可用才能安装——鸡生蛋：新手要先手动配好两个 `registries_mirror` 映射才能装，装完 add-on 才接管换源。`haos-mirror-switcher` 真机实测拉 Docker Hub 构建器 CLI 即报 `Can't pull image docker:29.6.2-cli` / `auth.docker.io ... EOF`。
 
 **决策**：允许 `source: local` 的 add-on 进入「预构建模式（prebuilt mode）」：

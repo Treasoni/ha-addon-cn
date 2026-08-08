@@ -18,6 +18,16 @@ ACTIONS = ROOT / "haos-mirror-switcher" / "lib" / "actions.sh"
 SERVER = ROOT / "haos-mirror-switcher" / "server.py"
 CONFIG = ROOT / "haos-mirror-switcher" / "config.yaml"
 CANDIDATES = ROOT / "haos-mirror-switcher" / "lib" / "candidates.json"
+UI = ROOT / "haos-mirror-switcher" / "www" / "index.html"
+
+
+def shell_function_body(name):
+    """Return one top-level bash function body for narrow safety assertions."""
+    source = ACTIONS.read_text(encoding="utf-8")
+    match = re.search(rf"^{re.escape(name)}\(\) \{{(?P<body>.*?)^\}}", source, re.MULTILINE | re.DOTALL)
+    if match is None:
+        raise AssertionError(f"missing shell function: {name}")
+    return match.group("body")
 
 
 @contextlib.contextmanager
@@ -57,6 +67,50 @@ def load_server_module():
 
 
 class HaosMirrorSwitcherTests(unittest.TestCase):
+    def test_apply_never_writes_unsupported_supervisor_mirror_configuration(self):
+        body = shell_function_body("apply")
+
+        self.assertIn("MIRROR_APPLICATION_UNSUPPORTED", body)
+        self.assertNotIn("docker_write_atomic", body)
+        self.assertNotIn("supervisor_restart", body)
+
+    def test_startup_self_heal_is_read_only(self):
+        body = shell_function_body("self_heal")
+
+        self.assertNotIn("docker_write_atomic", body)
+        self.assertNotIn("supervisor_restart", body)
+
+    def test_restore_and_automatic_cycle_cannot_apply_or_restart_mirrors(self):
+        for function_name in ("restore_backup", "auto_switch_cycle"):
+            body = shell_function_body(function_name)
+            self.assertNotIn("docker_write_atomic", body, function_name)
+            self.assertNotIn("supervisor_restart", body, function_name)
+
+    def test_legacy_write_requires_a_backup_and_verifies_the_removed_field(self):
+        write_body = shell_function_body("docker_write_atomic")
+        recovery_body = shell_function_body("recover_direct")
+
+        self.assertIn("无法创建 Supervisor 配置备份", write_body)
+        self.assertIn("docker_restore_internal_backup", write_body)
+        self.assertIn("LEGACY_RECOVERY_VERIFY_FAILED", recovery_body)
+        self.assertIn("has(\"registries_mirror\")", recovery_body)
+
+    def test_legacy_direct_recovery_forgets_old_mirror_snapshot(self):
+        body = shell_function_body("recover_direct")
+        cleanup_body = shell_function_body("_clear_legacy_state")
+
+        self.assertIn("_clear_legacy_state", body)
+        self.assertIn('st["last_known_good"] = None', cleanup_body)
+        self.assertIn("has(\"registries_mirror\")", body)
+        self.assertIn("docker_restore_internal_backup", body)
+
+    def test_ui_keeps_unsupported_application_controls_disabled(self):
+        page = UI.read_text(encoding="utf-8")
+
+        self.assertRegex(page, r'id="btnApply"[^>]*disabled')
+        self.assertRegex(page, r'id="btnRestore"[^>]*disabled')
+        self.assertIn("const MIRROR_APPLICATION_SUPPORTED=false", page)
+
     def test_state_field_preserves_dotted_registry_name_as_one_path_segment(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             state_file = Path(temp_dir) / "state.json"
@@ -112,6 +166,34 @@ class HaosMirrorSwitcherTests(unittest.TestCase):
         self.assertEqual("PROBE_COMPLETED_NO_RECOMMENDATION", response["code"])
         self.assertIn("暂未找到可用", response["user_message"])
         self.assertTrue(response["retryable"])
+
+    def test_legacy_recovery_without_mapping_does_not_claim_a_restart(self):
+        server = load_server_module()
+        handler = object.__new__(server.Handler)
+        with mock.patch.object(server, "sh", return_value=(True, "no legacy mapping", "")):
+            with mock.patch.object(
+                server,
+                "load_state",
+                return_value={
+                    "last_application": {
+                        "code": "LEGACY_RECOVERY_NOT_NEEDED",
+                        "requires_restart": False,
+                    }
+                },
+            ):
+                response = handler._action(
+                    "recover_direct",
+                    "DIRECT_RESTORED",
+                    "已移除镜像映射，Supervisor 正在重启",
+                    "DIRECT_RESTORE_FAILED",
+                    "恢复直连失败",
+                    restart=True,
+                )
+
+        self.assertTrue(response["ok"])
+        self.assertEqual("LEGACY_RECOVERY_NOT_NEEDED", response["code"])
+        self.assertFalse(response["requires_restart"])
+        self.assertIn("无需清理", response["user_message"])
 
     def test_action_log_works_without_bashio_in_child_shell(self):
         command = (
