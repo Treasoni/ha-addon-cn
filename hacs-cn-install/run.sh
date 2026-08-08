@@ -3,19 +3,18 @@
 set -e
 
 INTEGRATION_VERSION="$(bashio::config 'integration_version' '2.0.5.3')"
-FE_VERSION="20250128065759"
 WORK="/tmp/hacs-cn-install"
 TARGET="/homeassistant/custom_components/hacs"
 
 bashio::log.info "========================================="
 bashio::log.info "HACS 极速版 Gitee 安装器（hacs-cn-install）"
-bashio::log.info "integration_version=${INTEGRATION_VERSION}  frontend=${FE_VERSION}"
+bashio::log.info "integration_version 默认 = ${INTEGRATION_VERSION}（运行时优先取 gitee 最新 tag）"
 bashio::log.info "========================================="
 
 rm -rf "${WORK}"
 mkdir -p "${WORK}"
 
-# ---------- 1) 下载 gitee 源码（china 分支） ----------
+# ---------- 1) 下载 gitee 源码（china 分支，实时快照） ----------
 bashio::log.info "① 下载 gitee 源码（china 分支）..."
 curl -fL --retry 3 --connect-timeout 20 \
   -o "${WORK}/hacs-src.zip" \
@@ -27,12 +26,18 @@ unzip -q "${WORK}/hacs-src.zip" -d "${WORK}/src"
 SRC="$(find "${WORK}/src" -type d -path '*/custom_components/hacs' | head -n1)"
 [ -n "${SRC}" ] || bashio::exit.nok "gitee 源码中未找到 custom_components/hacs"
 
-# ---------- 2) 下载并解压前端轮子（清华 tuna 镜像） ----------
-bashio::log.info "② 从 tuna 镜像解析并下载 hacs_frontend==${FE_VERSION} 轮子..."
+# ---------- 2) 前端轮子：版本与集成源码自动对齐 ----------
+# 从源码 scripts/install/frontend 解析 FRONTEND_VERSION（上游 pin，不硬编码）
+FE_SCRIPT="$(find "${WORK}/src" -path '*/scripts/install/frontend' -type f | head -n1)"
+[ -n "${FE_SCRIPT}" ] || bashio::exit.nok "源码中未找到 scripts/install/frontend（无法确定前端版本）"
+FE_VERSION="$(sed -n 's/.*FRONTEND_VERSION="\([^"]*\)".*/\1/p' "${FE_SCRIPT}" | head -n1)"
+[ -n "${FE_VERSION}" ] || bashio::exit.nok "无法从 install/frontend 解析 FRONTEND_VERSION"
+bashio::log.info "② 前端版本（对齐集成源码）：${FE_VERSION}"
+bashio::log.info "   从 tuna 镜像解析并下载 hacs_frontend==${FE_VERSION} 轮子..."
 WHEEL_REL="$(curl -fsSL --connect-timeout 20 "https://pypi.tuna.tsinghua.edu.cn/simple/hacs_frontend/" \
   | grep -oE "href=\"[^\"]*${FE_VERSION}[^\"]*\.whl[^\"]*\"" | head -n1 \
   | sed 's/^href="//; s/"$//')"
-[ -n "${WHEEL_REL}" ] || bashio::exit.nok "tuna 上未找到 hacs_frontend==${FE_VERSION} 轮子"
+[ -n "${WHEEL_REL}" ] || bashio::exit.nok "tuna 上未找到 hacs_frontend==${FE_VERSION} 轮子（上游 pin 可能已更新，重试或等 add-on 更新）"
 WHEEL_URL="https://pypi.tuna.tsinghua.edu.cn/${WHEEL_REL#../../}"
 curl -fL --retry 3 --connect-timeout 20 -o "${WORK}/frontend.whl" "${WHEEL_URL}" \
   || bashio::exit.nok "下载前端轮子失败（请检查 tuna 连通性）"
@@ -42,9 +47,24 @@ unzip -q -o "${WORK}/frontend.whl" -d "${SRC}"
 rm -rf "${SRC}"/*.dist-info
 bashio::log.info "前端已解压进 custom_components/hacs（hacs_frontend/）"
 
-# ---------- 3) 注入版本号（china 分支 manifest 为 0.0.0） ----------
+# ---------- 3) 注入版本号：优先取 gitee 最新 china tag，失败回退 options 默认 ----------
+bashio::log.info "③ 查询 gitee 最新 china tag..."
+ALL_TAGS=""
+for page in 1 2 3; do
+  ALL_TAGS="${ALL_TAGS}$(curl -fsSL --connect-timeout 15 "https://gitee.com/api/v5/repos/hacs-china/integration/tags?per_page=100&page=${page}" 2>/dev/null || true)\n"
+done
+LATEST_TAG="$(printf '%b' "${ALL_TAGS}" \
+  | grep -oE '"name": ?"[0-9]+(\.[0-9]+)+"' \
+  | sed -E 's/.*"([0-9]+(\.[0-9]+)+)".*/\1/' \
+  | sort -t. -k1,1n -k2,2n -k3,3n -k4,4n \
+  | tail -n1)"
+if [ -n "${LATEST_TAG}" ]; then
+  INTEGRATION_VERSION="${LATEST_TAG}"
+  bashio::log.info "注入版本（gitee 最新 china tag）：${INTEGRATION_VERSION}"
+else
+  bashio::log.warning "gitee tag 查询失败，回退 options 默认版本：${INTEGRATION_VERSION}"
+fi
 sed -i "s/\"version\": \"0.0.0\"/\"version\": \"${INTEGRATION_VERSION}\"/" "${SRC}/manifest.json"
-bashio::log.info "③ manifest version -> ${INTEGRATION_VERSION}"
 
 # ---------- 4) 兜底：预下载 aiogithubapi 轮子（pypi.org 被墙时手动安装用） ----------
 bashio::log.info "④ 预下载 aiogithubapi 轮子到 /homeassistant/hacs-gitee-deps/ ..."

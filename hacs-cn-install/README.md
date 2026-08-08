@@ -21,7 +21,7 @@ HACS极速版Gitee安装器（slug：`hacs-cn-install`）是**不依赖 `get.hac
 
 | 配置键 | 类型/默认值 | 说明 |
 | ------ | ----------- | ---- |
-| `integration_version` | `str` / 默认 `2.0.5.3` | 注入到 HACS `manifest.json` 的版本号（china 分支源码默认 `0.0.0`，需注入真实版本供 HACS 显示与自检更新）。默认取上游 china 分支最新 tag，上游发布新版本后可自行更新此值 |
+| `integration_version` | `str` / 默认 `2.0.5.3` | 注入到 HACS `manifest.json` 的版本号（china 分支源码默认 `0.0.0`，需注入真实版本供 HACS 显示与自检更新）。**运行时优先从 gitee 取最新 china tag** 注入，仅当查询失败时回退此默认值 |
 
 ## 使用与访问入口
 
@@ -31,6 +31,8 @@ HACS极速版Gitee安装器（slug：`hacs-cn-install`）是**不依赖 `get.hac
 4. 安装完成后**重启 Home Assistant**，到 设置 → 设备与服务 → 添加集成，搜索「HACS」并添加。
 
 > 本加载项为一次性安装器，无端口、无 Web 界面；使用入口即上述 Home Assistant 设置页操作。
+
+**如何更新 HACS 极速版？** 直接重跑本加载项即可：它会重新拉取 gitee china 分支最新源码，**前端版本自动与源码对齐**（从源码 `scripts/install/frontend` 解析 `FRONTEND_VERSION`），注入版本自动取 gitee 最新 tag，并把旧 HACS 备份为 `hacs.bak-<时间戳>` 后覆盖。运行完重启 HA 生效。
 
 ## 常见问题
 
