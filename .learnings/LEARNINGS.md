@@ -20,6 +20,20 @@ _最后更新：2026-08-08_
 - 根因：构建 source: local 需要 Docker Hub 的 `library/docker` CLI 镜像作为构建器，这是 docker.io 通道；它不在 ghcr.io 映射覆盖范围内。
 - 下次做法：source: local 插件的「手动换源前置」必须**同时**配好 `{ "ghcr.io": ..., "docker.io": ... }` 两个映射，README 前置步骤要写明这条硬依赖。已在 haos-mirror-switcher README 补齐。
 
+### 预构建镜像发布三条铁律（build-addon.yml + GHCR）
+
+**类别**：knowledge_gap
+**优先级**：high
+**状态**：resolved（已落地 build-addon.yml / config.yaml / ADR-0004）
+**范围**：source: local 预构建 add-on / GitHub Actions buildx 推送 ghcr.io
+
+**摘要**：haos-mirror-switcher 转预构建模式，首轮 CI 构建连挂三轮，三条根因分别是被 buildx/docker 强制的规范：
+
+**详情**：
+- ① image tag 必须带完整 registry 前缀：`ghcr.io/<owner>/<slug>-{arch}`，只写 `<owner>/<slug>-{arch}` 会把 owner 当主机名，报 `failed to push Treasoni/...: lookup Treasoni: no such host`。workflow 里用 `IMAGE_REGISTRY` env 拼全。
+- ② Docker 镜像仓库名（namespace/repo 部分）必须**全小写**：`Treasoni/...` 直接报 `invalid tag ... repository name must be lowercase`。config.yaml `image:` 与 workflow tags 同步改 `ghcr.io/treasoni/...`（GitHub 用户名大小写不敏感，登录/推送不受影响）。
+- ③ GHCR 容器包**默认 private**，匿名 pull 403（镜像在、但 HA/镜像源拉不到）；且**个人账号包的可见性无法用 REST API 改**（`/user/packages/.../visibility` 返回 404，该端点只有 org 版），必须 web UI：包页面 → ⚙ Package settings → Danger Zone → Change visibility → Public。gh token 需 `read:packages,write:packages` scope 才能查包。
+
 ---
 
 - **`hassio.app_stdin` 是真实服务**（rpc_shutdown 审校）：HA 已将 add-on 改称 app，core 新增了 `hassio.app_stdin`（字段 `app`），与 `hassio.addon_stdin`（字段 `addon`）并存，均映射到 `/addons/{slug}/stdin`。上游官方 DOCS 已改用 `app_stdin`，中文 README 照抄不属于编造，切勿“纠正”成 addon_stdin。

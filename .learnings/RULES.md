@@ -31,3 +31,9 @@ _最后更新：2026-08-07_
 
 - **逻辑 RUN**：判断 apt/apk flag 与缓存清理前，先把 `\` 续行合并成逻辑 RUN 语句，勿逐物理行。
 - **FROM 解析**：ref 取第一个非 `--flag` token；`FROM <stage>` 别名放行（先收集 `AS <name>`）；addon 判定允许 `ARG BUILD_FROM=默认值`；镜像名正则含 `-`。
+
+## 预构建镜像发布（prebuilt mode）
+
+- **image tag 带全 registry 前缀**：`ghcr.io/<owner>/<slug>-{arch}`，勿只写 `<owner>/...`（会被当主机名，报 `lookup <owner>: no such host`）。
+- **镜像仓库名全小写**：config.yaml `image:` 与 workflow tags 都用 `ghcr.io/<owner小写>/...`；buildx 报 `repository name must be lowercase`。GitHub 用户名大小写不敏感。
+- **GHCR 包默认 private**：发布后匿名 `manifest` 探测 403 即私有，需 web UI 改 Public（个人账号包无 REST visibility 端点，只有 org 有）。
