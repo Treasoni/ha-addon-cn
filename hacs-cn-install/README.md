@@ -32,7 +32,9 @@ HACS极速版Gitee安装器（slug：`hacs-cn-install`）是**不依赖 `get.hac
 
 > 本加载项为一次性安装器，无端口、无 Web 界面；使用入口即上述 Home Assistant 设置页操作。
 
-**如何更新 HACS 极速版？** 直接重跑本加载项即可：它会重新拉取 gitee china 分支最新源码，**前端版本自动与源码对齐**（从源码 `scripts/install/frontend` 解析 `FRONTEND_VERSION`），注入版本自动取 gitee 最新 tag，并把旧 HACS 备份为 `hacs.bak-<时间戳>` 后覆盖。运行完重启 HA 生效。
+**如何更新 HACS 极速版？** 两条通道：
+- **重跑本加载项（稳定兜底）**：重新拉取 gitee china 分支最新源码，前端版本自动与源码对齐（从源码 `scripts/install/frontend` 解析 `FRONTEND_VERSION`），注入版本自动取 gitee 最新 tag，旧 HACS 备份为 `hacs.bak-<时间戳>` 后覆盖，运行完重启 HA 生效。只依赖 gitee.com + 清华 tuna，网络抖动时依然可用。
+- **HACS 内自更新（网络通畅时）**：在开发者工具调用 `hacs.upgrade` 服务（等价于 `wget -O - https://get.hacs.vip | bash -`），或极速版更新实体一键升级。该通道依赖 `get.hacs.vip` / `hacs.vip`，国内网络间歇可达，被墙时改用上面那条。
 
 ## 常见问题
 
@@ -45,7 +47,7 @@ HACS极速版Gitee安装器（slug：`hacs-cn-install`）是**不依赖 `get.hac
   ```
 
   装完重启 HA。
-- **装完 HACS 后商店里下载插件仍失败？** HACS 极速版内置 gitmirror/fastgit 等 GitHub 代理，是否可用取决于当前网络，超出本加载项安装范围。
+- **装完 HACS 后商店里下载插件仍失败？** HACS 极速版内置多层 GitHub 代理（`ghrp2.hacs.vip`/`ghrp.hacs.vip` → `gh-proxy.com` → `gitmirror` → `ghps.cc` → `gh.ddlc.top` → 直连 GitHub，逐层回退），可用性取决于当前网络，超出本加载项安装范围；网络抖动时可稍后重试或换时段。
 - **原有 HACS 会被覆盖吗？** 会。启动时若检测到已存在 `custom_components/hacs`，会先备份为 `hacs.bak-<时间戳>` 再安装新版（极速版与官方共用一套配置，覆盖后无需重新配置集成）。
 
 ---
