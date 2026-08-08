@@ -6,7 +6,7 @@
 set -euo pipefail
 
 # ---------------- 基础路径与常量 ----------------
-STATE_FILE="/data/state.json"
+STATE_FILE="${STATE_FILE:-/data/state.json}"
 LOCK_FILE="/data/.actions.lock"
 BACKUP_LOCAL="/data/docker.json.backup"          # addon_config 本地 last-good 快照
 OTA_DIR="/data/ota"                               # addon 内下载目录
@@ -125,15 +125,19 @@ PY
 }
 
 _state_field() {
-  python3 - "$1" <<'PY' || echo ""
+  STATE_FILE="$STATE_FILE" python3 - "$@" <<'PY' || echo ""
 import json, sys
+import os
 try:
-    with open("/data/state.json", "r", encoding="utf-8") as f:
+    with open(os.environ.get("STATE_FILE", "/data/state.json"), "r", encoding="utf-8") as f:
         st = json.load(f)
 except Exception:
     print("")
     sys.exit(0)
-keys = sys.argv[1].split(".")
+keys = sys.argv[1:]
+if not keys:
+    print("")
+    sys.exit(0)
 cur = st
 for k in keys:
     if not isinstance(cur, dict) or k not in cur:
@@ -407,7 +411,7 @@ probe_all() {
   ensure_state
   {
     for reg in ghcr.io docker.io lscr.io; do
-      if [ "$(_state_field "enabled.$reg")" != "true" ]; then
+      if [ "$(_state_field enabled "$reg")" != "true" ]; then
         printf 'RECOMMENDED|%s|\n' "$reg"
         continue
       fi
@@ -425,6 +429,7 @@ probe_all() {
       done <<< "$(_effective_candidates "$reg")"
       printf 'RECOMMENDED|%s|%s\n' "$reg" "${picked:-}"
     done
+    printf 'COMPLETE||\n'
   } | python3 -c '
 import json, sys, time
 try:
@@ -432,7 +437,13 @@ try:
         old = json.load(f)
 except Exception:
     old = {}
-st = {"probe_results": {}, "recommended": {}, "failure_streak": dict(old.get("failure_streak", {}))}
+registries = ("ghcr.io", "docker.io", "lscr.io")
+st = {
+    "probe_results": {registry: {} for registry in registries},
+    "recommended": {},
+    "failure_streak": dict(old.get("failure_streak", {})),
+    "probe_completed": False,
+}
 for line in sys.stdin:
     line = line.rstrip("\n")
     if not line:
@@ -443,7 +454,11 @@ for line in sys.stdin:
         st.setdefault("probe_results", {}).setdefault(reg, {})[host] = code
     elif typ == "RECOMMENDED":
         st.setdefault("recommended", {})[reg] = rest or None
-for reg in ("ghcr.io", "docker.io", "lscr.io"):
+    elif typ == "COMPLETE" and not reg and not rest:
+        st["probe_completed"] = True
+    else:
+        raise ValueError(f"invalid probe record: {line}")
+for reg in registries:
     active = old.get("active", {}).get(reg)
     status = st.get("probe_results", {}).get(reg, {}).get(active, "") if active else ""
     if not active or status.startswith("ok:"):
@@ -463,14 +478,19 @@ try:
 except Exception:
     raise SystemExit(1)
 
-# 探测没有产出任何 RESULT（python 崩溃/全部 registry 未启用）视为未完成，
-# 避免把空/半截结果写进 state 或误判镜像源不可用。
+# A completed probe may legitimately have no candidates or no successful hosts.
+# It is incomplete only when the producer did not finish every registry.
+registries = {"ghcr.io", "docker.io", "lscr.io"}
 probe_results = state.get("probe_results")
-if not isinstance(probe_results, dict) or not probe_results:
+if state.get("probe_completed") is not True:
+    raise SystemExit(1)
+if not isinstance(probe_results, dict) or set(probe_results) != registries:
+    raise SystemExit(1)
+if not all(isinstance(results, dict) for results in probe_results.values()):
     raise SystemExit(1)
 
 recommended = state.get("recommended")
-if not isinstance(recommended, dict):
+if not isinstance(recommended, dict) or set(recommended) != registries:
     raise SystemExit(1)
 PY
   then
@@ -480,7 +500,19 @@ PY
   _update_state "$fragment"
   local summary
   summary="$(_probe_summary "$fragment")"
-  _log "镜像源探测完成：${summary}"
+  if python3 - "$fragment" <<'PY'
+import json, sys
+try:
+    recommended = json.loads(sys.argv[1]).get("recommended", {})
+except Exception:
+    recommended = {}
+raise SystemExit(0 if any(recommended.values()) else 1)
+PY
+  then
+    _log "镜像源探测完成：${summary}"
+  else
+    _log "镜像源检查完成：暂未找到可用候选，已保持当前配置不变：${summary}"
+  fi
 }
 
 _probe_summary() {
@@ -668,7 +700,7 @@ self_heal() {
   current="$(docker_read)"
   has_mirror="$(jq -r 'has("registries_mirror")' <<<"$current" 2>/dev/null || echo false)"
   local lkg
-  lkg="$(_state_field "last_known_good")"
+  lkg="$(_state_field last_known_good)"
 
   if [ "$has_mirror" = "false" ] && [ "$lkg" != "null" ] && [ -n "$lkg" ]; then
     # HAOS 升级重置了 docker.json -> 把 last-known-good 的 registries_mirror 合并回当前配置，
@@ -709,9 +741,9 @@ auto_switch_cycle() {
   ensure_state
   local now last_probe last_restart onboarding
   now="$(date +%s)"
-  last_probe="$(_state_field "last_probe_ts")"
-  last_restart="$(_state_field "last_restart_ts")"
-  onboarding="$(_state_field "onboarding_completed")"
+  last_probe="$(_state_field last_probe_ts)"
+  last_restart="$(_state_field last_restart_ts)"
+  onboarding="$(_state_field onboarding_completed)"
   if [ "$onboarding" != "true" ]; then
     _log "首次引导尚未确认，自动换源只探测不应用"
     probe_all || return 1
@@ -783,7 +815,7 @@ PY
 }
 
 _os_board() {
-  _state_field "ota.board"
+  _state_field ota board
 }
 
 ota_download() {
@@ -792,7 +824,7 @@ ota_download() {
   local version="$1"
   local board target ok=false
   [ "${ENABLE_OTA:-false}" = "true" ] || { _log "OTA 实验功能未启用"; return 1; }
-  board="$(_state_field "ota.board")"
+  board="$(_state_field ota board)"
   [ -n "$board" ] && [ "$board" != "null" ] || { _log "OTA 下载失败：Supervisor 未返回有效 board"; return 1; }
   mkdir -p "$OTA_DIR"
   _log "OTA 下载：haos_${board}-${version}.raucb"
@@ -838,9 +870,9 @@ ota_install() {
   ensure_state
   [ "${ENABLE_OTA:-false}" = "true" ] || { _log "OTA 实验功能未启用"; return 1; }
   local board ver fname target
-  board="$(_state_field "ota.downloaded_board")"
-  ver="$(_state_field "ota.downloaded_version")"
-  fname="$(_state_field "ota.downloaded")"
+  board="$(_state_field ota downloaded_board)"
+  ver="$(_state_field ota downloaded_version)"
+  fname="$(_state_field ota downloaded)"
   if [ -z "$board" ] || [ -z "$ver" ] || [ -z "$fname" ] || [ "$fname" = "null" ]; then
     _log "OTA 安装：没有已下载的升级包，先下载"
     return 1

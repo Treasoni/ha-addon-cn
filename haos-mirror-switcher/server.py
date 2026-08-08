@@ -183,8 +183,18 @@ class Handler(BaseHTTPRequestHandler):
 
     def _action(self, fn, ok_code, ok_message, fail_code, fail_message, *, restart=False):
         success, output, error = sh(fn)
-        application = load_state().get("last_application", {}) if fn == "apply" else {}
+        state = load_state()
+        application = state.get("last_application", {}) if fn == "apply" else {}
         if success:
+            if fn == "probe_all" and not any(state.get("recommended", {}).values()):
+                return result(
+                    True,
+                    "PROBE_COMPLETED_NO_RECOMMENDATION",
+                    "检查完成，但暂未找到可用的镜像源；当前配置没有改动。",
+                    retryable=True,
+                    requires_restart=False,
+                    details=output,
+                )
             actual_code = application.get("code", ok_code)
             actual_restart = bool(application.get("requires_restart", restart))
             return result(

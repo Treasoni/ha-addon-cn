@@ -44,6 +44,10 @@ _Avoid_: 换源、改镜像、本地化镜像
 pull-through 代理 `ghcr.io` 的国内镜像站（当前为 `ghcr.nju.edu.cn`）。与「镜像仓库」（上游代码仓库全量镜像）是两码事。
 _Avoid_: 加速器、Docker 镜像加速（那是 docker.io 的 daemon.json 配置，对 ghcr.io 无效）
 
+**镜像源探测完成**:
+对每个启用的镜像仓库都已记录候选源检查结果的业务状态。没有候选源或没有任何候选成功，仍是完成的检查结果，当前配置必须保持不变；只有检查过程本身未完成才是探测失败。
+_Avoid_: 没有推荐源等同于探测器错误
+
 **镜像入口**:
 预构建 `source: local` add-on 面向国内用户的安装入口，例如
 `ghcr.nju.edu.cn/treasoni/haos-mirror-switcher-{arch}` 和

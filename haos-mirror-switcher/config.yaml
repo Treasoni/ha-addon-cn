@@ -9,9 +9,9 @@
 # default_credentials: 无（ingress 由 Supervisor 登录鉴权）
 # data_dir: /data（addon_config，持久化状态与备份；宿主 /mnt/data/supervisor/addons_config/ 下以 slug 命名的子目录）
 # env_vars: SUPERVISOR_TOKEN（hassio_api 注入）
-# version: 0.2.2
+# version: 0.2.3
 name: HAOS 国内换源
-version: "0.2.2"
+version: "0.2.3"
 slug: haos-mirror-switcher
 description: 自动探测并切换 Docker 国内镜像源，并提供 HAOS 固件 OTA 国内升级助手。
 url: https://gitee.com/zhqznc_10603234_123/ha-addon

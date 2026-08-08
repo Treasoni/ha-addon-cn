@@ -6,6 +6,7 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 import types
 import unittest
 from pathlib import Path
@@ -17,6 +18,28 @@ ACTIONS = ROOT / "haos-mirror-switcher" / "lib" / "actions.sh"
 SERVER = ROOT / "haos-mirror-switcher" / "server.py"
 CONFIG = ROOT / "haos-mirror-switcher" / "config.yaml"
 CANDIDATES = ROOT / "haos-mirror-switcher" / "lib" / "candidates.json"
+
+
+@contextlib.contextmanager
+def bash_env_with_python3():
+    """Provide a usable python3 command when exercising add-on shell code on Windows."""
+    env = os.environ.copy()
+    probe = subprocess.run(
+        ["bash", "-c", "python3 -c 'import sys'"],
+        capture_output=True,
+        env=env,
+        timeout=10,
+    )
+    if probe.returncode == 0:
+        yield env
+        return
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        shim = Path(temp_dir) / "python3"
+        shim.write_text('#!/usr/bin/env bash\nexec python "$@"\n', encoding="utf-8")
+        shim.chmod(0o755)
+        env["PATH"] = f"{temp_dir}{os.pathsep}{env.get('PATH', '')}"
+        yield env
 
 
 def load_server_module():
@@ -34,6 +57,62 @@ def load_server_module():
 
 
 class HaosMirrorSwitcherTests(unittest.TestCase):
+    def test_state_field_preserves_dotted_registry_name_as_one_path_segment(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            state_file = Path(temp_dir) / "state.json"
+            state_file.write_text(
+                json.dumps(
+                    {
+                        "enabled": {
+                            "ghcr.io": True,
+                            "docker.io": False,
+                            "lscr.io": True,
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            command = (
+                'export SLUG="haos-mirror-switcher" STATE_FILE="$2"; '
+                'source "$1"; '
+                '_state_field enabled ghcr.io; '
+                '_state_field enabled docker.io; '
+                '_state_field enabled lscr.io'
+            )
+            with bash_env_with_python3() as env:
+                completed = subprocess.run(
+                    ["bash", "-c", command, "actions.sh", ACTIONS.as_posix(), state_file.as_posix()],
+                    capture_output=True,
+                    text=True,
+                    env=env,
+                    timeout=10,
+                )
+
+        self.assertEqual(0, completed.returncode, completed.stderr)
+        self.assertEqual(["true", "false", "true"], completed.stdout.splitlines())
+
+    def test_probe_without_recommendation_is_a_completed_check(self):
+        server = load_server_module()
+        handler = object.__new__(server.Handler)
+        with mock.patch.object(server, "sh", return_value=(True, "all candidates failed", "")):
+            with mock.patch.object(
+                server,
+                "load_state",
+                return_value={"recommended": {"ghcr.io": None, "docker.io": None, "lscr.io": None}},
+            ):
+                response = handler._action(
+                    "probe_all",
+                    "PROBE_COMPLETED",
+                    "检查完成，请确认推荐镜像源后应用",
+                    "PROBE_FAILED",
+                    "镜像源检查失败，请稍后重试",
+                )
+
+        self.assertTrue(response["ok"])
+        self.assertEqual("PROBE_COMPLETED_NO_RECOMMENDATION", response["code"])
+        self.assertIn("暂未找到可用", response["user_message"])
+        self.assertTrue(response["retryable"])
+
     def test_action_log_works_without_bashio_in_child_shell(self):
         command = (
             'export SLUG="haos-mirror-switcher"; '
