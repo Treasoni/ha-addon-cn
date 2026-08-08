@@ -18,9 +18,18 @@ PROBE_COOLDOWN=60      # 周期探测至少间隔 60s
 AUTO_SWITCH_FAILURE_THRESHOLD=2
 
 # ---------------- 日志 ----------------
+_log_info() {
+  local msg="$1"
+  if declare -F bashio::log.info >/dev/null 2>&1; then
+    bashio::log.info "$msg"
+  else
+    printf '[INFO] %s\n' "$msg"
+  fi
+}
+
 _log() {
   local msg="$1"
-  bashio::log.info "$msg"
+  _log_info "$msg"
   if [ -f "$STATE_FILE" ]; then
     python3 - "$msg" <<'PY' || true
 import fcntl, json, os, sys, tempfile, time
@@ -443,11 +452,54 @@ for reg in ("ghcr.io", "docker.io", "lscr.io"):
         st.setdefault("failure_streak", {})[reg] = st.setdefault("failure_streak", {}).get(reg, 0) + 1
 st["last_probe_ts"] = int(time.time())
 print(json.dumps(st, ensure_ascii=False))
-' > /data/probe_out.json 2>/dev/null || true
+ ' > /data/probe_out.json || true
   fragment="$(cat /data/probe_out.json 2>/dev/null || echo '{}')"
   rm -f /data/probe_out.json
-  [ -n "$fragment" ] && [ "$fragment" != "{}" ] && _update_state "$fragment"
-  _log "镜像源探测完成"
+  if ! python3 - "$fragment" <<'PY'
+import json, sys
+
+try:
+    state = json.loads(sys.argv[1])
+except Exception:
+    raise SystemExit(1)
+
+# 探测没有产出任何 RESULT（python 崩溃/全部 registry 未启用）视为未完成，
+# 避免把空/半截结果写进 state 或误判镜像源不可用。
+probe_results = state.get("probe_results")
+if not isinstance(probe_results, dict) or not probe_results:
+    raise SystemExit(1)
+
+recommended = state.get("recommended")
+if not isinstance(recommended, dict):
+    raise SystemExit(1)
+PY
+  then
+    _log "镜像源探测失败：无法生成完整探测结果"
+    return 1
+  fi
+  _update_state "$fragment"
+  local summary
+  summary="$(_probe_summary "$fragment")"
+  _log "镜像源探测完成：${summary}"
+}
+
+_probe_summary() {
+  python3 - "$1" <<'PY'
+import json, sys
+try:
+    state = json.loads(sys.argv[1])
+except Exception:
+    state = {}
+parts = []
+for registry in ("ghcr.io", "docker.io", "lscr.io"):
+    results = state.get("probe_results", {}).get(registry, {})
+    if results:
+        detail = ", ".join(f"{host}={status}" for host, status in results.items())
+    else:
+        detail = "无候选"
+    parts.append(f"{registry}[{detail}]")
+print("；".join(parts))
+PY
 }
 
 _promote_recommendations() {
@@ -662,7 +714,7 @@ auto_switch_cycle() {
   onboarding="$(_state_field "onboarding_completed")"
   if [ "$onboarding" != "true" ]; then
     _log "首次引导尚未确认，自动换源只探测不应用"
-    probe_all
+    probe_all || return 1
     return 0
   fi
   [ -n "$last_probe" ] && [ "$(( now - last_probe ))" -lt "$PROBE_COOLDOWN" ] && return 0
@@ -670,7 +722,7 @@ auto_switch_cycle() {
     _log "重启冷却期内，跳过自动换源"
     return 0
   }
-  probe_all
+  probe_all || { _log "镜像源探测失败，跳过本次自动换源"; return 1; }
   AUTO_SWITCH_FAILURE_THRESHOLD="$AUTO_SWITCH_FAILURE_THRESHOLD" python3 - <<'PY'
 import fcntl, json, os, tempfile
 with open("/data/.state.lock", "a+", encoding="utf-8") as lock:
@@ -759,8 +811,8 @@ for h in hosts:
 PY
   while IFS= read -r url; do
     [ -n "$url" ] || continue
-    bashio::log.info "尝试下载源：$url"
-    if curl -fL --retry 2 --retry-delay 3 --max-time 600 -C - \
+    _log_info "尝试下载源：$url"
+    if curl -sSfL --retry 2 --retry-delay 3 --max-time 600 -C - \
         -o "$OTA_DIR/haos_${board}-${version}.raucb" "$url"; then
       if [ -s "$OTA_DIR/haos_${board}-${version}.raucb" ]; then
         ok=true

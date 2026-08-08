@@ -44,10 +44,19 @@ def sh(*args):
     env["PROBE_TIMEOUT"] = os.environ.get("PROBE_TIMEOUT", "8")
     env["SLUG"] = SLUG
     try:
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=900, env=env)
-        return proc.returncode == 0, proc.stdout.strip(), proc.stderr.strip()
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
+        output, error = proc.communicate(timeout=900)
     except subprocess.TimeoutExpired:
+        proc.kill()
+        output, error = proc.communicate()
+        print(f"[action:{args[0]}:stderr] timeout", flush=True)
         return False, "", "timeout"
+    output = output.decode("utf-8", errors="replace").strip()
+    error = error.decode("utf-8", errors="replace").strip()
+    for stream, content in (("stdout", output), ("stderr", error)):
+        for line in content.splitlines():
+            print(f"[action:{args[0]}:{stream}] {line}", flush=True)
+    return proc.returncode == 0, output, error
 
 
 def load_state():
