@@ -57,7 +57,8 @@ const $=id=>document.getElementById(id);
 let STATE=null;
 let autoProbed=false;
 function toast(msg,ms=4500){const t=$('toast');t.textContent=msg;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',ms)}
-async function api(path,method='GET',body){try{const r=await fetch(path,{method,headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,cache:'no-store'});return await r.json()}catch(e){return {ok:false,code:'NETWORK_ERROR',user_message:'页面无法连接到 add-on，请稍后刷新',retryable:true,details:String(e)}}}
+function apiUrl(path){return new URL(String(path).replace(/^\/+/,''),new URL('.',window.location.href)).toString()}
+async function api(path,method='GET',body){try{const r=await fetch(apiUrl(path),{method,headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,cache:'no-store'});return await r.json()}catch(e){return {ok:false,code:'NETWORK_ERROR',user_message:'页面无法连接到 add-on，请稍后刷新',retryable:true,details:String(e)}}}
 function hostChip(host,remove){const span=document.createElement('span');span.className='host badge';span.append(document.createTextNode(host));if(remove){const b=document.createElement('button');b.textContent='×';b.title='移除';b.onclick=()=>api('/api/candidates','POST',{registry:remove.registry,host,action:'remove'}).then(refresh);span.append(b)}return span}
 function fmtTs(ts){return ts?new Date(ts*1000).toLocaleString():'尚未检查'}
 function codeEl(v){const e=document.createElement('code');e.textContent=v;return e}

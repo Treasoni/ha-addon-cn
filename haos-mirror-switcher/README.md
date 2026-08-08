@@ -23,7 +23,8 @@
    - Gitee：<https://gitee.com/zhqznc_10603234_123/ha-addon>
    - GitHub：<https://github.com/Treasoni/ha-addon-cn>
 2. 搜索“HAOS 国内换源”，安装并启动。
-3. 点击“打开 Web 界面”。本加载项使用国内预构建入口，不需要你先配置 Docker Hub 或 GHCR 的本地构建通道。
+3. 安装完成后，在加载项页面关闭“保护模式（Protection mode）”，再启动加载项。这个权限用于访问 Supervisor 的 Docker socket；不关闭时只能查看页面，不能应用镜像配置。
+4. 点击“打开 Web 界面”。本加载项使用国内预构建入口，不需要你先配置 Docker Hub 或 GHCR 的本地构建通道。
 
 如果商店仓库可达但预构建镜像入口暂时不可用，请稍后重试；国内 pull-through 镜像站是公益服务，可能临时失效。
 
@@ -33,13 +34,13 @@
 
 | 配置键 | 类型 / 默认值 | 说明 |
 |---|---|---|
-| `auto_switch` | `bool` / `true` | 是否周期检查并自动维护已确认的镜像源 |
-| `probe_interval_hours` | `int` / `6` | 自动检查周期，单位为小时 |
-| `enable_ghcr` | `bool` / `true` | 是否管理 `ghcr.io` |
-| `enable_dockerio` | `bool` / `true` | 是否管理 `docker.io` |
-| `enable_lscr` | `bool` / `true` | 是否管理 `lscr.io` |
-| `probe_timeout_seconds` | `int` / `8` | 每个候选源的超时时间 |
-| `enable_ota` | `bool` / `false` | 是否显示 OTA 实验功能；默认关闭 |
+| `auto_switch` | `bool`，默认 `true` | 是否周期检查并自动维护已确认的镜像源 |
+| `probe_interval_hours` | `int`，默认 `6` | 自动检查周期，单位为小时 |
+| `enable_ghcr` | `bool`，默认 `true` | 是否管理 `ghcr.io` |
+| `enable_dockerio` | `bool`，默认 `true` | 是否管理 `docker.io` |
+| `enable_lscr` | `bool`，默认 `true` | 是否管理 `lscr.io` |
+| `probe_timeout_seconds` | `int`，默认 `8` | 每个候选源的超时时间 |
+| `enable_ota` | `bool`，默认 `false` | 是否显示 OTA 实验功能；默认关闭 |
 
 内置候选源是保守白名单：`ghcr.io` 使用 `ghcr.nju.edu.cn`，`docker.io` 使用 `docker.xuanyuan.me`，`lscr.io` 默认不内置候选。高级设置允许添加合法主机名，但建议先确认该站点支持目标仓库的真实 manifest。
 

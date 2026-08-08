@@ -524,7 +524,7 @@
     },
     "haos-mirror-switcher": {
       "source": "local",
-      "local_version": "0.2.0",
+      "local_version": "0.2.1",
       "synced_at": "2026-08-07T15:55:30+00:00",
       "zh_guide": true
     },

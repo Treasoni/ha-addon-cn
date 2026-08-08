@@ -25,7 +25,7 @@ if [ -n "$SOCK" ]; then
   bashio::log.info "使用 docker socket：${SOCK}"
   export DOCKER_HOST="unix://${SOCK}"
 else
-  bashio::log.warning "未检测到 docker socket —— Web 界面进入受限模式（只读状态，无法写 docker.json / OTA）"
+  bashio::log.warning "未检测到 docker socket —— 请在加载项页面关闭“保护模式”后重新启动；当前 Web 界面只能查看状态，无法写 docker.json / OTA"
 fi
 
 # ---------- 3) 共享动作模块 + 启动自愈 ----------
