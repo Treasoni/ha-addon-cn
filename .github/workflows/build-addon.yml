@@ -13,7 +13,7 @@ concurrency:
 
 env:
   IMAGE_REGISTRY: ghcr.io
-  IMAGE_NAMESPACE: Treasoni
+  IMAGE_NAMESPACE: treasoni
   ADDON_DIR: haos-mirror-switcher
 
 jobs:

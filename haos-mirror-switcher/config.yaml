@@ -18,7 +18,7 @@ url: https://gitee.com/zhqznc_10603234_123/ha-addon
 arch:
   - aarch64
   - amd64
-image: ghcr.io/Treasoni/haos-mirror-switcher-{arch}
+image: ghcr.io/treasoni/haos-mirror-switcher-{arch}
 startup: application
 boot: auto
 init: false

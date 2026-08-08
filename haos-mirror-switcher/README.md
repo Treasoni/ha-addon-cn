@@ -16,7 +16,7 @@
 
 > [!important] 前置步骤（首次必读）
 > 本加载项为**预构建模式**（`source: local` + 预构建镜像）：镜像已由 CI 构建并推送到
-> `ghcr.io/Treasoni/haos-mirror-switcher-{arch}`，Supervisor 安装时**只拉取一个预构建镜像**，
+> `ghcr.io/treasoni/haos-mirror-switcher-{arch}`，Supervisor 安装时**只拉取一个预构建镜像**，
 > **不再本地构建**——不再需要 Docker Hub 的构建器 CLI 镜像（旧版要先拉 `docker:*` 才装得上，现已去掉）。
 >
 > 装前只剩两个前提：

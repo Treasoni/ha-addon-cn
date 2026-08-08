@@ -12,7 +12,7 @@ Status: accepted
 - 安装只需 ghcr.io 单通道（经 ghcr.nju.edu.cn pull-through），不再需要 Docker Hub 构建器 CLI 镜像。
 - 门禁同步放宽：check-addon C9 仅在有 `image:` 而无 `# prebuilt: true` 时 FAIL（并有 W3 反向警告：声明 prebuilt 却缺 image）；check-docker D08 校验 `image:` 的 `{arch}` 形态。
 
-**验证方法**：`check-addon.py haos-mirror-switcher` PASS；`check-docker.sh --path haos-mirror-switcher` D08 通过且 addon-7 不触发（config.yaml 无 `source:` 字段）；workflow_dispatch 构建后 `docker manifest inspect ghcr.io/Treasoni/haos-mirror-switcher-amd64:0.1.0` 可验证镜像存在。
+**验证方法**：`check-addon.py haos-mirror-switcher` PASS；`check-docker.sh --path haos-mirror-switcher` D08 通过且 addon-7 不触发（config.yaml 无 `source:` 字段）；workflow_dispatch 构建后 `docker manifest inspect ghcr.io/treasoni/haos-mirror-switcher-amd64:0.1.0` 可验证镜像存在。
 
 **Considered Options**：
 - 保持纯本地构建——装前双通道鸡生蛋无解（正是本 ADR 要解决的），放弃。
