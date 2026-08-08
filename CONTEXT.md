@@ -44,6 +44,18 @@ _Avoid_: 换源、改镜像、本地化镜像
 pull-through 代理 `ghcr.io` 的国内镜像站（当前为 `ghcr.nju.edu.cn`）。与「镜像仓库」（上游代码仓库全量镜像）是两码事。
 _Avoid_: 加速器、Docker 镜像加速（那是 docker.io 的 daemon.json 配置，对 ghcr.io 无效）
 
+**镜像入口**:
+预构建 `source: local` add-on 面向国内用户的安装入口，例如
+`ghcr.nju.edu.cn/treasoni/haos-mirror-switcher-{arch}` 和
+`ghcr.nju.edu.cn/treasoni/hacs-cn-install-{arch}`。它解决的是“首次安装 add-on 镜像从哪里拉”的问题，
+不等同于 Supervisor 的 `registries_mirror` 配置；国内 pull-through 入口是公益服务，不承诺 SLA。
+
+**下载代理**:
+仅用于 OTA 或 HACS 安装后的运行时下载中转。下载代理不参与 Supervisor 拉取容器镜像，也不代表上游服务本身可达。
+
+**国内关键路径可用**:
+首次安装、镜像换源和 HACS 安装不要求用户直连 GitHub、GHCR 或 `get.hacs.vip`；不承诺所有公益代理永久稳定。
+
 **同步后变换（post-sync transform）**:
 同步管道里对 config.yaml 的重写步骤：拷贝上游文件后立即套镜像地址重写，先变换再与本地对比，保证改写不被下次同步冲掉、幂等且不误报 updated。当前镜像源记录在 `addons-manifest.json` 的 `image_mirror` 字段。
 _Avoid_: 同步钩子、改写步骤

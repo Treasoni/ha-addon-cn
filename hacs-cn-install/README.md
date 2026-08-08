@@ -1,58 +1,69 @@
 <!-- zh-guide -->
-# HACS极速版Gitee安装器
+# HACS 极速版国内安装器
+
+这是一个面向 Home Assistant OS `amd64` / `aarch64` 的一次性安装器。它从 Gitee 固定 commit 下载 HACS China 第三方 fork，从清华 TUNA 下载并校验前端和 `aiogithubapi` 依赖，然后把文件写入 Home Assistant 配置目录。
 
 ## 简介
 
-HACS极速版Gitee安装器（slug：`hacs-cn-install`）是**不依赖 `get.hacs.vip` 的 HACS 极速版安装方式**：直接下载 gitee 上 [hacs-china/integration](https://gitee.com/hacs-china/integration) 的 china 分支源码，再配合清华 tuna 镜像的 `hacs_frontend` 前端轮子，完整组装 HACS 极速版并写入 Home Assistant 的 `custom_components/hacs`。
+适合以下情况：`get.hacs.vip`、GitHub 或默认 PyPI 在当前网络不可达，但 Gitee 和清华 TUNA 可用。
 
-> 适用场景：`get.hacs.vip` / `github.com` 在当前网络不可达（被重置）。本加载项运行时只访问 **gitee.com** 与 **pypi.tuna.tsinghua.edu.cn**（均已实测可达），安装过程不触碰 get.hacs.vip 与 GitHub。
+安装关键路径只访问：
+
+- Gitee：HACS China 固定源码 commit；
+- 清华 TUNA：固定前端 wheel 和 `aiogithubapi` wheel。
+
+HACS China 是第三方 fork，不是官方 HACS。安装完成后，HACS 运行时访问仓库仍依赖 fork 自带代理；公益代理可能失效，不承诺永久稳定。
 
 ## 安装
 
-1. 在 Home Assistant → 设置 → 加载项 → 商店，添加本商店仓库：
-   - Gitee：`https://gitee.com/zhqznc_10603234_123/ha-addon`
-   - GitHub：`https://github.com/Treasoni/ha-addon-cn`
-2. 搜索「HACS极速版Gitee安装器」（slug：`hacs-cn-install`）并安装。
-3. 本加载项为**本地构建**，安装时 Supervisor 会拉取构建基础镜像（ghcr.io base 与 Docker Hub 构建器 CLI）。若因网络拉取失败，请先为本机 Docker 配好 `ghcr.io` 与 `docker.io` 两个国内镜像映射（例如用同商店的 `haos-mirror-switcher` 一键配置），再安装本加载项。
+建议先使用 `haos-mirror-switcher` 完成 Supervisor 镜像源检查，再安装本加载项。两者保持独立，本安装器本身使用国内预构建镜像入口。
+
+1. 在 Home Assistant → 设置 → 加载项 → 商店 → 右上角菜单，添加商店仓库：
+   - Gitee：<https://gitee.com/zhqznc_10603234_123/ha-addon>
+   - GitHub：<https://github.com/Treasoni/ha-addon-cn>
+2. 搜索“HACS 极速版国内安装器”，安装并启动。
+3. 等待日志显示安装完成，然后**手动重启 Home Assistant**。
+4. 重启后到 设置 → 设备与服务 → 添加集成，搜索并添加 HACS。
+
+本加载项不自动重启 Home Assistant，避免小白用户在不知情时中断服务。
 
 ## 配置
 
-此加载项为**一次性安装器**（`startup: once` + `boot: manual`），启动后自动完成安装并退出：
+这是一次性安装器，默认不会覆盖已有 HACS。
 
-| 配置键 | 类型/默认值 | 说明 |
-| ------ | ----------- | ---- |
-| `integration_version` | `str` / 默认 `2.0.5.3` | 注入到 HACS `manifest.json` 的版本号（china 分支源码默认 `0.0.0`，需注入真实版本供 HACS 显示与自检更新）。**运行时优先从 gitee 取最新 china tag** 注入，仅当查询失败时回退此默认值 |
+| 配置键 | 类型 / 默认值 | 说明 |
+|---|---|---|
+| `replace_existing` | `bool` / `false` | 检测到已有 `custom_components/hacs` 时是否允许覆盖；默认拒绝并且不修改任何文件 |
 
-## 使用与访问入口
+固定安装版本如下，不需要用户填写：
 
-1. 在「配置」页确认 `integration_version`（一般保持默认），点击「保存」。
-2. 点击「安装」构建此加载项（本地构建）。
-3. 点击「启动」运行一次：日志依次显示下载 gitee 源码 → 下载前端轮子 → 注入版本 → 备份旧 HACS → 拷贝完成。
-4. 安装完成后**重启 Home Assistant**，到 设置 → 设备与服务 → 添加集成，搜索「HACS」并添加。
+| 组件 | 固定值 | 说明 |
+|---|---|---|
+| HACS China tag | `2.0.5.3` | 用于 manifest 显示版本 |
+| HACS China commit | `d1c828dd078736ec663951844786cf8285e18b4d` | 源码下载按 commit 固定，不追踪最新分支或 tag |
+| 前端 | `20250128065759` | 从 TUNA 下载并校验 SHA-256 |
+| `aiogithubapi` | `24.6.0` | 从 TUNA 下载、校验并预置到 `/config/deps` |
 
-> 本加载项为一次性安装器，无端口、无 Web 界面；使用入口即上述 Home Assistant 设置页操作。
+## 使用 / 访问入口
 
-**如何更新 HACS 极速版？** 两条通道：
-- **重跑本加载项（稳定兜底）**：重新拉取 gitee china 分支最新源码，前端版本自动与源码对齐（从源码 `scripts/install/frontend` 解析 `FRONTEND_VERSION`），注入版本自动取 gitee 最新 tag，旧 HACS 备份为 `hacs.bak-<时间戳>` 后覆盖，运行完重启 HA 生效。只依赖 gitee.com + 清华 tuna，网络抖动时依然可用。
-- **HACS 内自更新（网络通畅时）**：在开发者工具调用 `hacs.upgrade` 服务（等价于 `wget -O - https://get.hacs.vip | bash -`），或极速版更新实体一键升级。该通道依赖 `get.hacs.vip` / `hacs.vip`，国内网络间歇可达，被墙时改用上面那条。
+普通用户只需要：确认配置 → 启动一次 → 看日志 → 手动重启 Home Assistant。
+
+- **已有 HACS 且 `replace_existing: false`**：日志返回 `EXISTING_HACS_REQUIRES_CONFIRMATION`，不会下载、备份或修改已有目录。
+- **确认覆盖**：把 `replace_existing` 改为 `true` 后重新启动。覆盖前会把旧目录备份到 `/config/hacs-cn-backups/`，最近保留三份；安装或校验失败会尝试恢复旧目录和依赖。
+- **依赖预置**：`aiogithubapi` 会自动写入 `/config/deps`，保留该目录中的其他依赖，不要求进入 Home Assistant 容器手工执行 pip。
+- **安装后复验**：程序会检查 HACS manifest、前端版本和 `aiogithubapi` 可导入性；任何一项失败都会返回明确错误码并停止。
+
+典型成功日志最后会提示：重启 Home Assistant，然后在“设置 → 设备与服务 → 添加集成”中搜索 HACS。
 
 ## 常见问题
 
-- **与商店里的 `get`（HACS极速版安装器）有何区别？** `get` 从 `get.hacs.vip` 下载安装脚本，国内网络常被重置导致失败；本加载项全程只访问 gitee.com 与清华 tuna 镜像（均已实测可达），绕开 `get.hacs.vip`。但本加载项**只安装 HACS**，不支持 `get` 的其他 13 个组件。
-- **下载失败或日志报 TLS 错误？** 本加载项只依赖 gitee.com 与 `pypi.tuna.tsinghua.edu.cn`，请确认这两个域名在当前网络可达；偶发失败可重试启动。
-- **安装完添加 HACS 集成时报错 / HACS 加载失败？** HACS 的 `requirements` 依赖 `aiogithubapi`，HA 默认从 pypi.org 安装；若 pypi.org 被墙，用本加载项预下载到 `/homeassistant/hacs-gitee-deps/` 的轮子手动装一次（需可操作 HA 容器的 shell，如 Terminal&SSH / Portainer）：
-
-  ```bash
-  docker exec homeassistant python3 -m pip install /homeassistant/hacs-gitee-deps/aiogithubapi-*.whl
-  ```
-
-  装完重启 HA。
-- **装完 HACS 后商店里下载插件仍失败？** HACS 极速版内置多层 GitHub 代理（`ghrp2.hacs.vip`/`ghrp.hacs.vip` → `gh-proxy.com` → `gitmirror` → `ghps.cc` → `gh.ddlc.top` → 直连 GitHub，逐层回退），可用性取决于当前网络，超出本加载项安装范围；网络抖动时可稍后重试或换时段。
-- **原有 HACS 会被覆盖吗？** 会。启动时若检测到已存在 `custom_components/hacs`，会先备份为 `hacs.bak-<时间戳>` 再安装新版（极速版与官方共用一套配置，覆盖后无需重新配置集成）。
-
----
-- 来源仓库：[hacs-china/integration](https://gitee.com/hacs-china/integration)（china 分支）
+- **为什么不能直接覆盖已有 HACS？** 默认安全策略是先停下来让你确认。只有把 `replace_existing` 改为 `true` 才允许覆盖。
+- **安装失败后原来的 HACS 还在吗？** 覆盖前会备份旧目录；源码、前端、依赖或安装后复验失败时会尝试回滚。
+- **为什么日志要求我手动重启 Home Assistant？** 安装器不会主动重启核心，避免后台静默中断服务；看到成功日志后手动重启即可。
+- **运行时还会访问 GitHub 吗？** 安装器关键路径不访问 GitHub、`get.hacs.vip` 或境外下载地址。HACS 安装后的仓库访问由 fork 自带代理负责，稳定性取决于代理实际状态。
+- **下载失败怎么办？** 确认 Gitee 和 `pypi.tuna.tsinghua.edu.cn` 可达后重新启动；固定 wheel 有 SHA-256 校验，校验不通过不会安装。
+- **这个加载项支持哪些架构？** 只支持 HAOS `amd64` 和 `aarch64`。
 
 ## 英文原版
 
-本加载项为自有开发工具（`source: local`），无上游英文 README；代码与安装流程见 [商店仓库](https://github.com/Treasoni/ha-addon-cn)。安装对象为 HACS 极速版，其上游资料见 [hacs-china/integration](https://gitee.com/hacs-china/integration)。
+本加载项是自有开发工具，没有独立的英文 README；仓库入口见 [English repository](https://github.com/Treasoni/ha-addon-cn)，上游 fork 见 [HACS China integration](https://gitee.com/hacs-china/integration)。

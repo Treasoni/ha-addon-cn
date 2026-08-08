@@ -15,6 +15,7 @@ HOST_OTA_DIR="${HOST_ADDON_DIR}/ota"
 SUPERVISOR_URL="http://supervisor"
 RESTART_COOLDOWN=900   # 15 分钟重启冷却
 PROBE_COOLDOWN=60      # 周期探测至少间隔 60s
+AUTO_SWITCH_FAILURE_THRESHOLD=2
 
 # ---------------- 日志 ----------------
 _log() {
@@ -22,50 +23,96 @@ _log() {
   bashio::log.info "$msg"
   if [ -f "$STATE_FILE" ]; then
     python3 - "$msg" <<'PY' || true
-import json, sys, time
+import fcntl, json, os, sys, tempfile, time
 try:
-    with open("/data/state.json", "r", encoding="utf-8") as f:
-        st = json.load(f)
+    with open("/data/.state.lock", "a+", encoding="utf-8") as lock:
+        fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+        try:
+            with open("/data/state.json", "r", encoding="utf-8") as f:
+                st = json.load(f)
+        except Exception:
+            st = {}
+        log = st.get("log", [])
+        log.append({"ts": int(time.time()), "msg": sys.argv[1]})
+        st["log"] = log[-50:]
+        st["last_action"] = sys.argv[1]
+        st["last_action_ts"] = int(time.time())
+        fd, tmp = tempfile.mkstemp(prefix="state.", dir="/data")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                json.dump(st, f, ensure_ascii=False, indent=2)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp, "/data/state.json")
+        finally:
+            if os.path.exists(tmp):
+                os.unlink(tmp)
 except Exception:
-    st = {}
-log = st.get("log", [])
-log.append({"ts": int(time.time()), "msg": sys.argv[1]})
-st["log"] = log[-50:]
-st["last_action"] = sys.argv[1]
-st["last_action_ts"] = int(time.time())
-with open("/data/state.json", "w", encoding="utf-8") as f:
-    json.dump(st, f, ensure_ascii=False, indent=2)
+    pass
 PY
   fi
 }
 
 # ---------------- 状态文件 ----------------
 ensure_state() {
-  if [ ! -f "$STATE_FILE" ]; then
-    python3 - <<'PY' || true
-import json
-st = {
-    "schema_version": 1,
-    "enabled": {"ghcr.io": True, "docker.io": True, "lscr.io": True},
-    "active": {},          # registry -> active mirror host
-    "override": {},        # registry -> [extra candidates]
-    "removed": {},         # registry -> [removed candidate hosts]
-    "ota": {"downloaded": "", "installed": "", "state": "idle"},
-    "probe_results": {},   # registry -> {host: code}
-    "proxy_override": [],  # 用户新增的 gh-proxy 主机（持久化在 /data）
-    "proxy_removed": [],   # 被移除的内置 gh-proxy 主机（持久化在 /data）
-    "last_probe_ts": 0,
-    "last_restart_ts": 0,
-    "last_known_good": None,
-    "last_action": "init",
-    "last_action_ts": 0,
-    "log": [],
-}
-with open("/data/state.json", "w", encoding="utf-8") as f:
-    json.dump(st, f, ensure_ascii=False, indent=2)
+  mkdir -p /data
+  python3 - <<'PY'
+import fcntl, json, os, tempfile
+
+path = "/data/state.json"
+with open("/data/.state.lock", "a+", encoding="utf-8") as lock:
+    fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+    try:
+        with open(path, encoding="utf-8") as f:
+            st = json.load(f)
+    except Exception:
+        st = {}
+    had_onboarding = "onboarding_completed" in st
+
+    defaults = {
+        "schema_version": 2,
+        "enabled": {"ghcr.io": True, "docker.io": True, "lscr.io": True},
+        "active": {},
+        "recommended": {},
+        "override": {},
+        "removed": {},
+        "ota": {"downloaded": "", "installed": "", "state": "idle"},
+        "probe_results": {},
+        "failure_streak": {},
+        "proxy_override": [],
+        "proxy_removed": [],
+        "last_probe_ts": 0,
+        "last_restart_ts": 0,
+        "last_known_good": None,
+        "onboarding_completed": False,
+        "last_application": {},
+        "last_action": "init",
+        "last_action_ts": 0,
+        "log": [],
+    }
+    for key, value in defaults.items():
+        if key not in st or (value is not None and not isinstance(st[key], type(value))):
+            st[key] = value
+    for registry in ("ghcr.io", "docker.io", "lscr.io"):
+        st["enabled"].setdefault(registry, True)
+    for key, value in defaults["ota"].items():
+        st["ota"].setdefault(key, value)
+    if st.get("schema_version", 0) < 2:
+        st["schema_version"] = 2
+    if not had_onboarding and st.get("last_known_good") is not None:
+        st["onboarding_completed"] = True
+
+    fd, tmp = tempfile.mkstemp(prefix="state.", dir="/data")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(st, f, ensure_ascii=False, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, path)
+    finally:
+        if os.path.exists(tmp):
+            os.unlink(tmp)
 PY
-    _log "已初始化状态文件"
-  fi
 }
 
 _state_field() {
@@ -97,18 +144,82 @@ PY
 
 _update_state() {
   # _update_state <json-fragment> —— 合并进 state.json
-  python3 - "$1" <<'PY' || true
-import json, sys
+  python3 - "$1" <<'PY'
+import fcntl, json, os, sys, tempfile
 frag = json.loads(sys.argv[1])
-with open("/data/state.json", "r", encoding="utf-8") as f:
-    st = json.load(f)
-for k, v in frag.items():
-    if isinstance(v, dict) and isinstance(st.get(k), dict):
-        st[k].update(v)
-    else:
-        st[k] = v
-with open("/data/state.json", "w", encoding="utf-8") as f:
-    json.dump(st, f, ensure_ascii=False, indent=2)
+with open("/data/.state.lock", "a+", encoding="utf-8") as lock:
+    fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+    with open("/data/state.json", "r", encoding="utf-8") as f:
+        st = json.load(f)
+    for k, v in frag.items():
+        if isinstance(v, dict) and isinstance(st.get(k), dict):
+            st[k].update(v)
+        else:
+            st[k] = v
+    fd, tmp = tempfile.mkstemp(prefix="state.", dir="/data")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(st, f, ensure_ascii=False, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, "/data/state.json")
+    finally:
+        if os.path.exists(tmp):
+            os.unlink(tmp)
+PY
+}
+
+_record_last_known_good() {
+  python3 - "$1" <<'PY'
+import fcntl, json, os, sys, tempfile
+value = json.loads(sys.argv[1])
+with open("/data/.state.lock", "a+", encoding="utf-8") as lock:
+    fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+    with open("/data/state.json", "r", encoding="utf-8") as f:
+        st = json.load(f)
+    st["last_known_good"] = value
+    fd, tmp = tempfile.mkstemp(prefix="state.", dir="/data")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(st, f, ensure_ascii=False, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, "/data/state.json")
+    finally:
+        if os.path.exists(tmp):
+            os.unlink(tmp)
+PY
+}
+
+_record_application() {
+  local ok="$1"
+  local code="$2"
+  local requires_restart="$3"
+  python3 - "$ok" "$code" "$requires_restart" <<'PY'
+import fcntl, json, os, sys, tempfile, time
+with open("/data/.state.lock", "a+", encoding="utf-8") as lock:
+    fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+    with open("/data/state.json", "r", encoding="utf-8") as f:
+        st = json.load(f)
+    success = sys.argv[1] == "true"
+    st["last_application"] = {
+        "ok": success,
+        "code": sys.argv[2],
+        "requires_restart": sys.argv[3] == "true",
+        "ts": int(time.time()),
+    }
+    if success:
+        st["onboarding_completed"] = True
+    fd, tmp = tempfile.mkstemp(prefix="state.", dir="/data")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(st, f, ensure_ascii=False, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, "/data/state.json")
+    finally:
+        if os.path.exists(tmp):
+            os.unlink(tmp)
 PY
 }
 
@@ -158,14 +269,77 @@ docker_write_atomic() {
 
 # ---------------- 探测 ----------------
 probe_host() {
-  local host="$1"
-  local code
-  # -L 跟随重定向（部分镜像站 /v2/ 会跳转）；--max-time 防卡死；200/401 视为可用
-  code="$(curl -sSL -o /dev/null -w "%{http_code}" --max-time "${PROBE_TIMEOUT:-8}" "https://${host}/v2/" 2>/dev/null || echo 0)"
-  if [ "$code" = "200" ] || [ "$code" = "401" ]; then
-    echo "ok"
+  local registry="$1"
+  local host="$2"
+  if ! python3 - "$host" <<'PY'
+import re, sys
+host = sys.argv[1]
+if not re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9.-]{0,251}[A-Za-z0-9])?(?::[0-9]{1,5})?", host):
+    raise SystemExit(1)
+PY
+  then
+    echo "fail:invalid_host|0"
+    return 0
+  fi
+  local probe_repo probe_tag
+  probe_repo="$(python3 - "$registry" <<'PY'
+import json, sys
+try:
+    with open("/lib/candidates.json", encoding="utf-8") as f:
+        spec = json.load(f).get("probe", {}).get(sys.argv[1], {})
+    print(spec.get("repository", ""))
+except Exception:
+    print("")
+PY
+)"
+  probe_tag="$(python3 - "$registry" <<'PY'
+import json, sys
+try:
+    with open("/lib/candidates.json", encoding="utf-8") as f:
+        spec = json.load(f).get("probe", {}).get(sys.argv[1], {})
+    print(spec.get("tag", ""))
+except Exception:
+    print("")
+PY
+)"
+  [ -n "$probe_repo" ] && [ -n "$probe_tag" ] || { echo "fail:no_probe_target|0"; return 0; }
+  local headers body result code ms content_type
+  headers="$(mktemp /tmp/mirror-headers.XXXXXX)"
+  body="$(mktemp /tmp/mirror-body.XXXXXX)"
+  if ! result="$(curl -sSL -D "$headers" -o "$body" -w "%{http_code}|%{time_total}" \
+    -H 'Accept: application/vnd.docker.distribution.manifest.v2+json, application/vnd.oci.image.manifest.v1+json, application/vnd.oci.image.index.v1+json' \
+    --connect-timeout "${PROBE_TIMEOUT:-8}" --max-time "${PROBE_TIMEOUT:-8}" \
+    "https://${host}/v2/${probe_repo}/manifests/${probe_tag}" 2>/dev/null)"; then
+    result="0|0"
+  fi
+  code="${result%%|*}"
+  ms="${result#*|}"
+  content_type="$(grep -i '^content-type:' "$headers" 2>/dev/null || true)"
+  local manifest_ok=false
+  if [ "$code" = "200" ] && printf '%s' "$content_type" | grep -Eqi 'manifest|json'; then
+    if python3 - "$body" <<'PY'
+import json, sys
+try:
+    with open(sys.argv[1], encoding="utf-8") as f:
+        payload = json.load(f)
+except Exception:
+    raise SystemExit(1)
+if not isinstance(payload, dict) or not any(
+    key in payload for key in ("schemaVersion", "mediaType", "manifests", "config", "layers")
+):
+    raise SystemExit(1)
+PY
+    then
+      manifest_ok=true
+    fi
+  fi
+  rm -f "$headers" "$body"
+  if [ "$code" = "401" ]; then
+    echo "ok:${code}|${ms}"
+  elif [ "$manifest_ok" = "true" ]; then
+    echo "ok:${code}|${ms}"
   else
-    echo "fail:$code"
+    echo "fail:${code}|${ms}"
   fi
 }
 
@@ -219,32 +393,37 @@ PY
 }
 
 probe_all() {
-  # 探测所有启用的 registry，挑选首个可用源写入 state.active / state.probe_results
-  # 注意：state 是嵌套结构（active.reg / probe_results.reg.host），不能用扁平键（如 active|reg）——
-  #        build_target 只读 st["active"] 字典，扁平键会被忽略导致 apply 永不写镜像。
+  # 探测所有启用的 registry，写入推荐源；只有 apply 才会把推荐源提升为 active。
   local reg host code picked fragment
   ensure_state
   {
     for reg in ghcr.io docker.io lscr.io; do
-      [ "$(_state_field "enabled.$reg")" = "true" ] || continue
+      if [ "$(_state_field "enabled.$reg")" != "true" ]; then
+        printf 'RECOMMENDED|%s|\n' "$reg"
+        continue
+      fi
       case "$reg" in
-        ghcr.io)   [ "${ENABLE_GHCR:-true}" = "true" ] || continue ;;
-        docker.io) [ "${ENABLE_DOCKERIO:-true}" = "true" ] || continue ;;
-        lscr.io)   [ "${ENABLE_LSCR:-true}" = "true" ] || continue ;;
+        ghcr.io)   [ "${ENABLE_GHCR:-true}" = "true" ] || { printf 'RECOMMENDED|%s|\n' "$reg"; continue; } ;;
+        docker.io) [ "${ENABLE_DOCKERIO:-true}" = "true" ] || { printf 'RECOMMENDED|%s|\n' "$reg"; continue; } ;;
+        lscr.io)   [ "${ENABLE_LSCR:-true}" = "true" ] || { printf 'RECOMMENDED|%s|\n' "$reg"; continue; } ;;
       esac
       picked=""
       while IFS= read -r host; do
         [ -n "$host" ] || continue
-        code="$(probe_host "$host")"
+        code="$(probe_host "$reg" "$host")"
         printf 'RESULT|%s|%s|%s\n' "$reg" "$host" "$code"
-        if [ "$code" = "ok" ] && [ -z "$picked" ]; then picked="$host"; fi
+        if [[ "$code" == ok:* ]] && [ -z "$picked" ]; then picked="$host"; fi
       done <<< "$(_effective_candidates "$reg")"
-      # picked 为空 -> active[reg] = null（逃生门：恢复直连）
-      printf 'ACTIVE|%s|%s\n' "$reg" "${picked:-}"
+      printf 'RECOMMENDED|%s|%s\n' "$reg" "${picked:-}"
     done
   } | python3 -c '
-import json, sys
-st = {}
+import json, sys, time
+try:
+    with open("/data/state.json", encoding="utf-8") as f:
+        old = json.load(f)
+except Exception:
+    old = {}
+st = {"probe_results": {}, "recommended": {}, "failure_streak": dict(old.get("failure_streak", {}))}
 for line in sys.stdin:
     line = line.rstrip("\n")
     if not line:
@@ -253,14 +432,46 @@ for line in sys.stdin:
     if typ == "RESULT":
         host, code = rest.split("|", 1)
         st.setdefault("probe_results", {}).setdefault(reg, {})[host] = code
+    elif typ == "RECOMMENDED":
+        st.setdefault("recommended", {})[reg] = rest or None
+for reg in ("ghcr.io", "docker.io", "lscr.io"):
+    active = old.get("active", {}).get(reg)
+    status = st.get("probe_results", {}).get(reg, {}).get(active, "") if active else ""
+    if not active or status.startswith("ok:"):
+        st.setdefault("failure_streak", {})[reg] = 0
     else:
-        st.setdefault("active", {})[reg] = rest or None
+        st.setdefault("failure_streak", {})[reg] = st.setdefault("failure_streak", {}).get(reg, 0) + 1
+st["last_probe_ts"] = int(time.time())
 print(json.dumps(st, ensure_ascii=False))
 ' > /data/probe_out.json 2>/dev/null || true
   fragment="$(cat /data/probe_out.json 2>/dev/null || echo '{}')"
   rm -f /data/probe_out.json
   [ -n "$fragment" ] && [ "$fragment" != "{}" ] && _update_state "$fragment"
   _log "镜像源探测完成"
+}
+
+_promote_recommendations() {
+  python3 - <<'PY'
+import fcntl, json, os, tempfile
+with open("/data/.state.lock", "a+", encoding="utf-8") as lock:
+    fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+    with open("/data/state.json", encoding="utf-8") as f:
+        st = json.load(f)
+    active = st.setdefault("active", {})
+    for reg, host in st.get("recommended", {}).items():
+        if host:
+            active[reg] = host
+    fd, tmp = tempfile.mkstemp(prefix="state.", dir="/data")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(st, f, ensure_ascii=False, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, "/data/state.json")
+    finally:
+        if os.path.exists(tmp):
+            os.unlink(tmp)
+PY
 }
 
 # ---------------- 目标配置（合并不覆盖） ----------------
@@ -280,14 +491,13 @@ enabled = st.get("enabled", {})
 reg_env = {"ghcr.io": "ENABLE_GHCR", "docker.io": "ENABLE_DOCKERIO", "lscr.io": "ENABLE_LSCR"}
 patch = {}
 for reg in ("ghcr.io", "docker.io", "lscr.io"):
-    # 只改 managed registry；active 为 null 时显式写 null 让 jq 侧删除该映射（recover_direct）
-    if enabled.get(reg) and os.environ.get(reg_env[reg], "true") == "true":
+    # disabled 或显式 active=null 表示删除该 managed registry；无 active 键则保持当前配置。
+    if not enabled.get(reg, True) or os.environ.get(reg_env[reg], "true") != "true":
+        patch[reg] = None
+    elif reg in cur:
         patch[reg] = cur.get(reg)
-try:
-    with open("/data/docker.json.new", "w", encoding="utf-8") as f:
-        json.dump(patch, f, ensure_ascii=False)
-except Exception:
-    pass
+with open("/data/docker.json.new", "w", encoding="utf-8") as f:
+    json.dump(patch, f, ensure_ascii=False)
 PY
   # 读当前 docker.json 并合并
   local current
@@ -329,29 +539,27 @@ supervisor_restart() {
 
 apply() {
   ensure_state
-  build_target
+  if ! _promote_recommendations; then
+    _record_application false "APPLY_STATE_FAILED" false
+    return 1
+  fi
+  if ! build_target; then
+    _record_application false "APPLY_TARGET_FAILED" false
+    return 1
+  fi
   if ! _change_detected; then
     _log "配置未变化，跳过重启"
+    _record_application true "APPLIED_NO_CHANGE" false
     return 0
   fi
   if ! docker_write_atomic /data/docker.json.new; then
     _log "写 docker.json 失败，未重启"
+    _record_application false "APPLY_WRITE_FAILED" false
     return 1
   fi
   # 记录 last-known-good
-  python3 - <<'PY' || true
-import json
-with open("/data/docker.json.new", "r", encoding="utf-8") as f:
-    good = json.load(f)
-try:
-    with open("/data/state.json", "r", encoding="utf-8") as f:
-        st = json.load(f)
-except Exception:
-    st = {}
-st["last_known_good"] = good
-with open("/data/state.json", "w", encoding="utf-8") as f:
-    json.dump(st, f, ensure_ascii=False, indent=2)
-PY
+  _record_last_known_good "$(cat /data/docker.json.new)"
+  _record_application true "APPLIED" true
   supervisor_restart
 }
 
@@ -373,14 +581,26 @@ restore_backup() {
 recover_direct() {
   # 逃生门：把所有 managed registry 置 null，恢复直连
   ensure_state
-  python3 - <<'PY' || true
-import json
-with open("/data/state.json", "r", encoding="utf-8") as f:
-    st = json.load(f)
-for reg in ("ghcr.io", "docker.io", "lscr.io"):
-    st.setdefault("active", {})[reg] = None
-with open("/data/state.json", "w", encoding="utf-8") as f:
-    json.dump(st, f, ensure_ascii=False, indent=2)
+  python3 - <<'PY'
+import fcntl, json, os, tempfile
+with open("/data/.state.lock", "a+", encoding="utf-8") as lock:
+    fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+    with open("/data/state.json", "r", encoding="utf-8") as f:
+        st = json.load(f)
+    for reg in ("ghcr.io", "docker.io", "lscr.io"):
+        st.setdefault("active", {})[reg] = None
+    st["recommended"] = {}
+    st["onboarding_completed"] = False
+    fd, tmp = tempfile.mkstemp(prefix="state.", dir="/data")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(st, f, ensure_ascii=False, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, "/data/state.json")
+    finally:
+        if os.path.exists(tmp):
+            os.unlink(tmp)
 PY
   build_target
   if ! docker_write_atomic /data/docker.json.new; then
@@ -394,7 +614,7 @@ self_heal() {
   ensure_state
   local current has_mirror
   current="$(docker_read)"
-  has_mirror="$(jq -e 'has("registries_mirror")' <<<"$current" 2>/dev/null || echo false)"
+  has_mirror="$(jq -r 'has("registries_mirror")' <<<"$current" 2>/dev/null || echo false)"
   local lkg
   lkg="$(_state_field "last_known_good")"
 
@@ -424,17 +644,7 @@ self_heal() {
     cur_mirror="$(jq -c '.registries_mirror // {}' <<<"$current")"
     if [ "$cur_mirror" != "{}" ]; then
       _log "首启：采纳当前已配置的镜像源（adopt），不写不重启"
-      python3 - "$cur_mirror" <<'PY' || true
-import json, sys
-try:
-    with open("/data/state.json", "r", encoding="utf-8") as f:
-        st = json.load(f)
-except Exception:
-    st = {}
-st["last_known_good"] = json.loads(sys.argv[1])
-with open("/data/state.json", "w", encoding="utf-8") as f:
-    json.dump(st, f, ensure_ascii=False, indent=2)
-PY
+      _record_last_known_good "$cur_mirror"
       docker_read > "$BACKUP_LOCAL" 2>/dev/null || true
     else
       _log "未检测到镜像源配置，请打开 Web 界面点击「一键应用」（或手动配置后重启本加载项）"
@@ -445,17 +655,49 @@ PY
 
 auto_switch_cycle() {
   ensure_state
-  local now last_probe last_restart
+  local now last_probe last_restart onboarding
   now="$(date +%s)"
   last_probe="$(_state_field "last_probe_ts")"
   last_restart="$(_state_field "last_restart_ts")"
+  onboarding="$(_state_field "onboarding_completed")"
+  if [ "$onboarding" != "true" ]; then
+    _log "首次引导尚未确认，自动换源只探测不应用"
+    probe_all
+    return 0
+  fi
   [ -n "$last_probe" ] && [ "$(( now - last_probe ))" -lt "$PROBE_COOLDOWN" ] && return 0
   [ -n "$last_restart" ] && [ "$(( now - last_restart ))" -lt "$RESTART_COOLDOWN" ] && {
     _log "重启冷却期内，跳过自动换源"
     return 0
   }
   probe_all
-  _update_state "{\"last_probe_ts\":$now}"
+  AUTO_SWITCH_FAILURE_THRESHOLD="$AUTO_SWITCH_FAILURE_THRESHOLD" python3 - <<'PY'
+import fcntl, json, os, tempfile
+with open("/data/.state.lock", "a+", encoding="utf-8") as lock:
+    fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+    with open("/data/state.json", "r", encoding="utf-8") as f:
+        st = json.load(f)
+    active = st.get("active", {})
+    recommended = st.setdefault("recommended", {})
+    streak = st.get("failure_streak", {})
+    threshold = int(os.environ.get("AUTO_SWITCH_FAILURE_THRESHOLD", "2"))
+    for reg in ("ghcr.io", "docker.io", "lscr.io"):
+        current = active.get(reg)
+        candidate = recommended.get(reg)
+        if current and candidate and candidate != current and streak.get(reg, 0) >= threshold:
+            continue
+        recommended[reg] = current or None
+    fd, tmp = tempfile.mkstemp(prefix="state.", dir="/data")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(st, f, ensure_ascii=False, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, "/data/state.json")
+    finally:
+        if os.path.exists(tmp):
+            os.unlink(tmp)
+PY
   apply
 }
 
@@ -463,10 +705,11 @@ auto_switch_cycle() {
 ota_check() {
   # 读 /os/info 的当前版本与最新版本
   ensure_state
+  [ "${ENABLE_OTA:-false}" = "true" ] || { _log "OTA 实验功能未启用"; return 1; }
   local info cur latest board
   info="$(curl -fsS -H "Authorization: Bearer $SUPERVISOR_TOKEN" "$SUPERVISOR_URL/os/info" 2>/dev/null || echo "{}")"
   cur="$(jq -r '.data.version // "unknown"' <<<"$info" 2>/dev/null)"
-  latest="$(jq -r '.data.latest_version // "unknown"' <<<"$info" 2>/dev/null)"
+  latest="$(jq -r '.data.version_latest // .data.latest_version // "unknown"' <<<"$info" 2>/dev/null)"
   board="$(jq -r '.data.board // ""' <<<"$info" 2>/dev/null)"
   python3 - "$cur" "$latest" "$board" <<'PY' || true
 import json, sys
@@ -488,14 +731,7 @@ PY
 }
 
 _os_board() {
-  # 板型推断：uname -m -> haos_{board}。amd64->generic-x86-64, aarch64->generic-aarch64
-  local m
-  m="$(uname -m)"
-  case "$m" in
-    x86_64)  echo "generic-x86-64" ;;
-    aarch64) echo "generic-aarch64" ;;
-    *)       echo "generic-x86-64" ;;
-  esac
+  _state_field "ota.board"
 }
 
 ota_download() {
@@ -503,8 +739,9 @@ ota_download() {
   ensure_state
   local version="$1"
   local board target ok=false
+  [ "${ENABLE_OTA:-false}" = "true" ] || { _log "OTA 实验功能未启用"; return 1; }
   board="$(_state_field "ota.board")"
-  [ -n "$board" ] && [ "$board" != "null" ] || board="$(_os_board)"
+  [ -n "$board" ] && [ "$board" != "null" ] || { _log "OTA 下载失败：Supervisor 未返回有效 board"; return 1; }
   mkdir -p "$OTA_DIR"
   _log "OTA 下载：haos_${board}-${version}.raucb"
   local hosts
@@ -547,6 +784,7 @@ PY
 ota_install() {
   # 经 host_dbus 调 RAUC D-Bus Installer.Install（宿主路径）
   ensure_state
+  [ "${ENABLE_OTA:-false}" = "true" ] || { _log "OTA 实验功能未启用"; return 1; }
   local board ver fname target
   board="$(_state_field "ota.downloaded_board")"
   ver="$(_state_field "ota.downloaded_version")"
@@ -575,6 +813,7 @@ ota_install() {
 ota_reboot() {
   # POST /host/reboot —— 服务器返回前宿主已重启
   ensure_state
+  [ "${ENABLE_OTA:-false}" = "true" ] || { _log "OTA 实验功能未启用"; return 1; }
   _log "重启宿主以生效 OTA 更新…"
   curl -fsS -X POST -H "Authorization: Bearer $SUPERVISOR_TOKEN" \
       "$SUPERVISOR_URL/host/reboot" >/dev/null 2>&1 || true

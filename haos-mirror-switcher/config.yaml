@@ -1,6 +1,6 @@
 # === 上游资料卡 ===
 # 本项目为自有开发工具（source: local），无独立上游软件仓库，方案对齐社区教程「HAOS 国内换源」。
-# prebuilt: true   # 预构建模式：镜像由 CI 构建推送 ghcr.io，Supervisor 只拉取、不本地构建
+# prebuilt: true   # 预构建模式：镜像由 CI 构建推送 ghcr.io，Supervisor 从国内入口拉取、不本地构建
 # upstream: https://gitee.com/zhqznc_10603234_123/ha-addon
 # 参考方案: ① Supervisor 镜像层：写 /mnt/data/supervisor/docker.json（HAOS 宿主；容器内 /data/docker.json）的
 #           registries_mirror 并重启 Supervisor；② OTA 固件层：gh-proxy 下载官方 raucb +
@@ -9,16 +9,16 @@
 # default_credentials: 无（ingress 由 Supervisor 登录鉴权）
 # data_dir: /data（addon_config，持久化状态与备份；宿主 /mnt/data/supervisor/addons_config/ 下以 slug 命名的子目录）
 # env_vars: SUPERVISOR_TOKEN（hassio_api 注入）
-# version: 0.1.0
+# version: 0.2.0
 name: HAOS 国内换源
-version: "0.1.0"
+version: "0.2.0"
 slug: haos-mirror-switcher
 description: 自动探测并切换 Docker 国内镜像源，并提供 HAOS 固件 OTA 国内升级助手。
 url: https://gitee.com/zhqznc_10603234_123/ha-addon
 arch:
   - aarch64
   - amd64
-image: ghcr.io/treasoni/haos-mirror-switcher-{arch}
+image: ghcr.nju.edu.cn/treasoni/haos-mirror-switcher-{arch}
 startup: application
 boot: auto
 init: false
@@ -37,7 +37,7 @@ options:
   enable_dockerio: true
   enable_lscr: true
   probe_timeout_seconds: 8
-  enable_ota: true
+  enable_ota: false
 schema:
   auto_switch: bool
   probe_interval_hours: int

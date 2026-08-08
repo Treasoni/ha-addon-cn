@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
-# server.py —— haos-mirror-switcher 内嵌 ingress Web 界面（纯 stdlib，无第三方依赖）
-# 只经 Supervisor ingress 进入（已登录鉴权），故无需 CSRF。
-# 所有写操作经 lib/actions.sh（flock 串行化）。
+"""haos-mirror-switcher ingress API.
 
+The API intentionally exposes a small, user-facing result contract while keeping
+technical command output in the add-on log.
+"""
+
+import fcntl
 import json
 import os
 import re
 import subprocess
+import tempfile
 import threading
-import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 STATE_FILE = "/data/state.json"
@@ -16,15 +19,27 @@ CANDIDATES_FILE = "/lib/candidates.json"
 PROXY_FILE = "/lib/proxy_hosts.json"
 INGRESS_PORT = int(os.environ.get("INGRESS_PORT", "8569"))
 SLUG = os.environ.get("SLUG", "haos-mirror-switcher")
-
+REGISTRIES = ("ghcr.io", "docker.io", "lscr.io")
+HOST_RE = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9.-]{0,251}[A-Za-z0-9])?(?::[0-9]{1,5})?$")
+VERSION_RE = re.compile(r"^[0-9][0-9A-Za-z._-]*$")
 _lock = threading.Lock()
 
 
 def sh(*args):
-    """调用 actions.sh 函数（bash 环境）。"""
-    fn = args[0]
-    rest = args[1:]
-    cmd = ["bash", "-c", f"source /lib/actions.sh; {fn} " + " ".join(rest)]
+    """Call a fixed actions.sh function without shell-string interpolation."""
+    if not args or args[0] not in {
+        "probe_all",
+        "apply",
+        "restore_backup",
+        "supervisor_restart",
+        "recover_direct",
+        "ota_check",
+        "ota_download",
+        "ota_install",
+        "ota_reboot",
+    }:
+        return False, "", "unsupported action"
+    cmd = ["bash", "-c", 'source /lib/actions.sh; "$@"', "actions.sh", *args]
     env = dict(os.environ)
     env["PROBE_TIMEOUT"] = os.environ.get("PROBE_TIMEOUT", "8")
     env["SLUG"] = SLUG
@@ -37,20 +52,37 @@ def sh(*args):
 
 def load_state():
     try:
-        with open(STATE_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
+        with open(STATE_FILE, "r", encoding="utf-8") as file:
+            return json.load(file)
     except Exception:
         return {}
 
 
+def write_state(state):
+    os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
+    with open("/data/.state.lock", "a+", encoding="utf-8") as lock_file:
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+        fd, temp_path = tempfile.mkstemp(prefix="state.", dir="/data")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as file:
+                json.dump(state, file, ensure_ascii=False, indent=2)
+                file.flush()
+                os.fsync(file.fileno())
+            os.replace(temp_path, STATE_FILE)
+        finally:
+            if os.path.exists(temp_path):
+                os.unlink(temp_path)
+
+
 def read_docker_mirror():
-    """读当前 docker.json 的 registries_mirror（经 supervisor 容器）。"""
     try:
-        out = subprocess.run(
+        proc = subprocess.run(
             ["docker", "exec", "hassio_supervisor", "cat", "/data/docker.json"],
-            capture_output=True, text=True, timeout=15,
-        ).stdout
-        return json.loads(out).get("registries_mirror", {})
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+        return json.loads(proc.stdout).get("registries_mirror", {})
     except Exception:
         return {}
 
@@ -61,36 +93,72 @@ def socket_available():
 
 def read_candidates():
     try:
-        with open(CANDIDATES_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
+        with open(CANDIDATES_FILE, "r", encoding="utf-8") as file:
+            raw = json.load(file)
+        return {registry: raw.get(registry, []) for registry in REGISTRIES}
     except Exception:
-        return {}
+        return {registry: [] for registry in REGISTRIES}
 
 
 def read_proxies():
-    """有效 gh-proxy 清单（内置 + state 新增 - state 移除；增删持久化在 /data/state.json，
-    不直接改 /lib/proxy_hosts.json —— 那是镜像层，容器重建即丢）。"""
     try:
-        with open(PROXY_FILE, "r", encoding="utf-8") as f:
-            builtin = json.load(f).get("hosts", [])
+        with open(PROXY_FILE, "r", encoding="utf-8") as file:
+            builtin = json.load(file).get("hosts", [])
     except Exception:
         builtin = []
-    st = load_state()
-    ov = st.get("proxy_override", [])
-    rm = set(st.get("proxy_removed", []))
-    out = []
-    for h in list(builtin) + [o for o in ov if o not in builtin]:
-        if h not in rm and h not in out:
-            out.append(h)
-    return out
+    state = load_state()
+    overrides = state.get("proxy_override", [])
+    removed = set(state.get("proxy_removed", []))
+    return [
+        host
+        for host in list(builtin) + [host for host in overrides if host not in builtin]
+        if host not in removed
+    ]
+
+
+def ota_enabled():
+    return os.environ.get("ENABLE_OTA", "false") == "true"
+
+
+def valid_host(value):
+    if not isinstance(value, str) or not HOST_RE.fullmatch(value):
+        return False
+    hostname = value
+    port = None
+    if ":" in value:
+        hostname, port_text = value.rsplit(":", 1)
+        try:
+            port = int(port_text)
+        except ValueError:
+            return False
+        if not 1 <= port <= 65535:
+            return False
+    labels = hostname.split(".")
+    if any(not label or len(label) > 63 for label in labels):
+        return False
+    if any(label.startswith("-") or label.endswith("-") for label in labels):
+        return False
+    return len(hostname) <= 253
+
+
+def result(ok, code, user_message, *, retryable=False, requires_restart=False, **extra):
+    payload = {
+        "ok": ok,
+        "code": code,
+        "user_message": user_message,
+        "retryable": retryable,
+        "requires_restart": requires_restart,
+    }
+    payload.update(extra)
+    return payload
 
 
 class Handler(BaseHTTPRequestHandler):
-    def log_message(self, *args):
-        pass
+    def log_message(self, *_args):
+        return
 
-    def _send_json(self, obj, code=200):
-        body = json.dumps(obj, ensure_ascii=False).encode("utf-8")
+    def _send_json(self, payload, code=200):
+        body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         self.send_response(code)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
@@ -99,184 +167,276 @@ class Handler(BaseHTTPRequestHandler):
 
     def _read_body(self):
         try:
-            n = int(self.headers.get("Content-Length", 0))
-            return json.loads(self.rfile.read(n).decode("utf-8")) if n else {}
+            length = int(self.headers.get("Content-Length", 0))
+            return json.loads(self.rfile.read(length).decode("utf-8")) if length else {}
         except Exception:
             return {}
+
+    def _action(self, fn, ok_code, ok_message, fail_code, fail_message, *, restart=False):
+        success, output, error = sh(fn)
+        application = load_state().get("last_application", {}) if fn == "apply" else {}
+        if success:
+            actual_code = application.get("code", ok_code)
+            actual_restart = bool(application.get("requires_restart", restart))
+            return result(
+                True,
+                actual_code,
+                "配置未变化，无需重启 Supervisor" if actual_code == "APPLIED_NO_CHANGE" else ok_message,
+                retryable=False,
+                requires_restart=actual_restart,
+                details=output,
+            )
+        actual_fail_code = application.get("code", fail_code)
+        return result(
+            False,
+            actual_fail_code,
+            fail_message,
+            retryable=True,
+            requires_restart=False,
+            details=error or output,
+        )
 
     def do_GET(self):
         if self.path in ("/", "/index.html"):
             try:
-                with open("/www/index.html", "r", encoding="utf-8") as f:
-                    body = f.read().encode("utf-8")
+                with open("/www/index.html", "r", encoding="utf-8") as file:
+                    body = file.read().encode("utf-8")
                 self.send_response(200)
                 self.send_header("Content-Type", "text/html; charset=utf-8")
                 self.send_header("Content-Length", str(len(body)))
                 self.end_headers()
                 self.wfile.write(body)
-                return
             except Exception:
-                self._send_json({"error": "index not found"}, 500)
-                return
-        if self.path == "/api/status":
-            st = load_state()
-            self._send_json({
-                "slug": SLUG,
-                "socket": socket_available(),
-                "current_mirror": read_docker_mirror(),
-                "active": st.get("active", {}),
-                "enabled": st.get("enabled", {}),
-                "override": st.get("override", {}),
-                "removed": st.get("removed", {}),
-                "candidates": read_candidates(),
-                "proxies": read_proxies(),
-                "ota": st.get("ota", {}),
-                "last_probe_ts": st.get("last_probe_ts"),
-                "last_restart_ts": st.get("last_restart_ts"),
-                "last_action": st.get("last_action"),
-                "last_action_ts": st.get("last_action_ts"),
-                "log": st.get("log", [])[-30:],
-                "options": {
-                    "auto_switch": os.environ.get("AUTO_SWITCH", "true"),
-                    "probe_interval_hours": os.environ.get("PROBE_INTERVAL_HOURS", "6"),
-                    "probe_timeout_seconds": os.environ.get("PROBE_TIMEOUT", "8"),
-                    "enable_ota": os.environ.get("ENABLE_OTA", "true"),
-                },
-            })
+                self._send_json(result(False, "UI_NOT_FOUND", "界面文件缺失"), 500)
             return
-        self._send_json({"error": "not found"}, 404)
+
+        if self.path == "/api/status":
+            state = load_state()
+            ota = state.get("ota", {})
+            self._send_json({
+                    **result(True, "STATUS_OK", "状态读取成功"),
+                    "slug": SLUG,
+                    "socket": socket_available(),
+                    "current_mirror": read_docker_mirror(),
+                    "active": state.get("active", {}),
+                    "recommended": state.get("recommended", {}),
+                    "enabled": state.get("enabled", {}),
+                    "override": state.get("override", {}),
+                    "removed": state.get("removed", {}),
+                    "probe_results": state.get("probe_results", {}),
+                    "failure_streak": state.get("failure_streak", {}),
+                    "candidates": read_candidates(),
+                    "proxies": read_proxies(),
+                    "ota": ota,
+                    "ota_enabled": ota_enabled(),
+                    "onboarding_pending": not bool(state.get("onboarding_completed")),
+                    "onboarding_completed": bool(state.get("onboarding_completed")),
+                    "last_application": state.get("last_application", {}),
+                    "last_probe_ts": state.get("last_probe_ts"),
+                    "last_restart_ts": state.get("last_restart_ts"),
+                    "last_action": state.get("last_action"),
+                    "last_action_ts": state.get("last_action_ts"),
+                    "log": state.get("log", [])[-30:],
+                    "options": {
+                        "auto_switch": os.environ.get("AUTO_SWITCH", "true"),
+                        "probe_interval_hours": os.environ.get("PROBE_INTERVAL_HOURS", "6"),
+                        "probe_timeout_seconds": os.environ.get("PROBE_TIMEOUT", "8"),
+                        "enable_ota": os.environ.get("ENABLE_OTA", "false"),
+                    },
+                })
+            return
+
+        self._send_json(result(False, "NOT_FOUND", "请求不存在"), 404)
 
     def do_POST(self):
         if self.path == "/api/probe":
             with _lock:
-                ok, out, err = sh("probe_all")
-            self._send_json({"ok": ok, "out": out, "err": err})
-            return
+                return self._send_json(
+                    self._action(
+                        "probe_all",
+                        "PROBE_COMPLETED",
+                        "检查完成，请确认推荐镜像源后应用",
+                        "PROBE_FAILED",
+                        "镜像源检查失败，请稍后重试",
+                    )
+                )
+
         if self.path == "/api/apply":
             with _lock:
-                ok, out, err = sh("apply")
-            self._send_json({"ok": ok, "out": out, "err": err,
-                             "note": "配置已写入，正在重启 Supervisor，加载项将自动恢复，请稍候刷新"})
-            return
+                return self._send_json(
+                    self._action(
+                        "apply",
+                        "APPLIED",
+                        "配置已应用，Supervisor 正在重启，稍后刷新页面",
+                        "APPLY_FAILED",
+                        "配置应用失败，原配置已保留或已回滚",
+                        restart=True,
+                    )
+                )
+
         if self.path == "/api/restore":
             with _lock:
-                ok, out, err = sh("restore_backup")
-            self._send_json({"ok": ok, "out": out, "err": err,
-                             "note": "已恢复上次配置并重启 Supervisor"})
-            return
+                return self._send_json(
+                    self._action(
+                        "restore_backup",
+                        "RESTORED",
+                        "已恢复上次配置，Supervisor 正在重启",
+                        "RESTORE_FAILED",
+                        "恢复上次配置失败",
+                        restart=True,
+                    )
+                )
+
         if self.path == "/api/restart-supervisor":
             with _lock:
-                ok, out, err = sh("supervisor_restart")
-            self._send_json({"ok": True, "out": out, "err": err,
-                             "note": "正在重启 Supervisor，加载项将短暂离线"})
-            return
+                return self._send_json(
+                    self._action(
+                        "supervisor_restart",
+                        "SUPERVISOR_RESTARTING",
+                        "Supervisor 正在重启，加载项会短暂离线",
+                        "SUPERVISOR_RESTART_FAILED",
+                        "Supervisor 重启请求失败",
+                        restart=True,
+                    )
+                )
+
         if self.path == "/api/recover-direct":
             with _lock:
-                ok, out, err = sh("recover_direct")
-            self._send_json({"ok": ok, "out": out, "err": err,
-                             "note": "已恢复直连（移除镜像映射）并重启 Supervisor"})
-            return
+                return self._send_json(
+                    self._action(
+                        "recover_direct",
+                        "DIRECT_RESTORED",
+                        "已移除镜像映射，Supervisor 正在重启",
+                        "DIRECT_RESTORE_FAILED",
+                        "恢复直连失败",
+                        restart=True,
+                    )
+                )
+
         if self.path == "/api/toggle":
             body = self._read_body()
-            reg = body.get("registry")
-            enabled = bool(body.get("enabled"))
+            registry = body.get("registry")
+            if registry not in REGISTRIES or not isinstance(body.get("enabled"), bool):
+                return self._send_json(result(False, "INVALID_REGISTRY", "仓库参数不合法"), 400)
             with _lock:
-                self._toggle(reg, enabled)
-            self._send_json({"ok": True})
-            return
+                state = load_state()
+                state.setdefault("enabled", {})[registry] = body["enabled"]
+                write_state(state)
+            return self._send_json(result(True, "TOGGLE_SAVED", "高级设置已保存"))
+
         if self.path == "/api/candidates":
             body = self._read_body()
-            reg = body.get("registry")
-            host = body.get("host")
+            registry = body.get("registry")
+            host = body.get("host", "")
             action = body.get("action")
-            if not reg or not host or action not in ("add", "remove"):
-                self._send_json({"ok": False, "error": "need registry/host/action"}, 400)
-                return
+            if registry not in REGISTRIES or not valid_host(host) or action not in ("add", "remove"):
+                return self._send_json(result(False, "INVALID_CANDIDATE", "镜像源主机名不合法"), 400)
             with _lock:
-                self._mutate_candidates(reg, host, action)
-            self._send_json({"ok": True})
-            return
+                self._mutate_candidates(registry, host, action)
+            return self._send_json(result(True, "CANDIDATE_SAVED", "候选镜像源已保存"))
+
         if self.path == "/api/proxy-hosts":
             body = self._read_body()
-            host = body.get("host")
+            host = body.get("host", "")
             action = body.get("action")
-            if not host or action not in ("add", "remove"):
-                self._send_json({"ok": False, "error": "need host/action"}, 400)
-                return
+            if not valid_host(host) or action not in ("add", "remove"):
+                return self._send_json(result(False, "INVALID_PROXY", "下载代理主机名不合法"), 400)
             with _lock:
                 self._mutate_proxies(host, action)
-            self._send_json({"ok": True})
-            return
+            return self._send_json(result(True, "PROXY_SAVED", "下载代理已保存"))
+
+        if self.path.startswith("/api/ota/") and not ota_enabled():
+            return self._send_json(result(False, "OTA_DISABLED", "OTA 实验功能当前未启用"), 403)
+
         if self.path == "/api/ota/check":
-            ok, out, err = sh("ota_check")
-            self._send_json({"ok": ok, "out": out, "err": err})
-            return
-        if self.path == "/api/ota/download":
-            body = self._read_body()
-            ver = body.get("version", "") or load_state().get("ota", {}).get("latest_version", "")
-            if ver and not re.fullmatch(r"[0-9][0-9A-Za-z._-]*", ver):
-                self._send_json({"ok": False, "error": "版本号格式不合法"}, 400)
-                return
             with _lock:
-                ok, out, err = sh("ota_download", ver) if ver else (False, "", "缺少版本号")
-            self._send_json({"ok": ok, "out": out, "err": err})
-            return
+                return self._send_json(
+                    self._action(
+                        "ota_check",
+                        "OTA_CHECKED",
+                        "OTA 版本检查完成",
+                        "OTA_CHECK_FAILED",
+                        "OTA 检查失败，不影响镜像换源功能",
+                    )
+                )
+
+        if self.path == "/api/ota/download":
+            with _lock:
+                body = self._read_body()
+                version = body.get("version", "") or load_state().get("ota", {}).get("latest_version", "")
+                if not VERSION_RE.fullmatch(version):
+                    return self._send_json(result(False, "INVALID_VERSION", "版本号格式不合法"), 400)
+                success, output, error = sh("ota_download", version)
+                return self._send_json(
+                    result(
+                        success,
+                        "OTA_DOWNLOADED" if success else "OTA_DOWNLOAD_FAILED",
+                        "升级包下载完成，可以安装到备用槽位" if success else "升级包下载失败；可稍后重试或更换高级代理",
+                        retryable=not success,
+                        details=output or error,
+                    )
+                )
+
         if self.path == "/api/ota/install":
             with _lock:
-                ok, out, err = sh("ota_install")
-            self._send_json({"ok": ok, "out": out, "err": err,
-                             "note": "升级包已安装到备用槽位，需要重启系统才能生效"})
-            return
+                return self._send_json(
+                    self._action(
+                        "ota_install",
+                        "OTA_INSTALLED",
+                        "升级包已安装到备用槽位，需重启系统生效",
+                        "OTA_INSTALL_FAILED",
+                        "OTA 安装失败，系统未重启",
+                    )
+                )
+
         if self.path == "/api/ota/reboot":
             with _lock:
-                ok, out, err = sh("ota_reboot")
-            self._send_json({"ok": True, "out": out, "err": err,
-                             "note": "正在重启系统，约 1-2 分钟后自动恢复，请稍候刷新"})
-            return
-        self._send_json({"error": "not found"}, 404)
+                return self._send_json(
+                    self._action(
+                        "ota_reboot",
+                        "OTA_REBOOTING",
+                        "系统正在重启，约 1-2 分钟后恢复",
+                        "OTA_REBOOT_FAILED",
+                        "系统重启请求失败",
+                        restart=True,
+                    )
+                )
 
-    def _toggle(self, reg, enabled):
-        st = load_state()
-        st.setdefault("enabled", {})[reg] = enabled
-        self._write_state(st)
+        self._send_json(result(False, "NOT_FOUND", "请求不存在"), 404)
 
-    def _mutate_candidates(self, reg, host, action):
-        st = load_state()
-        st.setdefault("override", {}).setdefault(reg, [])
-        st.setdefault("removed", {}).setdefault(reg, [])
+    @staticmethod
+    def _mutate_candidates(registry, host, action):
+        state = load_state()
+        state.setdefault("override", {}).setdefault(registry, [])
+        state.setdefault("removed", {}).setdefault(registry, [])
         if action == "add":
-            if host not in st["override"][reg]:
-                st["override"][reg].append(host)
-            if host in st["removed"][reg]:
-                st["removed"][reg].remove(host)
-        else:  # remove
-            # 内置候选也记入 removed；override 里的直接删除
-            if host in st["override"][reg]:
-                st["override"][reg].remove(host)
-            if host not in st["removed"][reg]:
-                st["removed"][reg].append(host)
-        self._write_state(st)
+            if host not in state["override"][registry]:
+                state["override"][registry].append(host)
+            if host in state["removed"][registry]:
+                state["removed"][registry].remove(host)
+        else:
+            if host in state["override"][registry]:
+                state["override"][registry].remove(host)
+            if host not in state["removed"][registry]:
+                state["removed"][registry].append(host)
+        write_state(state)
 
-    def _mutate_proxies(self, host, action):
-        # 写入 state（/data 持久化），绝不直接改 /lib/proxy_hosts.json（镜像层，容器重建即丢）
-        st = load_state()
-        st.setdefault("proxy_override", [])
-        st.setdefault("proxy_removed", [])
+    @staticmethod
+    def _mutate_proxies(host, action):
+        state = load_state()
+        state.setdefault("proxy_override", [])
+        state.setdefault("proxy_removed", [])
         if action == "add":
-            if host not in st["proxy_override"]:
-                st["proxy_override"].append(host)
-            if host in st["proxy_removed"]:
-                st["proxy_removed"].remove(host)
-        else:  # remove
-            if host in st["proxy_override"]:
-                st["proxy_override"].remove(host)
-            if host not in st["proxy_removed"]:
-                st["proxy_removed"].append(host)
-        self._write_state(st)
-
-    def _write_state(self, st):
-        with open(STATE_FILE, "w", encoding="utf-8") as f:
-            json.dump(st, f, ensure_ascii=False, indent=2)
+            if host not in state["proxy_override"]:
+                state["proxy_override"].append(host)
+            if host in state["proxy_removed"]:
+                state["proxy_removed"].remove(host)
+        else:
+            if host in state["proxy_override"]:
+                state["proxy_override"].remove(host)
+            if host not in state["proxy_removed"]:
+                state["proxy_removed"].append(host)
+        write_state(state)
 
 
 if __name__ == "__main__":
