@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ["haos-mirror-switcher/**"]
+    paths: ["haos-mirror-switcher/**", ".github/workflows/build-addon.yml"]
     tags: ["haos-mirror-switcher-*"]
 
 concurrency:
@@ -12,6 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  IMAGE_REGISTRY: ghcr.io
   IMAGE_NAMESPACE: Treasoni
   ADDON_DIR: haos-mirror-switcher
 
@@ -50,9 +51,9 @@ jobs:
       - name: Compute image tags
         id: meta
         run: |
-          TAGS="${{ env.IMAGE_NAMESPACE }}/haos-mirror-switcher-${{ matrix.arch }}:${{ steps.version.outputs.version }}"
+          TAGS="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/haos-mirror-switcher-${{ matrix.arch }}:${{ steps.version.outputs.version }}"
           if [ "${{ github.ref_type }}" = "tag" ]; then
-            TAGS="$TAGS,${{ env.IMAGE_NAMESPACE }}/haos-mirror-switcher-${{ matrix.arch }}:latest"
+            TAGS="$TAGS,${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/haos-mirror-switcher-${{ matrix.arch }}:latest"
           fi
           echo "tags=$TAGS" >> "$GITHUB_OUTPUT"
 
